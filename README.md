@@ -1,5 +1,5 @@
-robocup2014
-===========
+tournamenter
+============
 
 Robocup 2014 Administration panel for leagues
 
