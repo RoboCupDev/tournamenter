@@ -20,4 +20,4 @@ Setting up a development environment
 
         $ npm app.js
 
-   and then looking at http://127.0.0.1:3000
+   and then looking at http://127.0.0.1:1337
