@@ -1,24 +1,57 @@
 {
-    "name": "robocup2014sails",
-    "private": true,
-    "version": "0.0.1",
-    "description": "TouMan - Tournament Manager",
-    "dependencies": {
-        "sails": "0.9.7",
-        "grunt": "0.4.1",
-        "sails-disk": "~0.9.0",
-        "ejs": "0.8.4",
-        "optimist": "0.3.4",
+  "name": "tournamenter",
+  "version": "0.0.1",
+  "description": "Manages Competition Events such as RoboCup",
+  "dependencies": {
+    "sails": "0.9.7",
+    "grunt": "0.4.1",
+    "sails-disk": "~0.9.0",
+    "ejs": "0.8.4",
+    "optimist": "0.3.4",
 
-        "lodash": "*",
-        "sails-mongo": "*"
+    "lodash": "*",
+    "sails-mongo": "*"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "debug": "node debug app.js"
+  },
+  "main": "app.js",
+  "author": {
+    "name": "RoboCupDev Team",
+    "email": "robocupdev@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Ivan Seidel Gomes",
+      "email": "ivanseidel@gmail.com",
+      "url": "http://tendadigital.net/"
     },
-    "scripts": {
-        "start": "node app.js",
-        "debug": "node debug app.js"
+    {
+      "name": "Marek Suppa"
     },
-    "main": "app.js",
-    "repository": "",
-    "author": "",
-    "license": ""
+    {
+      "name": "Ado Matejov"
+    },
+    {
+      "name": "Kit Cambridge"
+    },
+    {
+      "name": "Fredrik Lofgren"
+    },
+    {
+      "name": "Oliver Quirke"
+    },
+    {
+      "name": "sebgu182"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/RoboCupDev/tournamenter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RoboCupDev/tournamenter.git"
+  },
+  "license": "MIT"
 }
