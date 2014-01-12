@@ -14,7 +14,7 @@
 					<button class="btn-team-refresh btn btn-xs btn-info">
 						<span class="glyphicon glyphicon-refresh"></span> Refresh
 					</button>
-					<button type="button" class="btn-group-create btn btn-success btn-xs">
+					<button type="button" class="btn-team-create btn btn-success btn-xs">
 						<span class="glyphicon glyphicon-plus"></span> Create Team
 					</button>
 				</div>
@@ -212,7 +212,8 @@ App.Views.Teams = Backbone.View.extend({
 
 	// Events
 	events: {
-		'click .btn-team-refresh': 'refresh'
+		'click .btn-team-refresh': 'refresh',
+		'click .btn-team-create': 'createTeam'
 	},
 
 	initialize: function(){
@@ -247,29 +248,33 @@ App.Views.Teams = Backbone.View.extend({
 		return this;
 	},
 
-	startSync: function(){
-		console.log('startSync');
+	createTeam: function(){
+		this.collection.create({}, {wait: true});
+	},
 
+	startSync: function(){
 		// Disable refresh button and animate icon
 		this.$btnRefresh.attr('disabled', true);
 		this.$btnRefresh.find('.glyphicon').addClass('icon-rotate');
 	},
 
 	endSync: function(){
-		console.log('endSync');
-
 		// Enable button and stop rotating
 		this.$btnRefresh.removeAttr('disabled');
 		this.$btnRefresh.find('.glyphicon').removeClass('icon-rotate');
 	},
 
 	add: function(model){
+		// If model exists, skip
+		if(this._views[model.id])
+			return this;
+
 		var teamView = new App.Views.Team({
 			model: model
 		});
 
 		// If model already exist, remove it
-		this.remove(model);
+		// this.remove(model);
 		
 		// Register in views
 		this._views[model.id] = teamView;
