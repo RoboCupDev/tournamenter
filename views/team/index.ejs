@@ -1,11 +1,13 @@
-
+<!-- Include countries list -->
+<script src="/js/countries.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/flag-icon.min.css">
 
 <!-- CONTENT -->
 <div class="row clearfix">
 	
 	<div class="col-md-12 column" id="groups-container">
 
-		<div class="panel panel-info" id="template-group-view">
+		<div class="panel panel-info" id="team-view">
 			<div class="panel-heading">
 				<!-- Team tools -->
 				<div class="pull-right">
@@ -22,62 +24,18 @@
 				</span>
 			</div>
 
-			<table id="template-table" class="table table-striped table-responsive table-hover table-bordered">
+			<table class="team-table table table-striped table-responsive table-hover table-bordered">
 				<thead>
 					<tr>
-						<th width="50px">Country</th>
+						<th width="200px">Country</th>
 						<th>Name</th>
 						<th width="200px">Tools</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td>asd</td>
-						<td>asd</td>
-						<td>asd</td>
-					</tr>
 				</tbody>
 			</table>
 
-			<!-- <div class="collapse collapsible">
-				<div class="panel-body">
-
-					<div class="row">
-						<div class="col-md-5 column">
-							<div class="panel panel-info">
-								<div class="panel-heading">Group Table</div>
-								<table class="spot-group-table table table-striped table-bordered table-condensed">
-								</table>
-							</div>
-						</div>
-
-						<div class="col-md-7 column">
-
-							<div class="panel panel-info">
-								<div class="panel-heading">Matches <small class="matches-count"></small>
-									<div class="pull-right">
-										<span class="label label-primary clear">DAY</span>
-										<span class="label label-info clear">HOUR</span>
-										<span class="label label-warning">FIELD</span>
-									</div>
-								</div>
-
-								<div class="spot-matches list-group">
-									
-								</div>
-
-								<div class="panel-footer">
-								<button type="button" class="btn-match-create btn btn-success btn-xs btn-block">
-									<span class="glyphicon glyphicon-plus"></span> Create New Match
-								</button>
-								</div>
-							</div>
-
-						</div>
-					</div>
-
-				</div>
-			</div> -->
 		</div>
 
 	</div>
@@ -111,3 +69,261 @@
 	</div>
 </div>
 <!--/ DESTROY MODAL -->
+
+<script type="text/html" id="template-team-view">
+	<td><span class="team-country" data-name="country"></span></td>
+	<td><span class="team-name"    data-name="name">{{name}}</span></td>
+	<td>Tools</td>
+</script>
+
+
+<script type="text/javascript">
+
+// Global object used to store all kinds of objects
+var App = {
+	Models: {},
+	Collections: {},
+	Views: {},
+};
+
+// Wait until page load is complet
+$(document).ready(function(){
+
+// Configure Underscore to use tags {{}}
+_.templateSettings = {
+  interpolate: /\{\{(.+?)\}\}/g
+};
+
+/*
+	Define Models
+*/
+App.Models.Team = Backbone.Model.extend({
+	urlRoot: '/teams',
+});
+
+App.Collections.Teams = Backbone.Collection.extend({
+	url: '/teams/find',
+	model: App.Models.Team
+});
+
+/*
+	Define Views
+*/
+App.Views.Team = Backbone.View.extend({
+	// It's a table row
+	tagName: 'tr',
+	template: _.template($('#template-team-view').html()),
+
+	initialize: function(){
+		console.log('Init TeamRow');
+		this.listenTo(this.model, 'change', this.render);
+		this.listenTo(this.model, 'destroy', this.destroy);
+	},
+
+	render: function(){
+		console.log('TeamView.render');
+
+		// Render with data
+		var dict = this.model.toJSON();
+		var html = this.template(dict);
+		this.$el.html(html);
+
+		// Configure in-place editors
+		this.configureName()
+			.configureCountry();
+
+		return this;
+	},
+
+	configureName: function(){
+		this.setupXEditable(this.$('.team-name'));
+		return this;
+	},
+
+	configureCountry: function(){
+		var field = this.$('.team-country');
+
+		function format(state) {
+			if(!state.id)
+				return state.text;
+			return '<span class="flag-icon flag-icon-' + state.id.toLowerCase() +'"></span> ' + state.text;
+		}
+
+		this.setupXEditable(field, {
+			type: 'select2',
+			mode: 'popup',
+			showbuttons: false,
+
+			escape: false,
+			value: this.model.get('country'),
+			source: Util.countries,
+
+			select2: {
+				width: 200,
+				placeholder: 'Select Country',
+				allowClear: true,
+
+			    formatSelection: format,
+			    escapeMarkup: function(m) { return m; },
+			}
+		});
+		return this;
+	},
+
+	destroy: function(){
+		this.$el.remove();
+	},
+
+	// Configure XEditable on field
+	setupXEditable: function(field, opts){
+		var view = this;
+
+		// Filter and adds default behavior
+		opts = opts || {};
+		var defaults = {
+			type: 'text',
+			mode: 'popup',
+			unsavedclass: '',
+			showbuttons: false,
+			success: function(response, newValue) {
+				// Finds key name
+				var name = opts.name || field.attr('data-name') || null;
+				// If found, then save it
+				// (silently, since XEditable will edit the field)
+				if(name)
+		        	view.model.save(name, newValue, {silent: true});
+		    }
+		};
+
+		// Apply options to editable
+		field.editable(_.defaults(opts, defaults));
+		return this;
+	},
+});
+
+App.Views.Teams = Backbone.View.extend({
+
+	// Private storage of team views
+	_views: {},
+
+	// jQuery links to place
+	$teamTable: null,
+	$btnRefresh: null,
+
+	// Events
+	events: {
+		'click .btn-team-refresh': 'refresh'
+	},
+
+	initialize: function(){
+		console.log('initialized!');
+		this.listenTo(this.collection, 'add', this.add);
+		this.listenTo(this.collection, 'remove', this.remove);
+		this.listenTo(this.collection, 'reset', this.render);
+
+		this.listenTo(this.collection, 'request', this.startSync);
+		this.listenTo(this.collection, 'sync', this.endSync);
+	},
+
+	render: function(){
+		var view = this;
+
+		// Find team table in view
+		if(!this.$teamTable)
+			this.$teamTable = this.$('.team-table tbody');
+
+		// Find jQuery objects
+		this.$btnRefresh = this.$('.btn-team-refresh');
+
+		// Go through all models inside the collection, adding to the view
+		_(this.collection.models).each(function(model){
+			// Create and add view
+			view.add(model);
+		});
+	},
+
+	refresh: function(){
+		this.collection.fetch();
+		return this;
+	},
+
+	startSync: function(){
+		console.log('startSync');
+
+		// Disable refresh button and animate icon
+		this.$btnRefresh.attr('disabled', true);
+		this.$btnRefresh.find('.glyphicon').addClass('icon-rotate');
+	},
+
+	endSync: function(){
+		console.log('endSync');
+
+		// Enable button and stop rotating
+		this.$btnRefresh.removeAttr('disabled');
+		this.$btnRefresh.find('.glyphicon').removeClass('icon-rotate');
+	},
+
+	add: function(model){
+		var teamView = new App.Views.Team({
+			model: model
+		});
+
+		// If model already exist, remove it
+		this.remove(model);
+		
+		// Register in views
+		this._views[model.id] = teamView;
+
+		// Append to this view
+		this.appendView(teamView);
+		return this;
+	},
+
+	appendView: function(view){
+		this.$teamTable.append(view.render().$el);
+		return this;
+	},
+
+	remove: function(model){
+		// If model doesn't exist, skip it
+		if(!this._views[model.id])
+			return this;
+
+		// Sub-view should remove() itself
+		model.trigger('destroy');
+		delete this._views[model.id];
+		return this;
+	},
+
+
+});
+
+/*
+	Create collection
+*/
+App.teams = new App.Collections.Teams();
+
+/*
+	Create Views
+*/
+App.teamsView = new App.Views.Teams({
+	collection: App.teams,
+	el: '#team-view'
+});
+
+/*
+	Load models
+*/
+App.teams.reset(<%- JSON.stringify(teams) %>);
+
+// setTimeout(function(){
+// 	App.teams.pop();
+// }, 1000);
+
+// setTimeout(function(){
+// 	App.teams.add({id: 99, name: 'Uhul!'});
+// }, 1500);
+
+});
+
+</script>
