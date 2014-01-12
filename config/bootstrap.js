@@ -24,11 +24,14 @@ module.exports.bootstrap = function (cb) {
 
 function initializeEasyAdmin(){
 
+	// Menus array that will hold all menus from controllers
+	var menus = [];
+
 	// Locals that are constant
 	var constantLocals = {
 		_projectName: sails.config.appName,
 		_rootUrl: '',
-		_menus: [],
+		// _menus: menus,
 	}
 
 	// console.log(sails.controllers);
@@ -38,9 +41,18 @@ function initializeEasyAdmin(){
 	// Search in every controller
 	_.each(sails.controllers, function(controller){
 		// Is there a key 'menus' inside '_config'
-		if(controller._config && controller._config.menus)
-			_.extend(constantLocals._menus, controller._config.menus);
+		if(controller._config && controller._config.menus){
+
+			var menusToAdd = controller._config.menus;
+
+			for(var k in menusToAdd)
+				menus.push(menusToAdd[k]);
+
+		}
 	});
+
+	// Sort menus
+	constantLocals._menus = _.sortBy(menus, 'order');
 
 	sails.express.app.locals(constantLocals);
 
