@@ -2,6 +2,13 @@
 <script src="/js/countries.js"></script>
 <link rel="stylesheet" type="text/css" href="/css/flag-icon.min.css">
 
+<style type="text/css">
+.fixXEditableTextArea{
+	white-space: nowrap !important;
+	border-bottom: 1px solid #46B8ED;
+}
+</style>
+
 <!-- CONTENT -->
 <div class="row clearfix">
 	
@@ -24,12 +31,12 @@
 				</span>
 			</div>
 
-			<table class="team-table table table-striped table-responsive table-hover table-bordered">
+			<table class="team-table table table-striped table-responsive table-hover">
 				<thead>
 					<tr>
-						<th width="200px">Country</th>
+						<th width="230px">Country</th>
 						<th>Name</th>
-						<th width="200px">Tools</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -70,10 +77,53 @@
 </div>
 <!--/ DESTROY MODAL -->
 
+<!-- EDIT MODAL -->
+<div id="modal-edit" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Edit Team <small class="team-name"></small></h4>
+			</div>
+			<div class="modal-body">
+
+				<!-- Alert about wrong syntax -->
+				<div class="alert alert-warning">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<strong>Ops!</strong> Looks like there is an syntax error in your json...
+				</div>
+
+				<!-- Edit field containing json -->
+				<div class="form-group">
+					<textarea class="team-json form-control" rows="10"></textarea>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<!-- Close and Confirm buttons -->
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn-confirm-edit btn btn-success">
+					<span class="glyphicon glyphicon-ok"></span> Save
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!--/ EDIT MODAL -->
+
 <script type="text/html" id="template-team-view">
 	<td><span class="team-country" data-name="country"></span></td>
 	<td><span class="team-name"    data-name="name">{{name}}</span></td>
-	<td>Tools</td>
+	<td>
+		<!-- Team tools -->
+		<div class="btn-group pull-right">
+			<button type="button" class="fixXEditableTextArea btn-team-edit btn btn-info btn-xs">
+				<span class="glyphicon glyphicon-pencil"></span> Edit JSON
+			</button>
+			<button type="button" class="btn-team-destroy btn btn-danger btn-xs">
+				<span class="glyphicon glyphicon-trash"></span> Delete
+			</button>
+		</div>
+	</td>
 </script>
 
 
@@ -114,6 +164,12 @@ App.Views.Team = Backbone.View.extend({
 	tagName: 'tr',
 	template: _.template($('#template-team-view').html()),
 
+	// Events
+	events: {
+		'click .btn-team-destroy': 'confirmAction',
+		'click .btn-team-edit': 'editJson'
+	},
+
 	initialize: function(){
 		console.log('Init TeamRow');
 		this.listenTo(this.model, 'change', this.render);
@@ -151,8 +207,6 @@ App.Views.Team = Backbone.View.extend({
 
 		this.setupXEditable(field, {
 			type: 'select2',
-			mode: 'popup',
-			showbuttons: false,
 
 			escape: false,
 			value: this.model.get('country'),
@@ -170,8 +224,75 @@ App.Views.Team = Backbone.View.extend({
 		return this;
 	},
 
+	editJson: function(){
+		var view = this;
+
+
+		// Find and reset modal
+		var $modal = $('#modal-edit');
+		var $field = $modal.find('.team-json');
+		$modal.find('.form-group').removeClass('has-error');
+		$modal.find('.alert-warning').hide();
+
+		// Format model as a json string and update modal
+		var modelAsJson = JSON.stringify(this.model.toJSON(), null, 4);
+		$modal.find('.team-name').text(this.model.get('name'));
+		$modal.find('.team-json').val(modelAsJson);
+
+		// Show and wait for confirmation
+		$modal.modal('show');
+		$modal.find('.btn-confirm-edit').unbind('click').click(saveAction);
+
+		function saveAction(){
+
+			// Try to Parse json
+			var rawUpdateData = $field.val();
+			try {
+				var newModel = JSON.parse(rawUpdateData);
+			} catch (e) {
+				// There was an error, show to the user
+				$modal.find('.form-group').addClass('has-error');
+				$modal.find('.alert-warning').slideDown('fast');
+				return;
+			}
+			
+			// Hide modal and save model
+			$modal.modal('hide');
+			view.model.save(newModel);
+		}
+		return this;
+	},
+
 	destroy: function(){
 		this.$el.remove();
+	},
+
+	// This launches a modal to confirm the action taken
+	confirmAction: function(){
+		var view = this;
+		// Find modal
+		$modal = $('#modal-destroy');
+		
+		// Check if user dismissed warning
+		if($modal.find('.btn-dismiss').is(':checked'))
+			return confirmed();
+
+		// Change message
+		var message = 'Are you shure that you want to DELETE "'+this.model.get('name')+'"?';
+		$modal.find('.modal-body').text(message);
+
+		// Show Modal
+		$modal.modal('show');
+
+		// Get callback on the confirm-delete button
+		$modal.find('.btn-confirm-destroy').unbind('click').click(confirmed);
+		function confirmed(){
+			// Hide modal
+			$modal.modal('hide');
+
+			// Callback
+			view.model.destroy({wait: true});
+		};
 	},
 
 	// Configure XEditable on field
@@ -182,7 +303,7 @@ App.Views.Team = Backbone.View.extend({
 		opts = opts || {};
 		var defaults = {
 			type: 'text',
-			mode: 'popup',
+			mode: 'inline',
 			unsavedclass: '',
 			showbuttons: false,
 			success: function(response, newValue) {
