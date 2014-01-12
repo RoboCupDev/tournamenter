@@ -17,10 +17,19 @@
 
 module.exports = {
     
-    index: function(req, res){
-    	return res.view({
-    		path: req.route.path
-		});
+    index: function(req, res, next){
+
+    	// Find teams
+    	Team.find().done(finishRendering);
+
+    	function finishRendering(err, collection){
+    		if(err) return next('Failet to retrieve data');
+
+			return res.view({
+				path: req.route.path,
+				teams: collection
+			});
+    	}
     },
 
 	post: function (req, res, next) {

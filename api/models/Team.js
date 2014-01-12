@@ -11,14 +11,23 @@ module.exports = {
 	tableName: 'teams',
 
 	attributes: {
-		name: 'string',
-		category: 'string',
+		name: {
+			type: 'string',
+			defaultsTo: '[Team Name]'
+		},
+		country: {
+			type: 'string',
+			defaultsTo: '?'
+		},
 
-		country: 'string',
-		state: 'string',
-		city: 'string',
-
-		active: 'boolean',
+		/*
+			This property can be used to sync data outside of this system.
+			It's not required, and in fact, not used inside this system.
+		*/
+		category: {
+			type: 'string',
+			defaultsTo: 'default'
+		},
 	}
 
 };
