@@ -17,6 +17,11 @@
 
 module.exports = {
     
+    index: function(req, res){
+    	return res.view({
+			
+		});
+    },
 
 	post: function (req, res, next) {
 		return XEditable.handle(Team)(req, res, next);
