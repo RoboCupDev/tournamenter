@@ -22,7 +22,7 @@ module.exports.bootstrap = function (cb) {
 	];
 
 	// Search for menus in controllers and merge with menus
-	menus.join(findMenusInControllers());
+	menus = menus.concat(findMenusInControllers());
 
 	// Get Express app instance
 	var express = sails.express.app;
@@ -33,6 +33,7 @@ module.exports.bootstrap = function (cb) {
 		_rootUrl: '',
 		_menus: menus,
 		sideMenu: false,
+		path: '/',
 	}
 
 	// Sort menus
