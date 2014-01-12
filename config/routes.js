@@ -32,9 +32,8 @@ module.exports.routes = {
   // located at `views/home/index.ejs`
   // 
   // (This would also work if you had a file at: `/views/home.ejs`)
-  '/': {
-    view: 'home/index'
-  }
+  '/': 'TeamController.manage',
+  'GET /teams': 'TeamController.manage',
 
   /*
   // But what if you want your home page to display

@@ -17,7 +17,10 @@
 
 module.exports = {
     
-    index: function(req, res, next){
+    /*
+    	This action is also routed for /teams under routes.js
+    */
+    manage: function(req, res, next){
 
     	// Find teams
     	Team.find().done(finishRendering);
