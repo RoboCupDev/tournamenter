@@ -34,7 +34,7 @@ module.exports = {
 	*/
 	_config: {
 		menus: [
-			{name: 'Teams', path: '/teams'}
+			{name: 'Teams', path: '/teams', order: 0}
 		]
 	}
 

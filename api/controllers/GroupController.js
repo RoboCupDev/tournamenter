@@ -170,7 +170,7 @@ module.exports = {
 	 */
 	_config: {
 		menus: [
-			{name: 'Groups', path: '/groups'}
+			{name: 'Groups', path: '/groups', order: 1}
 		]
 	}
 
