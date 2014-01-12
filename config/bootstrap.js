@@ -18,7 +18,7 @@ module.exports.bootstrap = function (cb) {
 		******************************************
 	*/
 	var menus = [
-		
+
 	];
 
 	// Search for menus in controllers and merge with menus
@@ -69,5 +69,5 @@ function findMenusInControllers(){
 		}
 	});
 
-	return menusToAdd;
+	return menus;
 }
