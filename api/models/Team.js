@@ -23,6 +23,14 @@ module.exports = {
 		/*
 			This property can be used to sync data outside of this system.
 			It's not required, and in fact, not used inside this system.
+
+			The idea is that all teams will be stored in a internet database,
+			and that each league will 'fetch' a single category from that
+			database (let's say: 'junior.rescueb').
+			This attribute will come with the team model, but will not be used.
+
+			It's nice to keep it even not using...
+
 		*/
 		category: {
 			type: 'string',
