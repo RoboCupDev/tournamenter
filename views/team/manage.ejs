@@ -362,6 +362,9 @@ App.Views.Teams = Backbone.View.extend({
 			// Create and add view
 			view.add(model);
 		});
+
+		// Update count
+		this.renderCount();
 	},
 
 	refresh: function(){
@@ -394,19 +397,13 @@ App.Views.Teams = Backbone.View.extend({
 			model: model
 		});
 
-		// If model already exist, remove it
-		// this.remove(model);
-		
-		// Register in views
+		// Register in views and append to views
 		this._views[model.id] = teamView;
-
-		// Append to this view
 		this.appendView(teamView);
-		return this;
-	},
 
-	appendView: function(view){
-		this.$teamTable.append(view.render().$el);
+		// Update count
+		this.renderCount();
+
 		return this;
 	},
 
@@ -418,9 +415,27 @@ App.Views.Teams = Backbone.View.extend({
 		// Sub-view should remove() itself
 		model.trigger('destroy');
 		delete this._views[model.id];
+
+		// Update count
+		this.renderCount();
+
 		return this;
 	},
 
+	appendView: function(view){
+		this.$teamTable.append(view.render().$el);
+		return this;
+	},
+
+	renderCount: function(){
+		var count = '';
+		if(this.collection.length > 0)
+			count = '('+this.collection.length+')';
+
+		this.$el.find('.team-count').text(count);
+
+		return this;
+	}
 
 });
 
