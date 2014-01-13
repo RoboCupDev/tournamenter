@@ -363,6 +363,10 @@ App.Views.Teams = Backbone.View.extend({
 
 		this.listenTo(this.collection, 'request', this.startSync);
 		this.listenTo(this.collection, 'sync', this.endSync);
+		this.listenTo(this.collection, 'change', this.endSync);
+		this.listenTo(this.collection, 'add', this.endSync);
+		this.listenTo(this.collection, 'remove', this.endSync);
+		this.listenTo(this.collection, 'reset', this.endSync);
 	},
 
 	render: function(){
@@ -386,7 +390,10 @@ App.Views.Teams = Backbone.View.extend({
 	},
 
 	refresh: function(){
-		this.collection.fetch();
+		var view = this;
+		this.startSync();
+		this.collection.fetch();//{success: finish, error: finish});
+		function finish(){view.endSync()};
 		return this;
 	},
 
