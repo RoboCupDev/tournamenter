@@ -171,14 +171,11 @@ App.Views.Team = Backbone.View.extend({
 	},
 
 	initialize: function(){
-		console.log('Init TeamRow');
 		this.listenTo(this.model, 'change', this.render);
 		this.listenTo(this.model, 'destroy', this.destroy);
 	},
 
 	render: function(){
-		console.log('TeamView.render');
-
 		// Render with data
 		var dict = this.model.toJSON();
 		var html = this.template(dict);
@@ -338,7 +335,6 @@ App.Views.Teams = Backbone.View.extend({
 	},
 
 	initialize: function(){
-		console.log('initialized!');
 		this.listenTo(this.collection, 'add', this.add);
 		this.listenTo(this.collection, 'remove', this.remove);
 		this.listenTo(this.collection, 'reset', this.render);
