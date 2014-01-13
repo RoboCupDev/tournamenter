@@ -201,13 +201,11 @@ App.Mixins.editJSON = function(model, title, cb){
 App.Models.Team = Backbone.Model.extend({
 	urlRoot: '/teams',
 });
-_.extend(App.Models.Team.prototype, App.Mixins.editJSON);
 
 App.Collections.Teams = Backbone.Collection.extend({
 	url: '/teams/find',
 	model: App.Models.Team
 });
-_.extend(App.Collections.Teams.prototype, App.Mixins.editJSON);
 
 /*
 	Define Views
