@@ -34,6 +34,7 @@ module.exports.bootstrap = function (cb) {
 		_menus: menus,
 		sideMenu: false,
 		path: '/',
+		_version: require('../package.json').version
 	}
 
 	// Sort menus
