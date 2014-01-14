@@ -19,6 +19,25 @@
     <script src="/js/jquery-1.10.2.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
 
+    <link href="/assets/x-editable/x-editable.css" rel="stylesheet"/>
+    <script src="/assets/x-editable/x-editable.min.js"></script>
+
+    <!-- underscore -->
+    <script src="/js/underscore-min.js"></script>    
+
+    <!-- backbone -->
+    <script src="/js/backbone-min.js"></script>    
+
+    <!-- select2 --> 
+    <link href="/assets/select2/select2.css" rel="stylesheet">
+    <script src="/assets/select2/select2.js"></script>  
+
+    <!-- select2 bootstrap -->
+    <link href="/assets/select2/select2-bootstrap.css" rel="stylesheet">
+
+    <!-- Custom utility -->
+    <script src="/js/util.js"></script>  
+
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
 
@@ -30,6 +49,7 @@
   </head>
 
   <%
+
     function realPath(path){
       if(!path)
         return '#';
@@ -40,11 +60,11 @@
       return _rootUrl + path;
     };
 
-    function isCurrentPage(path, pseudoMatch){
+    function isCurrentPage(testCase, pseudoMatch){
       if(pseudoMatch)
-        return (realPath(_pathName).indexOf(path) >= 0);
+        return (realPath(path).indexOf(testCase) >= 0);
 
-      return (_pathName == realPath(path));
+      return (path == realPath(testCase));
     };
 
     /*
@@ -150,8 +170,8 @@
 
             <!-- Private menu -->
             <ul class="nav navbar-nav navbar-right">
-              <% for(var i in _menusPrivate){ %>
-                <% var menu = _menusPrivate[i]; %>
+              <% for(var i in sideMenu){ %>
+                <% var menu = sideMenu[i]; %>
 
                 <% if(menu.childs && menu.childs.length > 0){ %>
                   <!-- Dropdown -->
@@ -260,8 +280,8 @@
 
     <div id="footer">
       <div class="container">
-        <p class="text-muted credit">© 2013 All rights reserved | Developed by <a target="_blank" href="http://tendadigital.net">Ivan Seidel</a>.
-          <small class="pull-right">Rendered in <%= (new Date()).getTime() - _startRenderTime %>ms</small>
+        <p class="text-muted credit">© 2014 | <a target="_blank" href="https://github.com/RoboCupDev">RoboCup Dev</a>
+          <small class="pull-right">v<%= _version %></small>
         </p>
       </div>
     </div>

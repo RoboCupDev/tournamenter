@@ -24,16 +24,15 @@ exports.handle = function(model) {
 
 		var Model = model;
 		if(!Model){
-			return next();
 			return next('There is a problem with the model!');
 		}
 
-		clonedParams = {};
+		var clonedParams = {};
 		clonedParams[key] = value;
 
 		Model.update(id, clonedParams, function(err, models) {
 			if(err) return next(err);
-			if(!models || models.length === 0) return next();
+			if(!models || models.length === 0) return next('A problem occurred while updating model');
 
 			// Because this should only update a single record and update
 			// returns an array, just use the first item

@@ -25,10 +25,7 @@ module.exports = {
 
 	index: function (req, res) {
 		return res.view({
-			questions: [{
-				title: 'Freddy a presidente?',
-				content: 'Últimamente Freddy se encuentra con más diplomacia.'
-			}]
+			path: req.route.path
 		});
 	},
 
@@ -170,7 +167,7 @@ module.exports = {
 	 */
 	_config: {
 		menus: [
-			{name: 'Groups', path: '/groups'}
+			{name: 'Groups', path: '/groups', order: 1}
 		]
 	}
 
