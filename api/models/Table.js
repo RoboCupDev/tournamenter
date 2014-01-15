@@ -154,17 +154,19 @@ module.exports = {
 			}
 
 		*/
-		table: generateTable,
+		table: generateTableData,
+		headers: generateTableHeaders,
 
 
 	},
 
 };
 
+
 /*
-	Generates the table
+	Generate the table headers
 */
-function generateTable(){
+function generateTableHeaders(){
 	// Save to allow in function referencte
 	var table = this;
 	var columns = table.columns*1;
@@ -185,6 +187,19 @@ function generateTable(){
 
 	// Add last header (Final score)
 	headers['final'] = table.headerFinal;
+
+	// Self assign headers and return
+	this.headers = headers;
+	return headers;
+}
+
+/*
+	Generates the table data
+*/
+function generateTableData(){
+	// Save to allow in function referencte
+	var table = this;
+	var columns = table.columns*1;
 
 	/*
 		Create data table
@@ -220,6 +235,9 @@ function generateTable(){
 		var scoreData = {};
 
 		// Add simple attributes
+		scoreData['id'] = score.id || null;
+		scoreData['teamId'] = score.teamId || null;
+		scoreData['tableId'] = score.tableId || null;
 		scoreData['team'] = score.teamId || null;
 		// scoreData.team: score.team.name
 		// scoreData.country: score.team.country
@@ -268,10 +286,7 @@ function generateTable(){
 	});
 
 	// Self assign the table
-	this.table = {
-		headers: headers,
-		data: finalData,
-	}
+	this.table = finalData;
 
 	// Return the table
 	return this.table;
