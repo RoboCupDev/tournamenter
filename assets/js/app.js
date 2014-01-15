@@ -32,6 +32,8 @@ App.Mixins.confirmAction = function(message, allowSkip, next){
 	if(allowSkip && $modal.find('.btn-dismiss').is(':checked'))
 		return confirmed();
 
+	$modal.find('.dont-remember').toggleClass('hide', !allowSkip);
+
 	// Change message
 	message = message || 'Are you certain about this action?';
 	$modal.find('.modal-body').text(message);
