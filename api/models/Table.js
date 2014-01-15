@@ -10,7 +10,14 @@ var _ = require('lodash');
 
 module.exports = {
 
-	tableName: 'teams',
+	tableName: 'tables',
+
+	types: {
+		// Returns if the method exists (default), or works (function)
+		oneOfMethods: function(val){
+			return (getMethodFor(val) ? true : false);
+		}
+	},
 
 	attributes: {
 		name: {
@@ -128,6 +135,7 @@ module.exports = {
 		evaluateMethod: {
 			type: 'string',
 			defaultsTo: 'sum',
+			oneOfMethods: true // <- type of validation
 		},
 
 		/*
@@ -165,7 +173,7 @@ module.exports = {
 */
 function generateTable(){
 	// Save to allow in function referencte
-	var table = table;
+	var table = this;
 	var columns = table.columns*1;
 
 	/*
@@ -180,7 +188,7 @@ function generateTable(){
 	};
 	// Create Scores header
 	for(var i = 1; i <= columns; i++)
-		header['score.'+(i)] = table.headerScore + i;
+		headers['score.'+(i)] = table.headerScore + i;
 
 	// Add last header (Final score)
 	headers['final'] = table.headerFinal;
@@ -219,7 +227,7 @@ function generateTable(){
 		var scoreData = {};
 
 		// Add simple attributes
-		scoreData.team: score.teamId;
+		scoreData['team'] = score.teamId || null;
 		// scoreData.team: score.team.name
 		// scoreData.country: score.team.country
 
@@ -228,7 +236,7 @@ function generateTable(){
 
 		// Add scores data
 		var scoreValues = [];
-		for(int i = 0; i < columns; i++){
+		for(var i = 0; i < columns; i++){
 
 			// Get value and add to scoreValues
 			var value = null;
@@ -239,7 +247,7 @@ function generateTable(){
 
 			// Generate field key and saves
 			var field = 'score.'+(i+1);
-			scoreData[field] = score.scores.value;
+			scoreData[field] = score.scores.value || null;
 		}
 
 		// Compute final score and adds to scoreData
@@ -253,13 +261,13 @@ function generateTable(){
 	var finalData = _.sortBy(tableRows, 'score');
 
 	if(table.order == 'asc')
-		finalTable = finalTable.reverse()
+		finalData = finalTable.reverse()
 
 	// Rank Table
 	var pos = 0;
 	var lastScore = -1;
 
-	_.forEach(finalTable, function(row){
+	_.forEach(finalData, function(row){
 		// Keeps the same ranking if scores is the same
 		if(lastScore != row.score){
 			pos++;
