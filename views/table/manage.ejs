@@ -1,1 +1,164 @@
-asdasd
+<style type="text/css">
+
+.spot-table-scores{
+	margin-bottom: 0px;
+}
+
+</style>
+
+<!-- TEMPLATE FOR GROUP VIEW -->
+<div class="panel panel-info" id="template-group-view">
+	<div class="panel-heading">
+
+		<!-- Table tools -->
+		<div class="pull-right">
+			
+			
+			<!-- Actions of the table. Only shown when not locked -->
+			<div class="btn-group">
+				<button class="btn-group-refresh btn btn-xs btn-info">
+					<span class="glyphicon glyphicon-refresh"></span> Refresh
+				</button>
+				<button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown">
+					<span class="caret"></span>
+					<span class="sr-only">Toggle Dropdown</span>
+				</button>
+
+				<ul class="dropdown-menu" role="menu">
+					<!-- Table actions -->
+					<li role="presentation" class="dropdown-header">Table Actions</li>
+					<li><a class="btn-table-destroy" href="#">
+						<span class="glyphicon glyphicon-trash"></span> Delete Table
+					</a></li>
+
+					<!-- Import/Export actions -->
+					<li class="divider"></li>
+					<li role="presentation" class="dropdown-header">Import/Export</li>
+					<li><a href="#">Import all teams</a></li>
+				</ul>
+			</div>
+
+			<input type="checkbox" class="table-locked switch-mini"
+				data-on="success" data-on-label="<i class='glyphicon glyphicon-pencil'></i>"
+				data-off="danger" data-off-label="<i class='glyphicon glyphicon-ban-circle'></i>">
+		</div>
+
+		<span class="panel-title">
+			<strong><span class="group-name" data-title="Table name">Table Name</span></strong>
+		</span>
+	</div>
+
+	<!-- Configuration panel -->
+	<div class="collapsible">
+		<div class="form-horizontal panel-body">
+
+
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Email</label>
+				<div class="col-sm-10">
+					<div class="table-sort">ASC</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Password</label>
+				<div class="col-sm-10">
+					<div class="table-sort">ASC</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<button type="button" class="btn-collapse btn btn-primary btn-xs btn-block">Hide options
+	</button>
+
+	<div class="collapsible">
+
+		<table class="spot-table-scores table table-striped table-bordered table-condensed table-responsive">
+			<thead>
+				<tr>
+					<th>Rank</th>
+					<th>Team</th>
+					<th>Score 1</th>
+					<th>Score 2</th>
+					<th>Score 3</th>
+					<th>Final</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>1</td>
+					<td>Emerotecos</td>
+					<td>123</td>
+					<td>-</td>
+					<td>-</td>
+					<td>123</td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td>XLS</td>
+					<td>532</td>
+					<td>-</td>
+					<td>-</td>
+					<td>532</td>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td>Emerotecos</td>
+					<td>123</td>
+					<td>-</td>
+					<td>-</td>
+					<td>123</td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td>XLS</td>
+					<td>532</td>
+					<td>-</td>
+					<td>-</td>
+					<td>532</td>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td>Emerotecos</td>
+					<td>123</td>
+					<td>-</td>
+					<td>-</td>
+					<td>123</td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td>XLS</td>
+					<td>532</td>
+					<td>-</td>
+					<td>-</td>
+					<td>532</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<button type="button" class="btn-collapse btn btn-info btn-xs btn-block">Hide Table
+	</button>
+
+<!-- 	<div class="collapsible">
+
+		Opts
+	</div>
+ -->
+	<!-- <button type="button" class="btn-collapse btn btn-info btn-xs btn-block">Show Configurations
+	</button> -->
+</div>
+<!--/ TEMPLATE FOR GROUP VIEW -->
+
+<%- JSON.stringify(tables) %>
+
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+
+	$('.table-locked').bootstrapSwitch();
+
+});
+
+</script>
