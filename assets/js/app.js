@@ -18,6 +18,26 @@ var App = {
 };
 
 /*
+	Mixin Function to help with Collection view controllers
+	It keeps track of inserted views, with the view.model.id
+
+	Call addView(view, id) to add a view
+	+ If the view already exist, it will return false;
+	+ else, return false
+
+	Call removeView(id) to remove a view
+	+ If the view exists, it will be removed and will return true
+	+ else, return false
+
+	Call getView(id) to get a view with id = id;
+*/
+// App.Mixins.CollectionList = {
+// 	_views: {},
+// 	addView: function(view, id){
+// 	}
+// }
+
+/*
 	Define Models
 */
 
@@ -28,9 +48,56 @@ App.Models.Team = Backbone.Model.extend({
 
 // Team Collection
 App.Collections.Teams = Backbone.Collection.extend({
+	model: App.Models.Team,
 	url: '/teams/find',
-	model: App.Models.Team
 });
+
+/*
+	Table Module Models
+*/
+
+// Score
+App.Models.Score = Backbone.Model.extend({
+	urlRoot: '/scores',
+});
+
+// Scores Collection
+App.Collections.Scores = Backbone.Collection.extend({
+	model: App.Models.Score,
+	url: '/scores/find',
+});
+
+// Table
+App.Models.Table = Backbone.Model.extend({
+	urlRoot: '/tables',
+	initialize: function(attributes){
+		// Create a Backbone model
+		attributes = attributes || {};
+		this.scores = new App.Collections.Scores(attributes.scores || {tableId: this.id});
+		delete attributes['scores'];
+	    this.scores.url = '/scores/find?tableId=' + this.id;
+	},
+	parse: function(data, options) {
+		// Delegate scores data to scores collection
+		this.scores.reset(data.scores);
+		delete data['scores'];
+
+		return data;
+	}
+});
+
+// Table Collection
+App.Collections.Tables = Backbone.Collection.extend({
+	model: App.Models.Table,
+	url: '/tables/associated',
+});
+
+/*
+	Configure Underscore to use tags {{}}
+*/
+_.templateSettings = {
+  interpolate: /\{\{(.+?)\}\}/g
+};
 
 // (function (io) {
 

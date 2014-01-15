@@ -290,6 +290,34 @@
       </div>
     </div>
 
+    <!-- DESTROY MODAL -->
+    <div id="modal-destroy" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Confirm Deletion</h4>
+          </div>
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+            <!-- Don't warn egain -->
+            <div class="pull-left">
+              <input class="btn-dismiss" id="modal-destroy-btn-dismiss" type="checkbox">
+              <label for="modal-destroy-btn-dismiss">Don't remember me</label>
+            </div>
+
+            <!-- Close and Confirm buttons -->
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn-confirm-destroy btn btn-danger">
+              <span class="glyphicon glyphicon-trash"></span> Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/ DESTROY MODAL -->
+
     <!-- Bring in the socket.io client -->
     <script type="text/javascript" src="/js/socket.io.js"></script>
     <!-- then beef it up with some convenience logic for talking to Sails.js -->
