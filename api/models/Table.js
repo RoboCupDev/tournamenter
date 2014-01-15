@@ -19,6 +19,30 @@ module.exports = {
 		},
 
 		/*
+			Scores data are inserted in another table, and linked with this
+			with the tableId field.
+			In order to compute the table data, it's needed to 'associate'
+			this object with the found with 'Scores' model, and set on this object
+			with key 'scores'.
+
+			Ex:
+			Scores.find({tableId: 'id'}).done(function(collection){
+				table.scores = collection;
+			});
+
+			var tableData = Scores.computeTable();
+		*/
+
+		/*
+			Just to help views, disabling/enabling some actions
+		*/
+		locked: {
+			type: 'string',
+			in: ['yes', 'no'],
+			defaultsTo: 'no',
+		},
+
+		/*
 			This field, represents 'how many' scores will a single
 			Team in the row have.
 			
@@ -38,6 +62,7 @@ module.exports = {
 		sort: {
 			type: 'string',
 			in: ['asc', 'desc'],
+			defaultsTo: 'desc',
 		},
 
 
@@ -71,15 +96,20 @@ module.exports = {
 		evaluateMethod: {
 			type: 'string',
 			defaultsTo: 'sum',
-		}
+		},
+
+		/*
+			This method will generate the table with all it's fields.
+
+		*/
 
 
 	},
 
 	beforeValidation: function (values, next) {
 		// Validate 'evaluateMethod'
-
-
+		if(!getMethodFor(values.evaluateMethod))
+			return next('evaluateMethod is not working');
 
 		return next();
 	},
@@ -115,7 +145,9 @@ evaluateMethods.sum = function(scores){
 /*
 	This will try to find a default method.
 	If not succeed, will try to parse as a function.
-	If not succeeded, will return null
+	If not succeeded, will return null.
+
+	In sum: Will return a function if succeeds, otherwise, 'null'
 */
 function getMethodFor(methodRaw){
 	// Try to find in defaults
@@ -124,7 +156,7 @@ function getMethodFor(methodRaw){
 
 	// Else, try to return a new function with it
 	try{
-		var method = Function('scores', method);
+		var method = Function('scores', methodRaw);
 		return method;
 	}catch(err){
 	}
@@ -134,19 +166,19 @@ function getMethodFor(methodRaw){
 /*
 	Tests
 */
-var testCase = {0: 100, 1: 213, '2':'5'};
+// var testCase = {0: 100, 1: 213, '2':'5'};
 
-var methods = [
-	'sum',
-	'min',
-	'max',
-	"var finalScore = 0;"+
-	"for(var k in scores){"+
-		"finalScore += scores[k]*1;"+
-	"}"+
-	"return finalScore;"
-];
+// var methods = [
+// 	'sum',
+// 	'min',
+// 	'max',
+// 	"var finalScore = 0;"+
+// 	"for(var k in scores){"+
+// 		"finalScore += scores[k]*1;"+
+// 	"}"+
+// 	"return finalScore;"
+// ];
 
-for(var m in methods)
-	console.log(getMethodFor(methods[m])(testCase) + ' : '+ methods[m]);
+// for(var m in methods)
+// 	console.log(getMethodFor(methods[m])(testCase) + ' : '+ methods[m]);
 // console.log(evaluateMethodGet('max')
