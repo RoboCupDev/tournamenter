@@ -18,6 +18,36 @@ var App = {
 };
 
 /*
+	Mixin to show modal and confirm action
+
+	  message: Message to place inside the modal
+	allowSkip: If the checkbox can skip this action
+	     next: callback for the result
+*/
+App.Mixins.confirmAction = function(message, allowSkip, next){
+	// Find modal
+	$modal = $('#modal-destroy');
+	
+	// Check if user dismissed warning
+	if(allowSkip && $modal.find('.btn-dismiss').is(':checked'))
+		return confirmed();
+
+	// Change message
+	message = message || 'Are you certain about this action?';
+	$modal.find('.modal-body').text(message);
+
+	// Show Modal
+	$modal.modal('show');
+
+	// Get callback on the confirm-delete button
+	$modal.find('.btn-confirm-destroy').unbind('click').click(confirmed);
+	function confirmed(){
+		// Hide modal and callback
+		$modal.modal('hide');
+		return next();
+	};
+}
+/*
 	Mixin Function to help with Collection view controllers
 	It keeps track of inserted views, with the view.model.id
 

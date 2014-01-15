@@ -233,29 +233,10 @@ App.Views.Team = Backbone.View.extend({
 	// This launches a modal to confirm the action taken
 	confirmAction: function(){
 		var view = this;
-		// Find modal
-		$modal = $('#modal-destroy');
-		
-		// Check if user dismissed warning
-		if($modal.find('.btn-dismiss').is(':checked'))
-			return confirmed();
-
-		// Change message
 		var message = 'Are you shure that you want to DELETE "'+this.model.get('name')+'"?';
-		$modal.find('.modal-body').text(message);
-
-		// Show Modal
-		$modal.modal('show');
-
-		// Get callback on the confirm-delete button
-		$modal.find('.btn-confirm-destroy').unbind('click').click(confirmed);
-		function confirmed(){
-			// Hide modal
-			$modal.modal('hide');
-
-			// Callback
+		App.Mixins.confirmAction(message, true, function(){
 			view.model.destroy({wait: true});
-		};
+		});
 	},
 
 	// Configure XEditable on field
