@@ -19,6 +19,12 @@ var async = require('async');
 
 module.exports = {
 
+	manage: function(req, res, next){
+		return res.view({
+			path: req.route.path
+		});
+	},
+
 	/*
 		The object of this action is to create a full data
 		of the table, with it's table data processed, ranked, [...]
@@ -160,9 +166,6 @@ module.exports = {
 
 	},
 
-	sandbox: function(req, res, next){
-		res.send('works');
-	},
 
 	/**
 	* Overrides for the settings in `config/controllers.js`
@@ -170,7 +173,7 @@ module.exports = {
 	*/
 	_config: {
 		menus: [
-			{name: 'Tables', path: '/tables/sandbox', order: 999},
+			{name: 'Tables', path: '/tables/manage', order: 999},
 		]		
 	}
 
