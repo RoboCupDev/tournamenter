@@ -1,7 +1,13 @@
 <style type="text/css">
+
 .spot-table-scores{
 	margin-bottom: 0px;
 }
+
+.scores-table{
+	margin-bottom: 0px;
+}
+
 </style>
 
 
@@ -13,7 +19,7 @@
 		<!-- CREATE GROUP BUTON -->
 		<p class="pull-right">
 			<button type="button" id="btn-create-table" class="btn btn-success">
-				<span class="glyphicon glyphicon-plus"></span> Create New Group
+				<span class="glyphicon glyphicon-plus"></span> Create New Table
 			</button>
 		</p>
 		<div class="clearfix"></div>
@@ -37,7 +43,7 @@
 				
 				<!-- Actions of the table. Only shown when not locked -->
 				<div class="btn-group">
-					<button class="btn-group-refresh btn btn-xs btn-info">
+					<button class="btn-table-refresh btn btn-xs btn-info">
 						<span class="glyphicon glyphicon-refresh"></span> Refresh
 					</button>
 					<button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown">
@@ -70,10 +76,10 @@
 		</div>
 
 		<!-- Configuration panel -->
-		<div class="collapsible">
+		<!-- <div class="collapsible">
 			<div class="form-horizontal panel-body">
 
-				<!-- <div class="form-group">
+				<div class="form-group">
 					<label class="col-sm-2 control-label">Email</label>
 					<div class="col-sm-10">
 						<div class="table-sort">ASC</div>
@@ -84,18 +90,18 @@
 					<div class="col-sm-10">
 						<div class="table-sort">ASC</div>
 					</div>
-				</div> -->
+				</div>
 
 			</div>
 		</div>
 
 		<button type="button" class="btn-collapse btn btn-primary btn-xs btn-block">
 			Hide options
-		</button>
+		</button> -->
 
 		<div class="collapsible">
 
-			<table class="table table-striped table-bordered table-condensed table-responsive">
+			<table class="scores-table table table-striped table-bordered table-condensed table-responsive">
 				<thead>
 					<tr>
 						<th>Rank</th>
@@ -145,20 +151,64 @@ App.Views.Table = Backbone.View.extend({
 	// Events
 	events: {
 		'click .btn-table-destroy': 'createTable',
+		'click .btn-table-refresh': 'refresh',
+		'click .btn-table-destroy': 'confirmDestroyAction',
 	},
 	
 	initialize: function(){
 		this.listenTo(this.model, 'change', this.render);
 		this.listenTo(this.model, 'destroy', this.destroy);
+
+		this.listenTo(this.model, 'request', this.startSync);
+		this.listenTo(this.model, 'sync', this.endSync);
+		this.listenTo(this.model, 'change', this.endSync);
+		this.listenTo(this.model, 'add', this.endSync);
+		this.listenTo(this.model, 'remove', this.endSync);
+		this.listenTo(this.model, 'reset', this.endSync);
+
+		this.$btnRefresh = this.$('btn-table-refresh');
 	},
 
 	render: function(){
-
 		// Render template
 		this.$el.html(this.template(this.model.attributes));
 
 		return this;
-	}
+	},
+
+	destroy: function(){
+		this.$el.remove();
+	},
+
+	refresh: function(){
+		var view = this;
+		this.startSync();
+		this.model.fetch();
+		return this;
+	},
+
+	confirmDestroyAction: function(evt){
+		var view = this;
+		// Stop link
+		evt.preventDefault();
+
+		var message = 'Are you shure that you want to delete the ENTIRE table "'+view.model.get('name')+'"?';
+		App.Mixins.confirmAction(message, false, function(){
+			view.model.destroy({wait: true});
+		});
+	},
+
+	startSync: function(){
+		// Disable refresh button and animate icon
+		this.$btnRefresh.attr('disabled', true);
+		this.$btnRefresh.find('.glyphicon').addClass('icon-rotate');
+	},
+
+	endSync: function(){
+		// Enable button and stop rotating
+		this.$btnRefresh.removeAttr('disabled');
+		this.$btnRefresh.find('.glyphicon').removeClass('icon-rotate');
+	},
 });
 
 /*
@@ -190,11 +240,8 @@ App.Views.Tables = Backbone.View.extend({
 		// Go through all models inside the collection, adding to the view
 		_(this.collection.models).each(function(model){
 			// Create and add view
-			view.add(model);
+			view.add(model, true);
 		});
-
-		// Update count
-		// this.renderCount();
 	},
 
 	refresh: function(){
@@ -208,7 +255,7 @@ App.Views.Tables = Backbone.View.extend({
 		this.collection.create({}, {wait: true});
 	},
 
-	add: function(model){
+	add: function(model, skipAnimation){
 		// If model exists, skip
 		if(this._views[model.id])
 			return this;
@@ -219,11 +266,7 @@ App.Views.Tables = Backbone.View.extend({
 
 		// Register in views and append to views
 		this._views[model.id] = tableView;
-		this.appendView(tableView);
-
-		// Update count
-		// this.renderCount();
-
+		this.appendView(tableView, skipAnimation);
 		return this;
 	},
 
@@ -235,16 +278,17 @@ App.Views.Tables = Backbone.View.extend({
 		// Sub-view should remove() itself
 		model.trigger('destroy');
 		delete this._views[model.id];
-
-		// Update count
-		this.renderCount();
-
 		return this;
 	},
 
-	appendView: function(view){
-		this.$tablesSpot.append(view.render().$el);
-		console.log('appending view: '+view.model);
+	appendView: function(view, skipAnimation){
+		this.$tablesSpot.prepend(view.render().$el.hide());
+		console.log(skipAnimation);
+		if(skipAnimation)
+			view.$el.show();
+		else
+			view.$el.slideDown();
+
 		return this;
 	},
 
