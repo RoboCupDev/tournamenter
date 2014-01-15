@@ -42,6 +42,38 @@ module.exports = {
 			defaultsTo: 'no',
 		},
 
+		
+		/*
+			Name for 'Rank' heading
+		*/
+		headerRank: {
+			type: 'string',
+			defaultsTo: 'Rank',
+		},
+		/*
+			Name for 'Team' heading
+		*/
+		headerTeam: {
+			type: 'string',
+			defaultsTo: 'Team',
+		},
+		/*
+			Prepended value for scores.
+			in case this equals to 'Score', headers will be generated as follows:
+				'Score 1', 'Score 2', 'Score 3'
+		*/
+		headerScore: {
+			type: 'string',
+			defaultsTo: 'Score',
+		},
+		/*
+			Name for 'Final' score heading
+		*/
+		headerFinal: {
+			type: 'string',
+			defaultsTo: 'Final',
+		},
+
 		/*
 			This field, represents 'how many' scores will a single
 			Team in the row have.
@@ -101,7 +133,19 @@ module.exports = {
 		/*
 			This method will generate the table with all it's fields.
 
+			return data will be on the following format:
+
+			{
+				headers: {'rank': 'Rank', 'team': 'Team', 'score.1': 'Score 1', 'final': 'Final'},
+				data: [
+					{'rank': 1, 'team':Team...'[,..] ],
+					{'rank': 2, 'team':Team...'[,..] ],
+					[...]
+				],
+			}
+
 		*/
+		table: generateTable,
 
 
 	},
@@ -115,6 +159,47 @@ module.exports = {
 	},
 
 };
+
+/*
+	Generates the table
+*/
+function generateTable(){
+	// Save to allow in function referencte
+	var table = table;
+	/*
+		Create headers array
+		Rank | Team | Score 1 | Score N | Final
+	*/
+
+	// Order is important
+	var headers = {
+		rank: table.headerRank,
+		team: table.headerTeam,
+	};
+	// Create Scores header
+	for(var i = 1; i <= table.columns*1; i++)
+		header['score.'+(i)] = table.headerScore + i;
+
+	// Add last header (Final score)
+	headers['final'] = table.headerFinal;
+
+	/*
+		Create data table
+	*/
+	var data = [];
+	var scores = table.scores;
+
+	// Just warn (DEBUG mode...)
+	if(!scores)
+		console.log('Table is empty!');
+
+	_(scores).forEach(function(score){
+		
+	});
+
+
+
+}
 
 /*
 	Default methods instantiation
