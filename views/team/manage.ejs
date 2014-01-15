@@ -140,14 +140,6 @@
 
 <script type="text/javascript">
 
-// Global object used to store all kinds of objects
-var App = {
-	Models: {},
-	Collections: {},
-	Views: {},
-	Mixins: {},
-};
-
 // Wait until page load is complet
 $(document).ready(function(){
 
@@ -194,18 +186,6 @@ App.Mixins.editJSON = function(model, title, cb){
 		if(cb)cb(newModel);
 	}
 }
-
-/*
-	Define Models
-*/
-App.Models.Team = Backbone.Model.extend({
-	urlRoot: '/teams',
-});
-
-App.Collections.Teams = Backbone.Collection.extend({
-	url: '/teams/find',
-	model: App.Models.Team
-});
 
 /*
 	Define Views
@@ -495,14 +475,6 @@ App.teamsView = new App.Views.Teams({
 	Load models
 */
 App.teams.reset(<%- JSON.stringify(teams) %>);
-
-// setTimeout(function(){
-// 	App.teams.pop();
-// }, 1000);
-
-// setTimeout(function(){
-// 	App.teams.add({id: 99, name: 'Uhul!'});
-// }, 1500);
 
 });
 
