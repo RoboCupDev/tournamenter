@@ -1,164 +1,276 @@
 <style type="text/css">
-
 .spot-table-scores{
 	margin-bottom: 0px;
 }
-
 </style>
 
-<!-- TEMPLATE FOR GROUP VIEW -->
-<div class="panel panel-info" id="template-group-view">
-	<div class="panel-heading">
 
-		<!-- Table tools -->
-		<div class="pull-right">
-			
-			
-			<!-- Actions of the table. Only shown when not locked -->
-			<div class="btn-group">
-				<button class="btn-group-refresh btn btn-xs btn-info">
-					<span class="glyphicon glyphicon-refresh"></span> Refresh
-				</button>
-				<button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown">
-					<span class="caret"></span>
-					<span class="sr-only">Toggle Dropdown</span>
-				</button>
+<!-- CONTENT -->
+<div class="row clearfix" id="tables-view">
 
-				<ul class="dropdown-menu" role="menu">
-					<!-- Table actions -->
-					<li role="presentation" class="dropdown-header">Table Actions</li>
-					<li><a class="btn-table-destroy" href="#">
-						<span class="glyphicon glyphicon-trash"></span> Delete Table
-					</a></li>
+	<div class="col-md-12 column">
 
-					<!-- Import/Export actions -->
-					<li class="divider"></li>
-					<li role="presentation" class="dropdown-header">Import/Export</li>
-					<li><a href="#">Import all teams</a></li>
-				</ul>
-			</div>
-
-			<input type="checkbox" class="table-locked switch-mini"
-				data-on="success" data-on-label="<i class='glyphicon glyphicon-pencil'></i>"
-				data-off="danger" data-off-label="<i class='glyphicon glyphicon-ban-circle'></i>">
-		</div>
-
-		<span class="panel-title">
-			<strong><span class="group-name" data-title="Table name">Table Name</span></strong>
-		</span>
+		<!-- CREATE GROUP BUTON -->
+		<p class="pull-right">
+			<button type="button" id="btn-create-table" class="btn btn-success">
+				<span class="glyphicon glyphicon-plus"></span> Create New Group
+			</button>
+		</p>
+		<div class="clearfix"></div>
 	</div>
-
-	<!-- Configuration panel -->
-	<div class="collapsible">
-		<div class="form-horizontal panel-body">
-
-
-			<div class="form-group">
-				<label class="col-sm-2 control-label">Email</label>
-				<div class="col-sm-10">
-					<div class="table-sort">ASC</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-2 control-label">Password</label>
-				<div class="col-sm-10">
-					<div class="table-sort">ASC</div>
-				</div>
-			</div>
-		</div>
+	
+	<div class="col-md-12 column" id="spot-tables">
 	</div>
-
-	<button type="button" class="btn-collapse btn btn-primary btn-xs btn-block">Hide options
-	</button>
-
-	<div class="collapsible">
-
-		<table class="spot-table-scores table table-striped table-bordered table-condensed table-responsive">
-			<thead>
-				<tr>
-					<th>Rank</th>
-					<th>Team</th>
-					<th>Score 1</th>
-					<th>Score 2</th>
-					<th>Score 3</th>
-					<th>Final</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>1</td>
-					<td>Emerotecos</td>
-					<td>123</td>
-					<td>-</td>
-					<td>-</td>
-					<td>123</td>
-				</tr>
-				<tr>
-					<td>2</td>
-					<td>XLS</td>
-					<td>532</td>
-					<td>-</td>
-					<td>-</td>
-					<td>532</td>
-				</tr>
-				<tr>
-					<td>1</td>
-					<td>Emerotecos</td>
-					<td>123</td>
-					<td>-</td>
-					<td>-</td>
-					<td>123</td>
-				</tr>
-				<tr>
-					<td>2</td>
-					<td>XLS</td>
-					<td>532</td>
-					<td>-</td>
-					<td>-</td>
-					<td>532</td>
-				</tr>
-				<tr>
-					<td>1</td>
-					<td>Emerotecos</td>
-					<td>123</td>
-					<td>-</td>
-					<td>-</td>
-					<td>123</td>
-				</tr>
-				<tr>
-					<td>2</td>
-					<td>XLS</td>
-					<td>532</td>
-					<td>-</td>
-					<td>-</td>
-					<td>532</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-
-	<button type="button" class="btn-collapse btn btn-info btn-xs btn-block">Hide Table
-	</button>
-
-<!-- 	<div class="collapsible">
-
-		Opts
-	</div>
- -->
-	<!-- <button type="button" class="btn-collapse btn btn-info btn-xs btn-block">Show Configurations
-	</button> -->
 </div>
-<!--/ TEMPLATE FOR GROUP VIEW -->
+<!--/ CONTENT -->
 
-<%- JSON.stringify(tables) %>
+
+<!--  TABLE VIEW TEMPLATE -->
+<script type="text/template" id="template-table-view">
+
+	<!-- <div class="panel panel-info"> -->
+		<div class="panel-heading">
+
+			<!-- Table tools -->
+			<div class="pull-right">
+				
+				
+				<!-- Actions of the table. Only shown when not locked -->
+				<div class="btn-group">
+					<button class="btn-group-refresh btn btn-xs btn-info">
+						<span class="glyphicon glyphicon-refresh"></span> Refresh
+					</button>
+					<button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown">
+						<span class="caret"></span>
+						<span class="sr-only">Toggle Dropdown</span>
+					</button>
+
+					<ul class="dropdown-menu" role="menu">
+						<!-- Table actions -->
+						<li role="presentation" class="dropdown-header">Table Actions</li>
+						<li><a class="btn-table-destroy" href="#">
+							<span class="glyphicon glyphicon-trash"></span> Delete Table
+						</a></li>
+
+						<!-- Import/Export actions -->
+						<li class="divider"></li>
+						<li role="presentation" class="dropdown-header">Import/Export</li>
+						<li><a href="#">Import all teams</a></li>
+					</ul>
+				</div>
+
+				<input type="checkbox" class="table-locked switch-mini"
+					data-on="success" data-on-label="<i class='glyphicon glyphicon-pencil'></i>"
+					data-off="danger" data-off-label="<i class='glyphicon glyphicon-ban-circle'></i>">
+			</div>
+
+			<span class="panel-title">
+				<strong><span class="group-name" data-title="Table name">{{name}}</span></strong>
+			</span>
+		</div>
+
+		<!-- Configuration panel -->
+		<div class="collapsible">
+			<div class="form-horizontal panel-body">
+
+				<!-- <div class="form-group">
+					<label class="col-sm-2 control-label">Email</label>
+					<div class="col-sm-10">
+						<div class="table-sort">ASC</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Password</label>
+					<div class="col-sm-10">
+						<div class="table-sort">ASC</div>
+					</div>
+				</div> -->
+
+			</div>
+		</div>
+
+		<button type="button" class="btn-collapse btn btn-primary btn-xs btn-block">
+			Hide options
+		</button>
+
+		<div class="collapsible">
+
+			<table class="table table-striped table-bordered table-condensed table-responsive">
+				<thead>
+					<tr>
+						<th>Rank</th>
+						<th>Team</th>
+						<th>Score 1</th>
+						<th>Score 2</th>
+						<th>Score 3</th>
+						<th>Final</th>
+					</tr>
+				</thead>
+				<tbody class="spot-scores">
+					<tr>
+						<td>2</td>
+						<td>XLS</td>
+						<td>532</td>
+						<td>-</td>
+						<td>-</td>
+						<td>532</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<button type="button" class="btn-collapse btn btn-info btn-xs btn-block">
+			Hide Table
+		</button>
+	<!-- </div> -->
+</script>
+<!--/ TABLE VIEW TEMPLATE -->
+
+
 
 <script type="text/javascript">
 
-
+// Wait until page load is complet
 $(document).ready(function(){
 
-	$('.table-locked').bootstrapSwitch();
+/*
+	Table Views (Keep track of ONE table object)
+*/
+App.Views.Table = Backbone.View.extend({
+	
+	tagName: 'div',
+	className: 'panel panel-info',
+	template: _.template($('#template-table-view').html()),
+
+	// Events
+	events: {
+		'click .btn-table-destroy': 'createTable',
+	},
+	
+	initialize: function(){
+		this.listenTo(this.model, 'change', this.render);
+		this.listenTo(this.model, 'destroy', this.destroy);
+	},
+
+	render: function(){
+
+		// Render template
+		this.$el.html(this.template(this.model.attributes));
+
+		return this;
+	}
+});
+
+/*
+	Table Collection views (Keep track of ALL table objects)
+*/
+App.Views.Tables = Backbone.View.extend({
+
+	// Private storage of team views
+	_views: {},
+
+	$tablesSpot: null,
+
+	// Events
+	events: {
+		'click #btn-create-table': 'createTable',
+	},
+
+	initialize: function(){
+		this.listenTo(this.collection, 'add', this.add);
+		this.listenTo(this.collection, 'remove', this.remove);
+		this.listenTo(this.collection, 'reset', this.render);
+
+		this.$tablesSpot = this.$('#spot-tables');
+	},
+
+	render: function(){
+		var view = this;
+
+		// Go through all models inside the collection, adding to the view
+		_(this.collection.models).each(function(model){
+			// Create and add view
+			view.add(model);
+		});
+
+		// Update count
+		// this.renderCount();
+	},
+
+	refresh: function(){
+		var view = this;
+		this.startSync();
+		this.collection.fetch();
+		return this;
+	},
+
+	createTable: function(){
+		this.collection.create({}, {wait: true});
+	},
+
+	add: function(model){
+		// If model exists, skip
+		if(this._views[model.id])
+			return this;
+
+		var tableView = new App.Views.Table({
+			model: model
+		});
+
+		// Register in views and append to views
+		this._views[model.id] = tableView;
+		this.appendView(tableView);
+
+		// Update count
+		// this.renderCount();
+
+		return this;
+	},
+
+	remove: function(model){
+		// If model doesn't exist, skip it
+		if(!this._views[model.id])
+			return this;
+
+		// Sub-view should remove() itself
+		model.trigger('destroy');
+		delete this._views[model.id];
+
+		// Update count
+		this.renderCount();
+
+		return this;
+	},
+
+	appendView: function(view){
+		this.$tablesSpot.append(view.render().$el);
+		console.log('appending view: '+view.model);
+		return this;
+	},
 
 });
 
+$(document).ready(function(){
+
+	/*
+		Create collection
+	*/
+	App.tables = new App.Collections.Tables();
+
+	/*
+		Create Views
+	*/
+	App.tablesView = new App.Views.Tables({
+		collection: App.tables,
+		el: '#tables-view'
+	});
+
+	/*
+		Load models
+	*/
+	App.tables.reset(<%- JSON.stringify(tables) %>);
+
+});
+
+});
 </script>
