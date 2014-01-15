@@ -107,8 +107,13 @@ module.exports = {
 
 			// Helper method used to save team data inside each table row
 			function associateWithTeams(teams, tableModel){
-				// Go through all team rows inside the table, and add's a team index
+				// Go through all team rows inside the table's data, and add's team object
 				_.forEach(tableModel.table.data, function(teamRow){
+					teamRow['team'] = teams[teamRow.id] || {};
+				});
+
+				// Go through all team rows inside scores, and add's a team object
+				_.forEach(tableModel.scores, function(teamRow){
 					teamRow['team'] = teams[teamRow.id] || {};
 				});
 			}
