@@ -15,7 +15,8 @@ module.exports = {
 	types: {
 		// Returns if the method exists (default), or works (function)
 		oneOfMethods: function(val){
-			return (getMethodFor(val) ? true : false);
+			var method = getMethodFor(val);
+			return (method ? true : false);
 		}
 	},
 
@@ -158,14 +159,6 @@ module.exports = {
 
 	},
 
-	beforeValidation: function (values, next) {
-		// Validate 'evaluateMethod'
-		if(!getMethodFor(values.evaluateMethod))
-			return next('evaluateMethod is not working');
-
-		return next();
-	},
-
 };
 
 /*
@@ -181,14 +174,14 @@ function generateTable(){
 		Rank | Team | Score 1 | Score N | Final
 	*/
 
-	// Order is important
-	var headers = {
-		rank: table.headerRank,
-		team: table.headerTeam,
-	};
+	var headers = {};
+
+	headers['rank'] = table.headerRank;
+	headers['team'] = table.headerTeam;
+	
 	// Create Scores header
 	for(var i = 1; i <= columns; i++)
-		headers['score.'+(i)] = table.headerScore + i;
+		headers['score.'+(i)] = table.headerScore + ' ' + i;
 
 	// Add last header (Final score)
 	headers['final'] = table.headerFinal;
@@ -230,9 +223,6 @@ function generateTable(){
 		scoreData['team'] = score.teamId || null;
 		// scoreData.team: score.team.name
 		// scoreData.country: score.team.country
-
-		// !!!!!! JUST FOR DEBUG: Add 'rank'
-		scoreData.rank = 1;
 
 		// Add scores data
 		var scoreValues = [];
@@ -277,13 +267,14 @@ function generateTable(){
 		row.rank = pos;
 	});
 
-	// Return table
-	return {
+	// Self assign the table
+	this.table = {
 		headers: headers,
 		data: finalData,
 	}
 
-
+	// Return the table
+	return this.table;
 }
 
 /*
@@ -327,6 +318,7 @@ function getMethodFor(methodRaw){
 	// Else, try to return a new function with it
 	try{
 		var method = Function('scores', methodRaw);
+		method();
 		return method;
 	}catch(err){
 	}

@@ -39,14 +39,14 @@ module.exports = {
 		// Query Table model, and call afterFindTables when done.
 		var finding = Table
 			.find(options)
-			.done(afterFindTables)
+			.done(associateScores)
 
 
 		/*
-			Start working with data
+			Associate Scores data with Table data in key 'scores'
 		*/
 		var data;
-		function afterFindTables(err, models){
+		function associateScores(err, models){
 			// Empy array (adjusts variable scope)
 			data = [];
 
@@ -70,13 +70,13 @@ module.exports = {
 			});
 
 			// Execute parallel tasks
-			async.parallel(findTasks, onAssociate);
+			async.parallel(findTasks, afterAssociateScores);
 		}
 
 		/*
-			This function is called after every association is done
+			This function is called after all associations finished
 		*/
-		function onAssociate(err, results){
+		function afterAssociateScores(err, results){
 			// Get response from callbacks and set as data array
 			data = results;
 
@@ -89,14 +89,53 @@ module.exports = {
 		*/
 		function processTables(){
 			// Now we go through all Tables and call the method table on it
-			data.forEach(function(table){
-				// Coincidently, the key we want to store and the table method are equal.
-				// (it's weird, but works)
-				table.table = table.table();
-			});
+			_.invoke(data, 'table');
 			
-			finishRendering();
+			// Now we associate team's data
+			associateTeams();
 		}
+
+		/*
+			Associate every Scores in table, inserting a 'team' hash with team data
+			(but first, we need to get a list of the teams)
+		*/
+		var teams;
+		function associateTeams(){
+
+			// Reset teams
+			teams = {};
+
+			// Helper method used to save team data inside each table row
+			function associateWithTeams(teams, tableModel){
+				// Go through all team rows inside the table, and add's a team index
+				_.forEach(tableModel.table.data, function(teamRow){
+					teamRow['team'] = teams[teamRow.id] || {};
+				});
+			}
+
+			// Find teams
+			Team.find().done(function(err, collection){
+				// Turns the id as the key to access it
+				// ( o(1) when accessing it )
+				for(var k in collection){
+					var team = collection[k];
+					teams[team.id] = team;
+				}
+
+				afterFindTeams();
+			});
+
+			function afterFindTeams(){
+				// Go through all tables and call association method
+				_.forEach(data, function(tableModel){
+					associateWithTeams(teams, tableModel);
+				});
+
+				// Finish rendering
+				finishRendering();
+			}
+		}
+
 
 		/*
 			Render JSON content
@@ -135,8 +174,8 @@ module.exports = {
 
 
 /*
-	This method receives one 'Table' object and:
-		+ todo
+	This method receives one 'Table' object and
+	insert key 'scores' inside it.
 */
 function associateTable(model, next){
 	// Perform search in Scores, where tableId equals to model.id and callback
