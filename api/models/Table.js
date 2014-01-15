@@ -166,6 +166,8 @@ module.exports = {
 function generateTable(){
 	// Save to allow in function referencte
 	var table = table;
+	var columns = table.columns*1;
+
 	/*
 		Create headers array
 		Rank | Team | Score 1 | Score N | Final
@@ -177,7 +179,7 @@ function generateTable(){
 		team: table.headerTeam,
 	};
 	// Create Scores header
-	for(var i = 1; i <= table.columns*1; i++)
+	for(var i = 1; i <= columns; i++)
 		header['score.'+(i)] = table.headerScore + i;
 
 	// Add last header (Final score)
@@ -186,17 +188,92 @@ function generateTable(){
 	/*
 		Create data table
 	*/
-	var data = [];
+	var tableRows = [];
 	var scores = table.scores;
 
 	// Just warn (DEBUG mode...)
 	if(!scores)
 		console.log('Table is empty!');
 
+	// Get evaluation method ('min', 'max', custom...)
+	var evalMethod = getMethodFor(table.evaluateMethod);
+
+	// Go through all scores, creating a unique row
 	_(scores).forEach(function(score){
-		
+		/*
+			Notice score structure:
+
+			{
+				tableId: [this table id]
+				teamId: xxx,
+				scores: {
+					  0: {value: xxx, data: {}},
+					'1': {value: xxx, data: {}},
+					  2: {value: xxx, data: {}}
+					  [...],
+				}
+			}
+		*/
+
+		// This will be the object inserted in the table's data array
+		var scoreData = {};
+
+		// Add simple attributes
+		scoreData.team: score.teamId;
+		// scoreData.team: score.team.name
+		// scoreData.country: score.team.country
+
+		// !!!!!! JUST FOR DEBUG: Add 'rank'
+		scoreData.rank = 1;
+
+		// Add scores data
+		var scoreValues = [];
+		for(int i = 0; i < columns; i++){
+
+			// Get value and add to scoreValues
+			var value = null;
+			if(score.scores[i])
+				value = score.scores[i].value;
+
+			scoreValues.push(value);
+
+			// Generate field key and saves
+			var field = 'score.'+(i+1);
+			scoreData[field] = score.scores.value;
+		}
+
+		// Compute final score and adds to scoreData
+		scoreData['final'] = evalMethod(scoreValues);
+
+		// Add to table data
+		tableRows.push(scoreData)
 	});
 
+	// Sort by 'final' field and reverse if needed
+	var finalData = _.sortBy(tableRows, 'score');
+
+	if(table.order == 'asc')
+		finalTable = finalTable.reverse()
+
+	// Rank Table
+	var pos = 0;
+	var lastScore = -1;
+
+	_.forEach(finalTable, function(row){
+		// Keeps the same ranking if scores is the same
+		if(lastScore != row.score){
+			pos++;
+			lastScore = row.score;
+		}
+
+		row.rank = pos;
+	});
+
+	// Return table
+	return {
+		headers: headers,
+		data: finalData,
+	}
 
 
 }
