@@ -45,9 +45,12 @@ module.exports = {
 		/*
 			Start working with data
 		*/
-		var data = [];
+		var data;
 		function afterFindTables(err, models){
-			if(err || data.length <= 0)
+			// Empy array (adjusts variable scope)
+			data = [];
+
+			if(err || models.length <= 0)
 				return finishRendering();
 
 			// Create parallel tasks to associate each table with it's scores
@@ -55,28 +58,43 @@ module.exports = {
 			models.forEach(function(table){
 
 				// Create and add parallel task to array
-				var task = function(){
-					associateTable(table, onAssociate);
+				var task = function(cb){
+					// Creates another wrapper function to return null on first param
+					// (it's required, since async work this way)
+					associateTable(table, function returnToAsync(associated){
+						cb(null, associated);
+					});
 				};
 				findTasks.push(task);
 
 			});
 
-			// This function is called after every association is done
-			function onAssociate(associated){
-				data.push(associated);
-			}
-
 			// Execute parallel tasks
-			async.parallel(findTasks, afterAssociateWithScores);
+			async.parallel(findTasks, onAssociate);
+		}
+
+		/*
+			This function is called after every association is done
+		*/
+		function onAssociate(err, results){
+			// Get response from callbacks and set as data array
+			data = results;
+
+			// Call next step
+			processTables();
 		}
 
 		/*
 			After scores are associated with the table, we can process it
 		*/
-		function afterAssociateWithScores(){
-			console.log('associated!');
-			console.log(data);
+		function processTables(){
+			// Now we go through all Tables and call the method table on it
+			data.forEach(function(table){
+				// Coincidently, the key we want to store and the table method are equal.
+				// (it's weird, but works)
+				table.table = table.table();
+			});
+			
 			finishRendering();
 		}
 
@@ -96,7 +114,7 @@ module.exports = {
 			res.send(data);
 		}
 
-	}
+	},
 
 	sandbox: function(req, res, next){
 		res.send('works');
@@ -114,3 +132,36 @@ module.exports = {
 
   
 };
+
+
+/*
+	This method receives one 'Table' object and:
+		+ todo
+*/
+function associateTable(model, next){
+	// Perform search in Scores, where tableId equals to model.id and callback
+	findAssociated(Scores, 'tableId', model.id, afterFind);
+
+	function afterFind(models){
+		model.scores = models;
+		return next(model);
+	}
+}
+
+/*
+	Find in Model, where 'key' is equal to id
+*/
+function findAssociated(Model, key, id, cb){
+	// Create where clause
+	var options = {
+		where: {}
+	};
+	options.where[key] = id;
+
+	var finding = Model.find(options);
+
+	finding.done(function afterFound(err, models) {
+		if(cb)
+			cb(models);
+	});
+}
