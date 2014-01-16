@@ -274,7 +274,7 @@ function generateTableDataInsideScores(){
 	});
 
 	// Sort by 'final' field and reverse if needed
-	var finalData = _.sortBy(scores, 'score');
+	var finalData = _.sortBy(scores, 'final');
 
 	if(table.order == 'asc')
 		finalData = finalTable.reverse()
@@ -285,9 +285,9 @@ function generateTableDataInsideScores(){
 
 	_.forEach(finalData, function(row){
 		// Keeps the same ranking if scores is the same
-		if(lastScore != row.score){
+		if(lastScore != row.final){
 			pos++;
-			lastScore = row.score;
+			lastScore = row.final;
 		}
 
 		row.rank = pos;
