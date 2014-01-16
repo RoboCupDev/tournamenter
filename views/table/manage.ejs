@@ -76,7 +76,7 @@
 		</div>
 
 		<!-- Configuration panel -->
-		<!-- <div class="collapsible">
+		<div class="collapsible-options collapse">
 			<div class="form-horizontal panel-body">
 
 				<div class="form-group">
@@ -95,11 +95,11 @@
 			</div>
 		</div>
 
-		<button type="button" class="btn-collapse btn btn-primary btn-xs btn-block">
-			Hide options
-		</button> -->
+		<button type="button" class="btn-collapse-options btn btn-primary btn-xs btn-block">
+			Hide Options
+		</button>
 
-		<div class="collapsible">
+		<div class="collapsible-scores collapse">
 
 			<table class="spot-scores table table-striped table-condensed table-responsive">
 				<thead>
@@ -109,8 +109,8 @@
 			</table>
 		</div>
 
-		<button type="button" class="btn-collapse btn btn-info btn-xs btn-block">
-			Hide Table
+		<button type="button" class="btn-collapse-scores btn btn-info btn-xs btn-block">
+			Show
 		</button>
 	<!-- </div> -->
 </script>
@@ -248,6 +248,7 @@ App.Views.Score = Backbone.View.extend({
 		var message = 'About to delete team  "'+view.model.get('name')+'" from table. Are you shure?';
 		App.Mixins.confirmAction(message, true, function(){
 			view.model.destroy({wait: true});
+			view.table.fetch({url: '/tables/associated/'+view.table.id});
 		});
 	},
 
@@ -289,10 +290,6 @@ App.Views.Scores = Backbone.View.extend({
 		this.collection.fetch();
 		return this;
 	},
-
-	// createTable: function(){
-	// 	this.collection.create({}, {wait: true});
-	// },
 
 	add: function(model){
 		var tableView = new App.Views.Score({
@@ -362,14 +359,18 @@ App.Views.Table = Backbone.View.extend({
 
 	render: function(){
 		console.log('rendering: '+this.model.id);
-		// Render with data
-		var dict = this.model.toJSON();
-		var html = this.template(dict);
-		this.$el.html(html);
+		var shouldRenderRoot = (this.$el.html() ? false : true);
+		if(shouldRenderRoot){
+			// Render with data
+			var dict = this.model.toJSON();
+			var html = this.template(dict);
+			this.$el.html(html);
+		}
 
 		// Configure in-place editors
 		this.configureTitleBar()
-			.renderScoresHeader();
+			.renderScoresHeader()
+			.makeCollapsible();
 
 		// Set scoresView element
 		this.scoresView.setElement(this.$('.spot-scores tbody'));
@@ -411,6 +412,21 @@ App.Views.Table = Backbone.View.extend({
 		});
 
 		$table.find('thead').html($html);
+
+		return this;
+	},
+
+	makeCollapsible: function(){
+
+		Util.makeCollapsible(this.$('.btn-collapse-scores'), this.$('.collapsible-scores'), {
+			showData: '<i class="glyphicon glyphicon-list"></i> Show Table Scores',
+			hideData: '<i class="glyphicon glyphicon-list"></i> Hide Table Scores',
+		});
+
+		Util.makeCollapsible(this.$('.btn-collapse-options'), this.$('.collapsible-options'), {
+			showData: '<i class="glyphicon glyphicon-wrench"></i> Show Table Options',
+			hideData: '<i class="glyphicon glyphicon-wrench"></i> Hide Table Options',
+		});
 
 		return this;
 	},

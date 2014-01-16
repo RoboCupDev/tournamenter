@@ -383,19 +383,8 @@ function GroupViewController(groupController, onBuild){
 		// Make it colapsible
 		var $collapsible = $template.find('.collapsible');
 		var $collapseBtn = $template.find('.btn-collapse');
-		$collapseBtn.unbind('click').click(collapse);
-
-		function collapse(){
-			// Is it colapsed?
-			if($collapsible.hasClass('collapse')){
-				$collapsible.collapse('show');
-				$collapseBtn.text('Hide');
-			}else{
-				$collapsible.collapse('hide');
-				$collapseBtn.text('Show');
-			}
-		}
-
+		Util.makeCollapsible($collapseBtn, $collapsible);
+		
 		// Make it deletable by the 'Delete Group' button
 		$template.find('.btn-group-destroy').unbind('click').click(onDestroyRequested);
 
