@@ -194,20 +194,20 @@
 <script type="text/javascript">
 
 // Snippet to allow accessing of objects via string
-Object.byString = function(o, s) {
-    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
-    s = s.replace(/^\./, '');           // strip a leading dot
-    var a = s.split('.');
-    while (a.length) {
-        var n = a.shift();
-        if (n in o) {
-            o = o[n];
-        } else {
-            return;
-        }
-    }
-    return o;
-}
+// Object.byString = function(o, s) {
+//     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+//     s = s.replace(/^\./, '');           // strip a leading dot
+//     var a = s.split('.');
+//     while (a.length) {
+//         var n = a.shift();
+//         if (n in o) {
+//             o = o[n];
+//         } else {
+//             return;
+//         }
+//     }
+//     return o;
+// }
 
 // Configure Inline edition
 $.fn.editable.defaults.mode = 'inline';
@@ -273,63 +273,6 @@ function ModelController(id, urlBase){
 			if(cb) cb(data);
 		}
 	}
-}
-
-
-/*
-	Creates a table with the given headers, content and jQuery root object
-*/
-function createTable(headers, content, root){
-	// Try recycling table if set
-	var $table = (root ? root : $('<table>'));
-
-	// Make it visible and remove id
-	$table.removeClass('hide');
-	$table.removeAttr('id');
-
-	// Creates thead
-	$thead = $('<thead>');
-
-	// Add Headers
-	var headersCount = 0;
-	$tr = $('<tr>');
-	$thead.append($tr);
-
-	for(var k in headers){
-		$tr.append($('<th>').text(headers[k]));
-		headersCount++;
-	}
-
-	// Creates tbody
-	$tbody = $('<tbody>');
-	
-	// Go trough all contents and adds to table
-	for(var c in content){
-		var rowData = content[c];
-		// console.log(rowData);
-		var $row = $('<tr>');
-
-		// Go through headers and append to table
-		for(var k in headers){
-			var value = Object.byString(rowData,k);
-			$row.append($('<td>').text(value));
-		}
-
-		$tbody.append($row);
-	}
-
-	// Show 'nothing on table' If there is no data
-	if(content.length <= 0){
-		var $row = $('<tr>');
-		$row.append($('<td>').addClass('text-center').attr('colspan', ''+headersCount).text('No data in table'));
-		$tbody.append($row);
-	}
-
-	$table.empty();
-	$table.append($thead);
-	$table.append($tbody);
-
-	return $table;
 }
 
 /*
@@ -483,7 +426,7 @@ function GroupViewController(groupController, onBuild){
 
 	// Tables are not usualy updated, but re-created
 	self.makeTable = function(headers, content, recycle){
-		return createTable(headers, content, (recycle ? recycle : $('#template-table').clone()));
+		return App.Mixins.createTable(headers, content, (recycle ? recycle : $('#template-table').clone()));
 	}
 
 	// Creates a single match entry with configuration
@@ -639,12 +582,17 @@ function GroupViewController(groupController, onBuild){
 
 	// Update the table with current model data
 	self.updateTable = function(){
+		// Get table and Add name property
 		var table = self.controller.data.table;
+		for(var k in table){
+			var row = table[k];
+			table[k].name = (row.team ? row.team.name : null) || '-Team not found';
+		}
 
 		// Headers of the table
 		var headers = {
 			'rank': 'Rank',
-			'team.name': 'Team',
+			'name': 'Team',
 			'P': 'P',
 			'S': 'S',
 			'W': 'W',

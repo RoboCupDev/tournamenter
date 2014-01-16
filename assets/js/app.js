@@ -86,6 +86,63 @@ App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
 };
 
 /*
+	Creates a table with the given headers, content and jQuery root object
+*/
+App.Mixins.createTable = function(headers, content, root){
+	// Try recycling table if set
+	var $table = (root ? root : $('<table>'));
+
+	// Make it visible and remove id
+	$table.removeClass('hide');
+	$table.removeAttr('id');
+
+	// Creates thead
+	$thead = $('<thead>');
+
+	// Add Headers
+	var headersCount = 0;
+	$tr = $('<tr>');
+	$thead.append($tr);
+
+	for(var k in headers){
+		$tr.append($('<th>').text(headers[k]));
+		headersCount++;
+	}
+
+	// Creates tbody
+	$tbody = $('<tbody>');
+	
+	// Go trough all contents and adds to table
+	for(var c in content){
+		var rowData = content[c];
+		// console.log(rowData);
+		var $row = $('<tr>');
+
+		// Go through headers and append to table
+		for(var k in headers){
+			var value = rowData[k];
+			$row.append($('<td>').text(value));
+		}
+
+		$tbody.append($row);
+	}
+
+	// Show 'nothing on table' If there is no data
+	if(content.length <= 0){
+		var $row = $('<tr>');
+		$row.append($('<td>').addClass('text-center').attr('colspan', ''+headersCount).text('No data in table'));
+		$tbody.append($row);
+	}
+
+	$table.empty();
+	$table.append($thead);
+	$table.append($tbody);
+
+	return $table;
+}
+
+
+/*
 	Mixin Function to help with Collection view controllers
 	It keeps track of inserted views, with the view.model.id
 
