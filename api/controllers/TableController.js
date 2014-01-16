@@ -24,10 +24,14 @@ module.exports = {
 		// Find tables
 		findAssociated(null, function(tables){
 
-			// Render view
-			return res.view({
-				path: req.route.path,
-				tables: tables
+
+			Team.getTeamsAsList(null, function (teamList){
+				// Render view
+				return res.view({
+					path: req.route.path,
+					tables: tables,
+					teamList: teamList
+				});
 			});
 
 		});

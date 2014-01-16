@@ -715,7 +715,7 @@ function GroupViewController(groupController, onBuild){
 $(document).ready(function() {
 
 	// Load Teams and saves to global object
-	$.get('/groups/teamlist', function (data) {
+	$.get('/teams/teamlist', function (data) {
 		TeamList = data;
 
 		bootstrap();

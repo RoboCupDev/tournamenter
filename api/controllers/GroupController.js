@@ -29,30 +29,6 @@ module.exports = {
 		});
 	},
 
-	teamlist: function(req, res){
-
-		Team.find(afterFind);
-
-		function afterFind(err, data){
-			var teamList = [];
-			var query = (req.param('query') || '').toLowerCase();
-
-			for(k in data){
-				team = data[k]
-				var insert = 
-				{
-					id: team.id,
-					text: data[k].name
-				};
-
-				if((insert.text || '').toLowerCase().indexOf(query) >= 0)
-					teamList.push(insert);
-			}
-
-			res.send(teamList);
-		}
-	},
-
 	// Mix in matches inside groups data
 	associated: function(req, res, next){
 

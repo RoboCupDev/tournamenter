@@ -42,7 +42,7 @@ module.exports.routes = {
   'PATCH /matches/:id': 'MatchController.update',
 
   'PATCH /tables/:id': 'TableController.update',
-  'PATCH /scores/:id': 'ScoreController.update',
+  'PATCH /scores/:id': 'ScoresController.update',
 
   /*
   // But what if you want your home page to display
