@@ -8,7 +8,7 @@
 
 var _ = require('lodash');
 
-module.exports = {
+var Table = {
 
 	tableName: 'tables',
 
@@ -92,6 +92,7 @@ module.exports = {
 			type: 'int',
 			defaultsTo: 1,
 			min: 1,
+			max: 20,
 		},
 
 		/*
@@ -170,6 +171,8 @@ module.exports = {
 	},
 
 };
+
+module.exports = Table;
 
 
 /*
@@ -276,8 +279,8 @@ function generateTableDataInsideScores(){
 	// Sort by 'final' field and reverse if needed
 	var finalData = _.sortBy(scores, 'final');
 
-	if(table.order == 'asc')
-		finalData = finalTable.reverse()
+	if(table.sort == 'desc')
+		finalData = finalData.reverse();
 
 	// Rank Table
 	var pos = 0;
@@ -300,30 +303,58 @@ function generateTableDataInsideScores(){
 	return this.scores;
 }
 
-/*
-	Default methods instantiation
-*/
-var evaluateMethods = {};
 
+/*
+	Evaluate methods calculators (Defaults)
+*/
 // Max method
-evaluateMethods.max = function(scores){
+var evMax = function(scores){
 	return _.max(scores, function(val) {
 		return val*1;
 	});
 };
 
 // Min method
-evaluateMethods.min = function(scores){
+var evMin = function(scores){
 	return _.min(scores, function(val) {
 		return val*1;
 	});
 };
 
 // Sum method
-evaluateMethods.sum = function(scores){
+var evSum = function(scores){
 	return _.reduce(scores, function(sum, num) {
 		return sum + num*1;
 	});
+};
+
+// Average method
+var evAvg = function(scores){
+	return _.reduce(scores, function(sum, num) {
+		return sum + num*1/scores.length;
+	});
+};
+
+/*
+	Default methods instantiation
+*/
+Table.evaluateMethods = {
+	max: evMax,
+	min: evMin,
+	sum: evSum,
+	avg: evAvg,
+};
+
+/*
+	This is helpfull to send to views, allowing them to know
+	defined methods.
+*/
+
+Table.evaluateMethodsNames = {
+	'max': 'Maximum',
+	'min': 'Minimum',
+	'sum': 'Sum',
+	'avg': 'Average',
 };
 
 /*
@@ -335,8 +366,8 @@ evaluateMethods.sum = function(scores){
 */
 function getMethodFor(methodRaw){
 	// Try to find in defaults
-	if(evaluateMethods[methodRaw])
-		return evaluateMethods[methodRaw];
+	if(Table.evaluateMethods[methodRaw])
+		return Table.evaluateMethods[methodRaw];
 
 	// Else, try to return a new function with it
 	try{

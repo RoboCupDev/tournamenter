@@ -71,12 +71,11 @@ App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
 		unsavedclass: '',
 		showbuttons: false,
 		success: function(response, newValue) {
-			console.log(this);
 			// Finds key name
 			var name = opts.name || $(this).attr('data-name') || null;
 			// If found, then save it
 			if(name){
-				saveOpts = saveOpts || {patch: true};
+				saveOpts = saveOpts || {patch: true, wait: true};
 	        	modelToSave.save(name, newValue, saveOpts);
 	        }
 	    }

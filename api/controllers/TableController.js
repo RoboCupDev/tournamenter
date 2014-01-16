@@ -30,7 +30,8 @@ module.exports = {
 				return res.view({
 					path: req.route.path,
 					tables: tables,
-					teamList: teamList
+					teamList: teamList,
+					evaluateMethodsNames: Table.evaluateMethodsNames,
 				});
 			});
 
