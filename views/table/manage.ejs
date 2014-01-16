@@ -61,9 +61,13 @@
 					</ul>
 				</div>
 
-				<input type="checkbox" class="table-locked switch-mini"
+				<button class="btn-team-add btn btn-xs btn-success">
+					<span class="glyphicon glyphicon-plus"></span> Add Team
+				</button>
+
+				<!-- <input type="checkbox" class="table-locked switch-mini"
 					data-on="success" data-on-label="<i class='glyphicon glyphicon-pencil'></i>"
-					data-off="danger" data-off-label="<i class='glyphicon glyphicon-ban-circle'></i>">
+					data-off="danger" data-off-label="<i class='glyphicon glyphicon-ban-circle'></i>"> -->
 			</div>
 
 			<span class="panel-title">
@@ -97,7 +101,7 @@
 
 		<div class="collapsible">
 
-			<table class="spot-scores table table-striped table-bordered table-condensed table-responsive">
+			<table class="spot-scores table table-striped table-condensed table-responsive">
 				<thead>
 				</thead>
 				<tbody>
@@ -123,18 +127,32 @@
 			<span class="editable" data-name="headerScore">{{headerScore}}</span> 1
 		</th>
 		<th><span class="editable" data-name="headerFinal">{{headerFinal}}</span></th>
+		<th><!-- tools --></th>
 	</tr>
 </script>
 <!--/ SCORES HEADER VIEW TEMPLATE -->
 
 <!--  SCORES DATA VIEW TEMPLATE -->
 <script type="text/template" id="template-scores-row">
-	<tr>
-		<td>{{rank}}</td>
-		<td>{{team.name}}</td>
-		<!-- Use tde class anchor-score to know where to prepend extra score headers -->
-		<td class="anchor-score">{{final}}</td>
-	</tr>
+	<td>{{rank}}</td>
+	<td><span class="score-team" data-name="teamId"></span></td>
+	<!-- Use tde class anchor-score to know where to prepend extra score headers -->
+	<td class="anchor-score">{{final}}</td>
+	<td>
+		<!-- Team tools -->
+		<div class="pull-right visible-xs">
+			<!-- Removes a team score row from the table -->
+			<button type="button" class="btn-team-destroy btn btn-danger btn-xs">
+				<span class="glyphicon glyphicon-trash"></span>
+			</button>
+		</div>
+		<div class="pull-right hidden-xs">
+			<!-- Removes a team score row from the table -->
+			<button type="button" class="btn-team-destroy btn btn-danger btn-xs">
+				<span class="glyphicon glyphicon-trash"></span> Remove
+			</button>
+		</div>
+	</td>
 </script>
 <!--/ SCORES DATA VIEW TEMPLATE -->
 
@@ -145,12 +163,164 @@
 // Wait until page load is complet
 $(document).ready(function(){
 
-
+/*
+	GLOBAL Teams list (used for scripts and also editable library)
+*/
+App.teamList = <%- JSON.stringify(teamList) %>;
 
 
 /*
   ************************************************************
-	Table Views (Keep track of ONE table object)
+	Score View (Keep track of ONE score object in a table)
+  ************************************************************
+*/
+App.Views.Score = Backbone.View.extend({
+
+	// This view is a single row in a table
+	tagName: 'tr',
+
+	// Private storage of team views
+	_views: {},
+
+	// Events
+	events: {
+		'click .btn-team-destroy': 'confirmDestroyAction',
+	},
+
+	initialize: function(){
+		this.listenTo(this.model, 'destroy', this.destroy);
+
+		this.table = this.model.collection.table;
+	},
+
+	templateScoresRow: _.template($('#template-scores-row').html()),
+	render: function(){
+		var dict = this.model.toJSON();
+		var columns = this.table.get('columns')*1;
+		var scores = dict.scores;
+
+		// Render and switch current element html
+		this.$el.html(this.templateScoresRow(dict));
+
+		/*
+			Create scores columns (dinamicaly)
+			We use the anchor css class 'anchor-score', to know
+			where to insertBefore scores with jquery
+		*/
+		$scoresAnchor = this.$('.anchor-score');
+		for(var i = 1; i <= columns; i++){
+
+			// Get score value
+			var scoreValue = (scores[i] ? scores[i].value : null) || '-';
+			// Create 
+			var cell = $('<td>').text(scoreValue);
+			cell.insertBefore($scoresAnchor);
+		}
+
+		// Configure editable field in team
+		this.configureTeamEditable();
+
+		return this;
+	},
+
+	configureTeamEditable: function(){
+		// Editable options used for Teams
+		$editable = this.$('.score-team');
+		App.Mixins.editInPlace(this.model, $editable, {
+			type: 'select2',
+			mode: 'popup',
+			source: App.teamList,
+			showbuttons: false,
+			select2: {
+				width: 200,
+				placeholder: 'Select Team',
+				allowClear: true,
+			}
+		});
+		console.log(App.teamList);
+		$editable.editable('setValue', this.model.get('teamId'));
+
+		return this;
+	},
+
+	confirmDestroyAction: function(){
+		var view = this;
+		var message = 'About to delete team  "'+view.model.get('name')+'" from table. Are you shure?';
+		App.Mixins.confirmAction(message, true, function(){
+			view.model.destroy({wait: true});
+		});
+	},
+
+	destroy: function(){
+		this.$el.remove();
+	},
+
+});
+
+
+/*
+  ************************************************************
+	Scores View (Keep track of ALL scores object in a table)
+  ************************************************************
+*/
+
+App.Views.Scores = Backbone.View.extend({
+
+	initialize: function(){
+		this.listenTo(this.collection, 'add', this.add);
+		this.listenTo(this.collection, 'remove', this.remove);
+		this.listenTo(this.collection, 'reset', this.render);
+	},
+
+	render: function(){
+		var view = this;
+
+		// Empty table body
+		this.$el.empty();
+
+		// Go through all models inside the collection, adding to the view
+		_(this.collection.models).each(function(model){
+			// Create and add view
+			view.add(model);
+		});
+	},
+
+	refresh: function(){
+		this.collection.fetch();
+		return this;
+	},
+
+	// createTable: function(){
+	// 	this.collection.create({}, {wait: true});
+	// },
+
+	add: function(model){
+		var tableView = new App.Views.Score({
+			model: model
+		});
+
+		// Append view and render it
+		this.appendView(tableView);
+		return this;
+	},
+
+	remove: function(model){
+		// Trigger destroy on model, and delegate remove action
+		model.trigger('destroy');
+	},
+
+	appendView: function(view){
+		this.$el.append(view.render().$el);
+		
+		return this;
+	},
+
+});
+
+
+/*
+  ************************************************************
+	Table View (Keep track of ONE table object)
   ************************************************************
 */
 App.Views.Table = Backbone.View.extend({
@@ -159,11 +329,14 @@ App.Views.Table = Backbone.View.extend({
 	className: 'panel panel-info',
 	template: _.template($('#template-table-view').html()),
 
+	// Scores view nested to this view
+	scoresView: null,
+
 	// Events
 	events: {
-		'click .btn-table-destroy': 'createTable',
 		'click .btn-table-refresh': 'refresh',
 		'click .btn-table-destroy': 'confirmDestroyAction',
+		'click .btn-team-add': 'addTeam',
 	},
 	
 	initialize: function(){
@@ -178,7 +351,13 @@ App.Views.Table = Backbone.View.extend({
 		this.listenTo(this.model, 'remove', this.endSync);
 		this.listenTo(this.model, 'reset', this.endSync);
 
+		// Save jquery refresh button instance
 		this.$btnRefresh = this.$('btn-table-refresh');
+
+		// Instantiate Scores view for current model
+		this.scoresView = new App.Views.Scores({
+			collection: this.model.scores,
+		});
 	},
 
 	render: function(){
@@ -190,8 +369,11 @@ App.Views.Table = Backbone.View.extend({
 
 		// Configure in-place editors
 		this.configureTitleBar()
-			.renderScoresHeader()
-			.renderScoresData();
+			.renderScoresHeader();
+
+		// Set scoresView element
+		this.scoresView.setElement(this.$('.spot-scores tbody'));
+		this.scoresView.render();
 
 		return this;
 	},
@@ -233,55 +415,26 @@ App.Views.Table = Backbone.View.extend({
 		return this;
 	},
 
-	templateScoresRow: _.template($('#template-scores-row').html()),
-	renderScoresData: function(){
-		var view = this;
-		// Find table spot
-		$table = view.$('.spot-scores');
-		rows = [];//$('<tbody>');
-
-		// Render headers with data
-		var scores = view.model.get('scores');
-		var columns = view.model.get('columns')*1;
-
-		// For each object in the array, create a new row with it
-		_(scores).forEach(function(rowData){
-			createRow(rowData);
-		});
-
-		// Snipped used to create a row for each score in table
-		function createRow(rowData){
-			console.log(rowData);
-			var $html = $(view.templateScoresRow(rowData));
-
-			// Create extra scores columns
-			$scoresAnchor = $html.find('.anchor-score');
-			var scores = rowData.scores;
-			for(var i = 1; i <= columns; i++){
-				var scoreValue = (scores[i] ? scores[i].value : null) || '-';
-				var newHeader = $('<td>').text(scoreValue);
-				newHeader.insertBefore($scoresAnchor);
-			}
-
-			rows.push($html);
-		}
-
-		// Change tbody to new one just generated
-		$table.find('tbody').html(rows);
-
-		return this;
-	},
-
 	destroy: function(){
-		this.$el.remove();
+		var view = this;
+		// Animate and remove after
+		this.$el.slideUp(function(){
+			view.$el.remove();
+		});
 	},
 
 	refresh: function(){
-		console.log('refresh: '+this.model.id);
 		var view = this;
 		this.startSync();
-		this.model.fetch();
+		this.model.fetch({url: '/tables/associated/'+this.model.id});
 		return this;
+	},
+
+	addTeam: function(){
+		var view = this;
+		this.model.scores.create({tableId: view.model.id}, {wait: true, silent: true, success: function(){
+			view.refresh();
+		}});
 	},
 
 	confirmDestroyAction: function(evt){

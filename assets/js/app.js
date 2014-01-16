@@ -201,14 +201,19 @@ App.Models.Table = Backbone.Model.extend({
 	initialize: function(attributes){
 		// Create a Backbone model
 		attributes = attributes || {};
-		this.scores = new App.Collections.Scores(attributes.scores || {tableId: this.id});
-		delete attributes['scores'];
+		this.scores = new App.Collections.Scores(attributes.scores || []);
+
+		// Save this object inside the scores collection, allowing access from it
+		this.scores.table = this;
 	    this.scores.url = '/scores/find?tableId=' + this.id;
+		delete attributes['scores'];
 	},
 	parse: function(data, options) {
 		// Delegate scores data to scores collection
-		this.scores.reset(data.scores);
-		delete data['scores'];
+		if(data.scores){
+			this.scores.reset(data.scores);
+			delete data['scores'];
+		}
 
 		return data;
 	},
