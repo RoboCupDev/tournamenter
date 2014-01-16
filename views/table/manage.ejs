@@ -78,25 +78,100 @@
 		<!-- Configuration panel -->
 		<div class="collapsible-options collapse">
 			<div class="form-horizontal panel-body">
+				<div class="column col-md-6">
+					<p class="lead">Options</p>
 
-				<div class="form-group">
-					<label class="col-sm-2 control-label">Email</label>
-					<div class="col-sm-10">
-						<div class="table-sort">ASC</div>
-					</div>
+					<dl class="dl-horizontal">
+					
+					<!-- Columns -->
+					<dt>Score Columns:</dt>
+					<dd>
+						<span class="table-columns" data-title="Data Columns" data-name="columns">{{columns}}</span>
+					</dd>
+
+					<!-- Ranking (sort)-->
+					<dt>Final Score sort:</dt>
+					<dd>
+						<span class="table-sort" data-title="Order" data-name="sort">{{sort}}</span>
+					</dd>
+
+					<!-- evaluateMethod -->
+					<dt>Final Score function:</dt>
+					<dd>
+						<span class="table-evaluateMethod" data-title="Score Algorithm" data-name="evaluateMethod">{{evaluateMethod}}</span>
+					</dd>
+
+					<!-- evaluateMethod -->
+					<dt>Column names:</dt>
+					<dd>
+						<em>Click on the column header in the table.</em>
+					</dd>
+
+					</dl>
 				</div>
-				<div class="form-group">
-					<label class="col-sm-2 control-label">Password</label>
-					<div class="col-sm-10">
-						<div class="table-sort">ASC</div>
+
+				<div class="column col-md-6">
+					<p class="lead">Help</p>
+				
+					<button type="button" class="btn-collapse-help btn btn-info btn-md btn-block">
+						Show Help
+					</button>
+
+					<!-- Help -->
+					<div class="collapse collapsible-help">
+					<dl>
+						<dt>Score Columns</dt>
+						<dd>
+							<small>
+								This is the number of <code>matches</code>, <code>rounds</code>, <code>turns</code>, <code>scores</code>... for a single team.<br/>
+								If there are 3 rounds, than this value should be 3.<br/>
+								Notice that the minimum is 1, and the maximum is 20.
+							</small>
+						</dd>
+
+						<dt>Final Score Sort</dt>
+						<dd>
+							<small>
+								After calculating the final score for each team, the system will generate a 'rank'.<br/>
+								This field configures if the rank will give priority to 'lower' values, or 'higger' values.<br/>
+								Example 1: use Descending, if a higger final score is better than a lowest one.<br/>
+								Example 2: use Ascending, if a lower final score is better than a larger one.
+							</small>
+						</dd>
+
+						<dt>Final Score function</dt>
+						<dd>
+						<small>
+							The <code>Rank</code>, is generated based on the <code>Final</code> score, generaly calculated based on the scores obtained by the team. However, depending on the tournament, the final score can be different. Perhaps, the final score, will be the avarega, or the maximum, or even the avarege, removing the wrost and the best score (for example).<br/>
+							In this way, you can either insert some 'default' functions already made, or, create your own with javascript (read the last one).
+							<ul>
+								<li><code>avg</code>: Insert this to calculate an average on all scores</li>
+								<li><code>sum</code>: The final score is the sum of all scores</li>
+								<li><code>min</code>: The final score is the minimum of all scores</li>
+								<li><code>max</code>: The final score is the maximum of all scores</li>
+								<li>
+									anything else: Will be threated as 'literal' javascript function, where <code>scores</code> is an array containing all scores. Use <code>scores.length</code> to return the columns.<br/>
+									This function should return a value to be used as final score.<br/>
+									Example of simple sum function.<br/>
+	<code>var finalScore = 0;<br/>
+	for(var k in scores){<br/>
+	&nbsp&nbspfinalScore += scores[k]*1;<br/>
+	}<br/>
+	return finalScore;</code>
+								</li>
+							</ul>
+						</small>
+						</dd>
+					</dl>
 					</div>
+
 				</div>
 
 			</div>
 		</div>
 
 		<button type="button" class="btn-collapse-options btn btn-primary btn-xs btn-block">
-			Hide Options
+			Show Options
 		</button>
 
 		<div class="collapsible-scores collapse">
@@ -168,6 +243,20 @@ $(document).ready(function(){
 */
 App.teamList = <%- JSON.stringify(teamList) %>;
 
+/*
+	default evaluateMethods available.
+
+	Convert to XEditable structe after setting
+*/
+App.evaluateMethodsNames = <%- JSON.stringify(evaluateMethodsNames) %>;
+App.evaluateMethodsList = [];
+for(var k in App.evaluateMethodsNames){
+	App.evaluateMethodsList.push({value: k, text: App.evaluateMethodsNames[k]});
+}
+console.log(App.evaluateMethodsList);
+
+// List to allow XEditable to create a select list instead of raw string typing
+App.sortList = [{value: 'asc', text: 'ASCENDING'}, {value: 'desc', text: 'DESCENDING'}];
 
 /*
   ************************************************************
@@ -237,7 +326,7 @@ App.Views.Score = Backbone.View.extend({
 				allowClear: true,
 			}
 		});
-		console.log(App.teamList);
+
 		$editable.editable('setValue', this.model.get('teamId'));
 
 		return this;
@@ -341,6 +430,11 @@ App.Views.Table = Backbone.View.extend({
 		this.listenTo(this.model, 'change', this.render);
 		this.listenTo(this.model, 'destroy', this.destroy);
 
+		// Fields that will force a fetch from server
+		this.listenTo(this.model, 'change:columns', this.refresh);
+		this.listenTo(this.model, 'change:sort', this.refresh);
+		this.listenTo(this.model, 'change:evaluateMethod', this.refresh);
+
 		this.listenTo(this.model, 'request', this.startSync);
 		this.listenTo(this.model, 'sync', this.endSync);
 		this.listenTo(this.model, 'change', this.endSync);
@@ -370,11 +464,16 @@ App.Views.Table = Backbone.View.extend({
 		// Configure in-place editors
 		this.configureTitleBar()
 			.renderScoresHeader()
-			.makeCollapsible();
+			.makeCollapsible()
+			.configureOptions();
 
 		// Set scoresView element
-		this.scoresView.setElement(this.$('.spot-scores tbody'));
-		this.scoresView.render();
+		var scoresSpot = this.$('.spot-scores tbody');
+		if(scoresSpot != this.scoresView.$el){
+			console.log('rendering scores egain: '+this.model.id);
+			this.scoresView.setElement(this.$('.spot-scores tbody'));
+			this.scoresView.render();
+		}
 
 		return this;
 	},
@@ -428,6 +527,33 @@ App.Views.Table = Backbone.View.extend({
 			hideData: '<i class="glyphicon glyphicon-wrench"></i> Hide Table Options',
 		});
 
+		Util.makeCollapsible(this.$('.btn-collapse-help'), this.$('.collapsible-help'), {
+			showData: '<i class="glyphicon glyphicon-question-sign"></i> Show Help',
+			hideData: '<i class="glyphicon glyphicon-question-sign"></i> Hide Help',
+		});
+
+		return this;
+	},
+
+	configureOptions: function(){
+		// Make editable fields
+		App.Mixins.editInPlace(this.model, this.$('.table-columns'), {
+			mode: 'popup',
+		});
+
+		App.Mixins.editInPlace(this.model, this.$('.table-sort'), {
+			type: 'select',
+			mode: 'popup',
+			source: App.sortList,
+			value: this.model.get('sort'),
+		});
+
+		App.Mixins.editInPlace(this.model, this.$('.table-evaluateMethod'), {
+			type: 'textarea',
+			mode: 'popup',
+			value: this.model.get('evaluateMethod'),
+		});
+
 		return this;
 	},
 
@@ -441,6 +567,7 @@ App.Views.Table = Backbone.View.extend({
 
 	refresh: function(){
 		var view = this;
+		console.log('refreshing: '+this.model.id);
 		this.startSync();
 		this.model.fetch({url: '/tables/associated/'+this.model.id});
 		return this;
