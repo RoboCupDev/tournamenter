@@ -60,7 +60,7 @@ App.Mixins.confirmAction = function(message, allowSkip, next){
 
 	Usage: editInPlace(ModelToSave, jQueryField, )
 */
-App.Mixins.editInPlace = function(modelToSave, jQueryField, opts){
+App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
 	// Filter and adds default behavior
 	opts = opts || {};
 
@@ -73,9 +73,10 @@ App.Mixins.editInPlace = function(modelToSave, jQueryField, opts){
 			// Finds key name
 			var name = opts.name || jQueryField.attr('data-name') || null;
 			// If found, then save it
-			// (silently, since XEditable will edit the field)
-			if(name)
-	        	modelToSave.save(name, newValue, {silent: true});
+			if(name){
+				saveOpts = saveOpts || {silent: true, patch: true};
+	        	modelToSave.save(name, newValue, saveOpts);
+	        }
 	    }
 	};
 
@@ -150,7 +151,7 @@ App.Models.Table = Backbone.Model.extend({
 		delete data['scores'];
 
 		return data;
-	}
+	},
 });
 
 // Table Collection

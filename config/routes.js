@@ -35,6 +35,15 @@ module.exports.routes = {
   '/': 'TeamController.manage',
   'GET /teams': 'TeamController.manage',
 
+  // PATCH methods for Backbone
+  'PATCH /teams/:id': 'TeamController.update',
+
+  'PATCH /groups/:id': 'GroupController.update',
+  'PATCH /matches/:id': 'MatchController.update',
+
+  'PATCH /tables/:id': 'TableController.update',
+  'PATCH /scores/:id': 'ScoreController.update',
+
   /*
   // But what if you want your home page to display
   // a signup form located at `views/user/signup.ejs`?
