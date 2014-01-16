@@ -157,7 +157,16 @@ module.exports = {
 		table: generateTableData,
 		headers: generateTableHeaders,
 
+	},
 
+	beforeUpdate: function(attrs, next){
+		removeBadFields(attrs);
+		next();
+	},
+
+	beforeCreate: function(attrs, next){
+		removeBadFields(attrs);
+		next();
 	},
 
 };
@@ -339,6 +348,19 @@ function getMethodFor(methodRaw){
 	}
 	return null;
 }
+
+/*
+	Method used to remove fields that are not supposed to
+	be there, on create and update.
+*/
+function removeBadFields(attrs){
+	var badList = ['scores', 'table', 'headers'];
+	for(var k in badList){
+		if(attrs[badList[k]])
+			delete attrs[badList[k]];
+	}
+}
+
 
 /*
 	Tests
