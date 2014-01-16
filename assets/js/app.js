@@ -49,6 +49,41 @@ App.Mixins.confirmAction = function(message, allowSkip, next){
 		return next();
 	};
 }
+
+/*
+	Mixin to help configuring XEditable fields, for in place editions
+
+	It configures the XEditable field by default, to save to the given
+	model, instead of using it's own method to send by ajax.
+
+	Also, leave some defaults to facilitate configuration.
+
+	Usage: editInPlace(ModelToSave, jQueryField, )
+*/
+App.Mixins.editInPlace = function(modelToSave, jQueryField, opts){
+	// Filter and adds default behavior
+	opts = opts || {};
+
+	var defaults = {
+		type: 'text',
+		mode: 'inline',
+		unsavedclass: '',
+		showbuttons: false,
+		success: function(response, newValue) {
+			// Finds key name
+			var name = opts.name || jQueryField.attr('data-name') || null;
+			// If found, then save it
+			// (silently, since XEditable will edit the field)
+			if(name)
+	        	modelToSave.save(name, newValue, {silent: true});
+	    }
+	};
+
+	// Apply options to editable
+	jQueryField.editable(_.defaults(opts, defaults));
+	return this;
+};
+
 /*
 	Mixin Function to help with Collection view controllers
 	It keeps track of inserted views, with the view.model.id

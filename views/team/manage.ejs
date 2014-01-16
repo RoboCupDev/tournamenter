@@ -187,7 +187,7 @@ App.Views.Team = Backbone.View.extend({
 	},
 
 	configureName: function(){
-		this.setupXEditable(this.$('.team-name'));
+		App.Mixins.editInPlace(this.model, this.$('.team-name'));
 		return this;
 	},
 
@@ -200,7 +200,7 @@ App.Views.Team = Backbone.View.extend({
 			return '<span class="flag-icon flag-icon-' + state.id.toLowerCase() +'"></span> ' + state.text;
 		}
 
-		this.setupXEditable(field, {
+		App.Mixins.editInPlace(this.model, field, {
 			type: 'select2',
 
 			escape: false,
@@ -237,32 +237,6 @@ App.Views.Team = Backbone.View.extend({
 		App.Mixins.confirmAction(message, true, function(){
 			view.model.destroy({wait: true});
 		});
-	},
-
-	// Configure XEditable on field
-	setupXEditable: function(field, opts){
-		var view = this;
-
-		// Filter and adds default behavior
-		opts = opts || {};
-		var defaults = {
-			type: 'text',
-			mode: 'inline',
-			unsavedclass: '',
-			showbuttons: false,
-			success: function(response, newValue) {
-				// Finds key name
-				var name = opts.name || field.attr('data-name') || null;
-				// If found, then save it
-				// (silently, since XEditable will edit the field)
-				if(name)
-		        	view.model.save(name, newValue, {silent: true});
-		    }
-		};
-
-		// Apply options to editable
-		field.editable(_.defaults(opts, defaults));
-		return this;
 	},
 });
 
