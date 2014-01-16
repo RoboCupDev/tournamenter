@@ -105,8 +105,8 @@ function findAssociated(id, next){
 		// Empy array (adjusts variable scope)
 		data = [];
 
-		if(err || models.length <= 0)
-			return finishRendering();
+		if(err)
+			next('Failed to retrieve data');
 
 		// Create parallel tasks to associate each table with it's scores
 		var findTasks = [];
