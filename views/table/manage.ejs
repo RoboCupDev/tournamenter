@@ -1,10 +1,6 @@
 <style type="text/css">
 
-.spot-table-scores{
-	margin-bottom: 0px;
-}
-
-.scores-table{
+.spot-scores{
 	margin-bottom: 0px;
 }
 
@@ -101,26 +97,10 @@
 
 		<div class="collapsible">
 
-			<table class="scores-table table table-striped table-bordered table-condensed table-responsive">
+			<table class="spot-scores table table-striped table-bordered table-condensed table-responsive">
 				<thead>
-					<tr>
-						<th>Rank</th>
-						<th>Team</th>
-						<th>Score 1</th>
-						<th>Score 2</th>
-						<th>Score 3</th>
-						<th>Final</th>
-					</tr>
 				</thead>
-				<tbody class="spot-scores">
-					<tr>
-						<td>2</td>
-						<td>XLS</td>
-						<td>532</td>
-						<td>-</td>
-						<td>-</td>
-						<td>532</td>
-					</tr>
+				<tbody>
 				</tbody>
 			</table>
 		</div>
@@ -131,6 +111,32 @@
 	<!-- </div> -->
 </script>
 <!--/ TABLE VIEW TEMPLATE -->
+
+
+<!--  SCORES HEADER VIEW TEMPLATE -->
+<script type="text/template" id="template-scores-header">
+	<tr>
+		<th><span class="editable" data-name="headerRank">{{headerRank}}</span></th>
+		<th><span class="editable" data-name="headerTeam">{{headerTeam}}</span></th>
+		<!-- Use the class anchor-score to know where to prepend extra score headers -->
+		<th class="anchor-score">
+			<span class="editable" data-name="headerScore">{{headerScore}}</span> 1
+		</th>
+		<th><span class="editable" data-name="headerFinal">{{headerFinal}}</span></th>
+	</tr>
+</script>
+<!--/ SCORES HEADER VIEW TEMPLATE -->
+
+<!--  SCORES DATA VIEW TEMPLATE -->
+<script type="text/template" id="template-scores-row">
+	<tr>
+		<td>{{rank}}</td>
+		<td>{{team.name}}</td>
+		<!-- Use tde class anchor-score to know where to prepend extra score headers -->
+		<td class="anchor-score">{{final}}</td>
+	</tr>
+</script>
+<!--/ SCORES DATA VIEW TEMPLATE -->
 
 
 
@@ -161,6 +167,7 @@ App.Views.Table = Backbone.View.extend({
 	},
 	
 	initialize: function(){
+		console.log('initialized: '+this.model.id);
 		this.listenTo(this.model, 'change', this.render);
 		this.listenTo(this.model, 'destroy', this.destroy);
 
@@ -175,13 +182,16 @@ App.Views.Table = Backbone.View.extend({
 	},
 
 	render: function(){
+		console.log('rendering: '+this.model.id);
 		// Render with data
 		var dict = this.model.toJSON();
 		var html = this.template(dict);
 		this.$el.html(html);
 
 		// Configure in-place editors
-		this.configureTitleBar();
+		this.configureTitleBar()
+			.renderScoresHeader()
+			.renderScoresData();
 
 		return this;
 	},
@@ -191,14 +201,83 @@ App.Views.Table = Backbone.View.extend({
 		// Configure table name edition
 		var $name = this.$('.table-name');
 		App.Mixins.editInPlace(this.model, $name);
+
+		return this;
 	},
 
+	// Render Scores header
+	templateScoresHeader: _.template($('#template-scores-header').html()),
+	renderScoresHeader: function(){
+		// Find table spot
+		$table = this.$('.spot-scores');
+
+		// Render headers with data
+		var dict = this.model.toJSON();
+
+		var $html = $(this.templateScoresHeader(dict));
+
+		// Create extra score header columns
+		$scoresHeader = $html.find('.anchor-score');
+		for(var i = dict.columns*1; i > 1; i--){
+			var newHeader = $('<th>').text(dict.headerScore + ' ' + i);
+			newHeader.insertAfter($scoresHeader);
+		}
+
+		// Make editable
+		App.Mixins.editInPlace(this.model, $html.find('.editable'), {
+			mode: 'popup',
+		});
+
+		$table.find('thead').html($html);
+
+		return this;
+	},
+
+	templateScoresRow: _.template($('#template-scores-row').html()),
+	renderScoresData: function(){
+		var view = this;
+		// Find table spot
+		$table = view.$('.spot-scores');
+		rows = [];//$('<tbody>');
+
+		// Render headers with data
+		var scores = view.model.get('scores');
+		var columns = view.model.get('columns')*1;
+
+		// For each object in the array, create a new row with it
+		_(scores).forEach(function(rowData){
+			createRow(rowData);
+		});
+
+		// Snipped used to create a row for each score in table
+		function createRow(rowData){
+			console.log(rowData);
+			var $html = $(view.templateScoresRow(rowData));
+
+			// Create extra scores columns
+			$scoresAnchor = $html.find('.anchor-score');
+			var scores = rowData.scores;
+			for(var i = 1; i <= columns; i++){
+				var scoreValue = (scores[i] ? scores[i].value : null) || '-';
+				var newHeader = $('<td>').text(scoreValue);
+				newHeader.insertBefore($scoresAnchor);
+			}
+
+			rows.push($html);
+		}
+
+		// Change tbody to new one just generated
+		$table.find('tbody').html(rows);
+
+		return this;
+	},
 
 	destroy: function(){
 		this.$el.remove();
 	},
 
 	refresh: function(){
+		console.log('refresh: '+this.model.id);
 		var view = this;
 		this.startSync();
 		this.model.fetch();

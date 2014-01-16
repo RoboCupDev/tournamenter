@@ -76,7 +76,7 @@ App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
 			var name = opts.name || $(this).attr('data-name') || null;
 			// If found, then save it
 			if(name){
-				saveOpts = saveOpts || {silent: true, patch: true};
+				saveOpts = saveOpts || {patch: true};
 	        	modelToSave.save(name, newValue, saveOpts);
 	        }
 	    }
@@ -191,6 +191,7 @@ App.Models.Score = Backbone.Model.extend({
 // Scores Collection
 App.Collections.Scores = Backbone.Collection.extend({
 	model: App.Models.Score,
+	comparator: 'rank',
 	url: '/scores/find',
 });
 
