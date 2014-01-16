@@ -14,7 +14,11 @@ Util.makeCollapsible = function($trigger, $target, opts){
 		hideData: 'Hide',
 	});
 
-	updateText();
+	if($target.hasClass('collapse')){
+		$trigger.html(opts.showData);
+	}else{
+		$trigger.html(opts.hideData);
+	}
 
 	$trigger.unbind('click').click(toggleCollapse);
 
@@ -22,18 +26,10 @@ Util.makeCollapsible = function($trigger, $target, opts){
 		// Is it colapsed?
 		if($target.hasClass('collapse')){
 			$target.collapse('show');
+			$trigger.html(opts.hideData);
 		}else{
 			$target.collapse('hide');
-		}
-		updateText();
-	}
-
-	// Change the trigger text depending if it's collapsed or not
-	function updateText(){
-		if($target.hasClass('collapse')){
 			$trigger.html(opts.showData);
-		}else{
-			$trigger.html(opts.hideData);
 		}
 	}
 }
