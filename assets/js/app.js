@@ -61,6 +61,7 @@ App.Mixins.confirmAction = function(message, allowSkip, next){
 	Usage: editInPlace(ModelToSave, jQueryField, )
 */
 App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
+
 	// Filter and adds default behavior
 	opts = opts || {};
 
@@ -70,8 +71,9 @@ App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
 		unsavedclass: '',
 		showbuttons: false,
 		success: function(response, newValue) {
+			console.log(this);
 			// Finds key name
-			var name = opts.name || jQueryField.attr('data-name') || null;
+			var name = opts.name || $(this).attr('data-name') || null;
 			// If found, then save it
 			if(name){
 				saveOpts = saveOpts || {silent: true, patch: true};
