@@ -16,7 +16,7 @@
 
 	<div class="col-md-12 column">
 
-		<!-- CREATE GROUP BUTON -->
+		<!-- CREATE TABLE -->
 		<p class="pull-right">
 			<button type="button" id="btn-create-table" class="btn btn-success">
 				<span class="glyphicon glyphicon-plus"></span> Create New Table
@@ -71,7 +71,7 @@
 			</div>
 
 			<span class="panel-title">
-				<strong><span class="group-name" data-title="Table name">{{name}}</span></strong>
+				<strong><span class="table-name" data-name="name" data-title="Table name">{{name}}</span></strong>
 			</span>
 		</div>
 
@@ -139,8 +139,13 @@
 // Wait until page load is complet
 $(document).ready(function(){
 
+
+
+
 /*
+  ************************************************************
 	Table Views (Keep track of ONE table object)
+  ************************************************************
 */
 App.Views.Table = Backbone.View.extend({
 	
@@ -170,11 +175,24 @@ App.Views.Table = Backbone.View.extend({
 	},
 
 	render: function(){
-		// Render template
-		this.$el.html(this.template(this.model.attributes));
+		// Render with data
+		var dict = this.model.toJSON();
+		var html = this.template(dict);
+		this.$el.html(html);
+
+		// Configure in-place editors
+		this.configureTitleBar();
 
 		return this;
 	},
+
+	// Setup in place edition and fields callbacks in title bar
+	configureTitleBar: function(){
+		// Configure table name edition
+		var $name = this.$('.table-name');
+		App.Mixins.editInPlace(this.model, $name);
+	},
+
 
 	destroy: function(){
 		this.$el.remove();
@@ -211,8 +229,14 @@ App.Views.Table = Backbone.View.extend({
 	},
 });
 
+
+
+
+
 /*
+  ************************************************************
 	Table Collection views (Keep track of ALL table objects)
+  ************************************************************
 */
 App.Views.Tables = Backbone.View.extend({
 
@@ -240,7 +264,7 @@ App.Views.Tables = Backbone.View.extend({
 		// Go through all models inside the collection, adding to the view
 		_(this.collection.models).each(function(model){
 			// Create and add view
-			view.add(model, true);
+			view.add(model);
 		});
 	},
 
@@ -255,7 +279,7 @@ App.Views.Tables = Backbone.View.extend({
 		this.collection.create({}, {wait: true});
 	},
 
-	add: function(model, skipAnimation){
+	add: function(model, collection, options){
 		// If model exists, skip
 		if(this._views[model.id])
 			return this;
@@ -265,8 +289,9 @@ App.Views.Tables = Backbone.View.extend({
 		});
 
 		// Register in views and append to views
+		var shouldAnimate = collection ? true : false;
 		this._views[model.id] = tableView;
-		this.appendView(tableView, skipAnimation);
+		this.appendView(tableView, shouldAnimate);
 		return this;
 	},
 
@@ -281,13 +306,12 @@ App.Views.Tables = Backbone.View.extend({
 		return this;
 	},
 
-	appendView: function(view, skipAnimation){
+	appendView: function(view, shouldAnimate){
 		this.$tablesSpot.prepend(view.render().$el.hide());
-		console.log(skipAnimation);
-		if(skipAnimation)
-			view.$el.show();
-		else
+		if(shouldAnimate)
 			view.$el.slideDown();
+		else
+			view.$el.show();
 
 		return this;
 	},
