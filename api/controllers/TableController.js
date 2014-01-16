@@ -160,12 +160,12 @@ function findAssociated(id, next){
 		function associateWithTeams(teams, tableModel){
 			// Go through all team rows inside the table's data, and add's team object
 			_.forEach(tableModel.table, function(teamRow){
-				teamRow['team'] = teams[teamRow.id] || {};
+				teamRow['team'] = teams[teamRow.teamId] || {};
 			});
 
 			// Go through all team rows inside scores, and add's a team object
 			_.forEach(tableModel.scores, function(teamRow){
-				teamRow['team'] = teams[teamRow.id] || {};
+				teamRow['team'] = teams[teamRow.teamId] || {};
 			});
 		}
 
