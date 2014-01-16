@@ -154,8 +154,8 @@ module.exports = {
 			}
 
 		*/
-		table: generateTableData,
-		headers: generateTableHeaders,
+		calculate: generateTableDataInsideScores,
+		// headers: generateTableHeaders,
 
 	},
 
@@ -203,9 +203,9 @@ function generateTableHeaders(){
 }
 
 /*
-	Generates the table data
+	Generates the table data inside scores objects
 */
-function generateTableData(){
+function generateTableDataInsideScores(){
 	// Save to allow in function referencte
 	var table = this;
 	var columns = table.columns*1;
@@ -213,7 +213,6 @@ function generateTableData(){
 	/*
 		Create data table
 	*/
-	var tableRows = [];
 	var scores = table.scores;
 
 	// Just warn (DEBUG mode...)
@@ -241,13 +240,13 @@ function generateTableData(){
 		*/
 
 		// This will be the object inserted in the table's data array
-		var scoreData = {};
+		// var scoreData = {};
 
 		// Add simple attributes
-		scoreData['id'] = score.id || null;
-		scoreData['teamId'] = score.teamId || null;
-		scoreData['tableId'] = score.tableId || null;
-		scoreData['team'] = score.teamId || null;
+		// scoreData['id'] = score.id || null;
+		// scoreData['teamId'] = score.teamId || null;
+		// scoreData['tableId'] = score.tableId || null;
+		// scoreData['team'] = score.teamId || null;
 		// scoreData.team: score.team.name
 		// scoreData.country: score.team.country
 
@@ -263,19 +262,19 @@ function generateTableData(){
 			scoreValues.push(value);
 
 			// Generate field key and saves
-			var field = 'score.'+(i+1);
-			scoreData[field] = score.scores.value || null;
+			// var field = 'score.'+(i+1);
+			// score[field] = score.scores.value || null;
 		}
 
 		// Compute final score and adds to scoreData
-		scoreData['final'] = evalMethod(scoreValues);
+		score['final'] = evalMethod(scoreValues);
 
 		// Add to table data
-		tableRows.push(scoreData)
+		// tableRows.push(score)
 	});
 
 	// Sort by 'final' field and reverse if needed
-	var finalData = _.sortBy(tableRows, 'score');
+	var finalData = _.sortBy(scores, 'score');
 
 	if(table.order == 'asc')
 		finalData = finalTable.reverse()
@@ -295,10 +294,10 @@ function generateTableData(){
 	});
 
 	// Self assign the table
-	this.table = finalData;
+	this.scores = finalData;
 
 	// Return the table
-	return this.table;
+	return this.scores;
 }
 
 /*

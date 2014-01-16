@@ -139,8 +139,8 @@ function findAssociated(id, next){
 	*/
 	function processTables(){
 		// Now we go through all Tables and call the method table on it
-		_.invoke(data, 'table');
-		_.invoke(data, 'headers');
+		_.invoke(data, 'calculate');
+		// _.invoke(data, 'headers');
 		
 		// Now we associate team's data
 		associateTeams();
@@ -159,9 +159,9 @@ function findAssociated(id, next){
 		// Helper method used to save team data inside each table row
 		function associateWithTeams(teams, tableModel){
 			// Go through all team rows inside the table's data, and add's team object
-			_.forEach(tableModel.table, function(teamRow){
-				teamRow['team'] = teams[teamRow.teamId] || {};
-			});
+			// _.forEach(tableModel.table, function(teamRow){
+			// 	teamRow['team'] = teams[teamRow.teamId] || {};
+			// });
 
 			// Go through all team rows inside scores, and add's a team object
 			_.forEach(tableModel.scores, function(teamRow){
