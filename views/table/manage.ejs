@@ -334,7 +334,7 @@ App.Views.Score = Backbone.View.extend({
 
 	confirmDestroyAction: function(){
 		var view = this;
-		var message = 'About to delete team  "'+view.model.get('name')+'" from table. Are you shure?';
+		var message = 'You are about to delete team "' + view.model.get('name') + '" from the table. Are you sure you want to proceed?';
 		App.Mixins.confirmAction(message, true, function(){
 			view.model.destroy({wait: true});
 			view.table.fetch({url: '/tables/associated/'+view.table.id});
