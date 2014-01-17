@@ -17,8 +17,8 @@ module.exports = {
   	},
 
   	teamId: {
-  		type: 'int',
-  		defaultsTo: 0,
+  		type: 'string',
+  		defaultsTo: null,
   	},
 
   	/*
