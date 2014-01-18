@@ -6,7 +6,7 @@ Util.countries = [
   {text: 'Albania', id: 'AL'}, 
   {text: 'Algeria', id: 'DZ'}, 
   {text: 'American Samoa', id: 'AS'}, 
-  {text: 'AndorrA', id: 'AD'}, 
+  {text: 'Andorra', id: 'AD'},
   {text: 'Angola', id: 'AO'}, 
   {text: 'Anguilla', id: 'AI'}, 
   {text: 'Antarctica', id: 'AQ'}, 
