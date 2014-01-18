@@ -60,24 +60,38 @@ App.Mixins.confirmAction = function(message, allowSkip, next){
 
 	Usage: editInPlace(ModelToSave, jQueryField, )
 */
-App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
-
+App.Mixins.editInPlace = function(modelToSave, jQueryField, opts){
 	// Filter and adds default behavior
 	opts = opts || {};
 
 	var defaults = {
 		type: 'text',
 		mode: 'inline',
-		unsavedclass: '',
+		// unsavedclass: '',
 		showbuttons: false,
-		success: function(response, newValue) {
-			// Finds key name
-			var name = opts.name || $(this).attr('data-name') || null;
-			// If found, then save it
-			if(name){
-				saveOpts = saveOpts || {patch: true, wait: true};
-	        	modelToSave.save(name, newValue, saveOpts);
-	        }
+		url: function(params) {
+			var d = new $.Deferred;
+			d.promise();
+
+			// This is the default backbone save options object
+			var saveOpts = {
+				patch: true,
+				wait: true,
+				success: function(){
+					d.resolve();
+				},
+				error: function(response, xhr) {
+					var msg = 'Something went wrong...';
+					d.reject(msg);
+				}
+			};
+
+			var toSave = {};
+			toSave[params.name] = params.value;
+
+        	modelToSave.save(toSave, saveOpts);
+
+        	return d;
 	    }
 	};
 

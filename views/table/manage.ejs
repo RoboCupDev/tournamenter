@@ -88,7 +88,7 @@
 					<!-- Ranking (sort)-->
 					<dt>Final Score sort:</dt>
 					<dd>
-						<span class="table-sort" data-title="Order" data-name="sort">{{sort}}</span>
+						<span class="table-sort" data-title="Order" data-name="sort"></span>
 					</dd>
 
 					<!-- evaluateMethod -->
@@ -268,9 +268,6 @@ App.Views.Score = Backbone.View.extend({
 	// This view is a single row in a table
 	tagName: 'tr',
 
-	// Private storage of team views
-	_views: {},
-
 	// Events
 	events: {
 		'click .btn-team-destroy': 'confirmDestroyAction',
@@ -336,9 +333,30 @@ App.Views.Score = Backbone.View.extend({
 		var view = this;
 		var message = 'You are about to delete team "' + view.model.get('name') + '" from the table. Are you sure you want to proceed?';
 		App.Mixins.confirmAction(message, true, function(){
-			view.model.destroy({wait: true});
-			view.table.fetch({url: '/tables/associated/'+view.table.id});
+			view.model.destroy({wait: false});
+
+			// Post sync
+			view.fetchTableLater();
+			
 		});
+	},
+
+	/*
+		This method creates a new timeOut to running refresh
+		and is reseted every time it is called.
+	*/
+	refreshTimeout: null,
+	refreshTimeoutDelay: 1600, // 1.3 seconds
+	fetchTableLater: function(){
+		var view = this;
+		// Clear timeout if exists
+		// if(view.refreshTimeout)
+			clearTimeout(view.refreshTimeout);
+
+		// Sync later
+		view.refreshTimeout = setTimeout(function(){
+			view.table.fetch({url: '/tables/associated/'+view.table.id});
+		}, view.refreshTimeoutDelay);
 	},
 
 	destroy: function(){
@@ -551,6 +569,7 @@ App.Views.Table = Backbone.View.extend({
 		App.Mixins.editInPlace(this.model, this.$('.table-evaluateMethod'), {
 			type: 'textarea',
 			mode: 'popup',
+			showbuttons: true,
 			value: this.model.get('evaluateMethod'),
 		});
 
