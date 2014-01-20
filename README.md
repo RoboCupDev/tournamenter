@@ -23,4 +23,9 @@ Setting up a development environment
    and then looking at http://127.0.0.1:1337
 
 
+Tests
+=====
 
+You can see if the tests pass by running
+
+        $ npm test
