@@ -45,4 +45,22 @@ describe('Team', function() {
         });
    });
   });
+  describe('#create()', function(){
+    it('should create a team easily', function(){
+        Team.create({
+            name: "Test Name",
+            country: "UK"
+        }).done(function(err, team){
+            assert(team.name === "Test Name");
+            assert(team.country === "UK");
+        })
+    });
+  });
+  describe('#list again', function(){
+    it('should list a few more teams now', function(){
+      Team.find(function(err, teams){
+          assert(teams.length === 3);
+      });
+    });
+ });
 });
