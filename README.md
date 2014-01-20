@@ -18,6 +18,9 @@ Setting up a development environment
 
 3. Test if everything works by running
 
-        $ npm app.js
+        $ sails lift
 
    and then looking at http://127.0.0.1:1337
+
+
+
