@@ -10,7 +10,8 @@
     "optimist": "0.3.4",
 
     "lodash": "*",
-    "sails-mongo": "*"
+    "sails-mongo": "*",
+    "async": "*"
   },
   "devDependencies": {
     "mocha": "1.14.0",

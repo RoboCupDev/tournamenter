@@ -35,6 +35,12 @@ module.exports = {
     	}
     },
 
+    teamlist: function(req, res){
+    	Team.getTeamsAsList(req.param('query'), function(teamList){
+    		res.send(teamList);
+    	});
+	},
+
 	post: function (req, res, next) {
 		return XEditable.handle(Team)(req, res, next);
 	},  

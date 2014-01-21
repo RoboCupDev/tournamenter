@@ -1,0 +1,738 @@
+<style type="text/css">
+
+.spot-scores{
+	margin-bottom: 0px;
+}
+
+</style>
+
+
+<!-- CONTENT -->
+<div class="row clearfix" id="tables-view">
+
+	<div class="col-md-12 column">
+
+		<!-- CREATE TABLE -->
+		<p class="pull-right">
+			<button type="button" id="btn-create-table" class="btn btn-success">
+				<span class="glyphicon glyphicon-plus"></span> Create New Table
+			</button>
+		</p>
+		<div class="clearfix"></div>
+	</div>
+	
+	<div class="col-md-12 column" id="spot-tables">
+	</div>
+</div>
+<!--/ CONTENT -->
+
+
+<!--  TABLE VIEW TEMPLATE -->
+<script type="text/template" id="template-table-view">
+
+	<!-- <div class="panel panel-info"> -->
+		<div class="panel-heading">
+
+			<!-- Table tools -->
+			<div class="pull-right">
+				
+				
+				<!-- Actions of the table. Only shown when not locked -->
+				<div class="btn-group">
+					<button class="btn-table-refresh btn btn-xs btn-info">
+						<span class="glyphicon glyphicon-refresh"></span> Refresh
+					</button>
+					<button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown">
+						<span class="caret"></span>
+						<span class="sr-only">Toggle Dropdown</span>
+					</button>
+
+					<ul class="dropdown-menu" role="menu">
+						<!-- Table actions -->
+						<li role="presentation" class="dropdown-header">Table Actions</li>
+						<li><a class="btn-table-destroy" href="#">
+							<span class="glyphicon glyphicon-trash"></span> Delete Table
+						</a></li>
+
+						<!-- Import/Export actions -->
+						<li class="divider"></li>
+						<li role="presentation" class="dropdown-header">Import/Export</li>
+						<li><a href="#">Import all teams</a></li>
+					</ul>
+				</div>
+
+				<!-- <input type="checkbox" class="table-locked switch-mini"
+					data-on="success" data-on-label="<i class='glyphicon glyphicon-pencil'></i>"
+					data-off="danger" data-off-label="<i class='glyphicon glyphicon-ban-circle'></i>"> -->
+			</div>
+
+			<span class="panel-title">
+				<strong><span class="table-name" data-name="name" data-title="Table name">{{name}}</span></strong>
+			</span>
+		</div>
+
+		<!-- Configuration panel -->
+		<div class="collapsible-options collapse">
+			<div class="form-horizontal panel-body">
+				<div class="column col-md-6">
+					<p class="lead">Options</p>
+
+					<dl class="dl-horizontal">
+					
+					<!-- Columns -->
+					<dt>Score Columns:</dt>
+					<dd>
+						<span class="table-columns" data-title="Data Columns" data-name="columns">{{columns}}</span>
+					</dd>
+
+					<!-- Ranking (sort)-->
+					<dt>Final Score sort:</dt>
+					<dd>
+						<span class="table-sort" data-title="Order" data-name="sort"></span>
+					</dd>
+
+					<!-- evaluateMethod -->
+					<dt>Final Score function:</dt>
+					<dd>
+						<span class="table-evaluateMethod" data-title="Score Algorithm" data-name="evaluateMethod">{{evaluateMethod}}</span>
+					</dd>
+
+					<!-- evaluateMethod -->
+					<dt>Column names:</dt>
+					<dd>
+						<em>Click on the column header in the table.</em>
+					</dd>
+
+					</dl>
+				</div>
+
+				<div class="column col-md-6">
+					<p class="lead">Help</p>
+				
+					<button type="button" class="btn-collapse-help btn btn-info btn-md btn-block">
+						Show Help
+					</button>
+
+					<!-- Help -->
+					<div class="collapse collapsible-help">
+					<dl>
+						<dt>Score Columns</dt>
+						<dd>
+							<small>
+								This is the number of <code>matches</code>, <code>rounds</code>, <code>turns</code>, <code>scores</code>... for a single team.<br/>
+								If there are 3 rounds, than this value should be 3.<br/>
+								Notice that the minimum is 1, and the maximum is 20.
+							</small>
+						</dd>
+
+						<dt>Final Score Sort</dt>
+						<dd>
+							<small>
+								After calculating the final score for each team, the system will generate a 'rank'.<br/>
+								This field configures if the rank will give priority to 'lower' values, or 'higger' values.<br/>
+								Example 1: use Descending, if a higger final score is better than a lowest one.<br/>
+								Example 2: use Ascending, if a lower final score is better than a larger one.
+							</small>
+						</dd>
+
+						<dt>Final Score function</dt>
+						<dd>
+						<small>
+							The <code>Rank</code>, is generated based on the <code>Final</code> score, generaly calculated based on the scores obtained by the team. However, depending on the tournament, the final score can be different. Perhaps, the final score, will be the avarega, or the maximum, or even the avarege, removing the wrost and the best score (for example).<br/>
+							In this way, you can either insert some 'default' functions already made, or, create your own with javascript (read the last one).
+							<ul>
+								<li><code>avg</code>: Insert this to calculate an average on all scores</li>
+								<li><code>sum</code>: The final score is the sum of all scores</li>
+								<li><code>min</code>: The final score is the minimum of all scores</li>
+								<li><code>max</code>: The final score is the maximum of all scores</li>
+								<li>
+									anything else: Will be threated as 'literal' javascript function, where <code>scores</code> is an array containing all scores. Use <code>scores.length</code> to return the columns.<br/>
+									This function should return a value to be used as final score.<br/>
+									Example of simple sum function.<br/>
+	<code>var finalScore = 0;<br/>
+	for(var k in scores){<br/>
+	&nbsp&nbspfinalScore += scores[k]*1;<br/>
+	}<br/>
+	return finalScore;</code>
+								</li>
+							</ul>
+						</small>
+						</dd>
+					</dl>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
+		<button type="button" class="btn-collapse-options btn btn-primary btn-xs btn-block">
+			Show Options
+		</button>
+
+		<div class="collapsible-scores collapse">
+
+			<table class="spot-scores table table-striped table-condensed table-responsive">
+				<thead>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		</div>
+
+		<button type="button" class="btn-collapse-scores btn btn-info btn-xs btn-block">
+			Show
+		</button>
+	<!-- </div> -->
+</script>
+<!--/ TABLE VIEW TEMPLATE -->
+
+
+<!--  SCORES HEADER VIEW TEMPLATE -->
+<script type="text/template" id="template-scores-header">
+	<tr>
+		<th><span class="editable" data-name="headerRank">{{headerRank}}</span></th>
+		<th><span class="editable" data-name="headerTeam">{{headerTeam}}</span></th>
+		<!-- Use the class anchor-score to know where to prepend extra score headers -->
+		<th class="anchor-score">
+			<span class="editable" data-name="headerScore">{{headerScore}}</span> 1
+		</th>
+		<th><span class="editable" data-name="headerFinal">{{headerFinal}}</span></th>
+		<th class="text-right">
+			<button class="btn-team-add btn btn-xs btn-success">
+				<span class="glyphicon glyphicon-plus"></span> Add Team
+			</button>
+		</th>
+	</tr>
+</script>
+<!--/ SCORES HEADER VIEW TEMPLATE -->
+
+<!--  SCORES DATA VIEW TEMPLATE -->
+<script type="text/template" id="template-scores-row">
+	<td>{{rank}}</td>
+	<td><span class="score-team" data-name="teamId"></span></td>
+	<!-- Use tde class anchor-score to know where to prepend extra score headers -->
+	<td class="anchor-score">{{final}}</td>
+	<td>
+		<!-- Team tools -->
+		<div class="pull-right visible-xs">
+			<!-- Removes a team score row from the table -->
+			<button type="button" class="btn-team-destroy btn btn-danger btn-xs">
+				<span class="glyphicon glyphicon-trash"></span>
+			</button>
+		</div>
+		<div class="pull-right hidden-xs">
+			<!-- Removes a team score row from the table -->
+			<button type="button" class="btn-team-destroy btn btn-danger btn-xs">
+				<span class="glyphicon glyphicon-trash"></span> Remove
+			</button>
+		</div>
+	</td>
+</script>
+<!--/ SCORES DATA VIEW TEMPLATE -->
+
+
+
+<script type="text/javascript">
+
+// Wait until page load is complet
+$(document).ready(function(){
+
+/*
+	GLOBAL Teams list (used for scripts and also editable library)
+*/
+App.teamList = <%- JSON.stringify(teamList) %>;
+
+/*
+	default evaluateMethods available.
+
+	Convert to XEditable structe after setting
+*/
+App.evaluateMethodsNames = <%- JSON.stringify(evaluateMethodsNames) %>;
+App.evaluateMethodsList = [];
+for(var k in App.evaluateMethodsNames){
+	App.evaluateMethodsList.push({value: k, text: App.evaluateMethodsNames[k]});
+}
+console.log(App.evaluateMethodsList);
+
+// List to allow XEditable to create a select list instead of raw string typing
+App.sortList = [{value: 'asc', text: 'ASCENDING'}, {value: 'desc', text: 'DESCENDING'}];
+
+/*
+  ************************************************************
+	Score View (Keep track of ONE score object in a table)
+  ************************************************************
+*/
+App.Views.Score = Backbone.View.extend({
+
+	// This view is a single row in a table
+	tagName: 'tr',
+
+	// Events
+	events: {
+		'click .btn-team-destroy': 'confirmDestroyAction',
+	},
+
+	initialize: function(){
+		this.listenTo(this.model, 'destroy', this.destroy);
+
+		this.table = this.model.collection.table;
+	},
+
+	templateScoresRow: _.template($('#template-scores-row').html()),
+	render: function(){
+		var dict = this.model.toJSON();
+		var columns = this.table.get('columns')*1;
+		var scores = dict.scores;
+
+		// Render and switch current element html
+		this.$el.html(this.templateScoresRow(dict));
+
+		/*
+			Create scores columns (dinamicaly)
+			We use the anchor css class 'anchor-score', to know
+			where to insertBefore scores with jquery
+		*/
+		$scoresAnchor = this.$('.anchor-score');
+		for(var i = 1; i <= columns; i++){
+
+			// Get score value
+			var scoreValue = (scores[i] ? scores[i].value : null) || '-';
+			// Create 
+			var cell = $('<td>').text(scoreValue);
+			cell.insertBefore($scoresAnchor);
+		}
+
+		// Configure editable field in team
+		this.configureTeamEditable();
+
+		return this;
+	},
+
+	configureTeamEditable: function(){
+		// Editable options used for Teams
+		$editable = this.$('.score-team');
+		App.Mixins.editInPlace(this.model, $editable, {
+			type: 'select2',
+			mode: 'popup',
+			source: App.teamList,
+			showbuttons: false,
+			select2: {
+				width: 200,
+				placeholder: 'Select Team',
+				allowClear: true,
+			}
+		});
+
+		$editable.editable('setValue', this.model.get('teamId'));
+
+		return this;
+	},
+
+	confirmDestroyAction: function(){
+		var view = this;
+		var message = 'You are about to delete team "' + view.model.get('name') + '" from the table. Are you sure you want to proceed?';
+		App.Mixins.confirmAction(message, true, function(){
+			view.model.destroy({wait: false});
+
+			// Post sync
+			view.fetchTableLater();
+			
+		});
+	},
+
+	/*
+		This method creates a new timeOut to running refresh
+		and is reseted every time it is called.
+	*/
+	refreshTimeout: null,
+	refreshTimeoutDelay: 1600, // 1.3 seconds
+	fetchTableLater: function(){
+		var view = this;
+		// Clear timeout if exists
+		// if(view.refreshTimeout)
+			clearTimeout(view.refreshTimeout);
+
+		// Sync later
+		view.refreshTimeout = setTimeout(function(){
+			view.table.fetch({url: '/tables/associated/'+view.table.id});
+		}, view.refreshTimeoutDelay);
+	},
+
+	destroy: function(){
+		this.$el.remove();
+	},
+
+});
+
+
+/*
+  ************************************************************
+	Scores View (Keep track of ALL scores object in a table)
+  ************************************************************
+*/
+
+App.Views.Scores = Backbone.View.extend({
+
+	initialize: function(){
+		this.listenTo(this.collection, 'add', this.add);
+		this.listenTo(this.collection, 'remove', this.remove);
+		this.listenTo(this.collection, 'reset', this.render);
+	},
+
+	render: function(){
+		var view = this;
+
+		// Empty table body
+		this.$el.empty();
+
+		// Go through all models inside the collection, adding to the view
+		_(this.collection.models).each(function(model){
+			// Create and add view
+			view.add(model);
+		});
+	},
+
+	refresh: function(){
+		this.collection.fetch();
+		return this;
+	},
+
+	add: function(model){
+		var tableView = new App.Views.Score({
+			model: model
+		});
+
+		// Append view and render it
+		this.appendView(tableView);
+		return this;
+	},
+
+	remove: function(model){
+		// Trigger destroy on model, and delegate remove action
+		model.trigger('destroy');
+	},
+
+	appendView: function(view){
+		this.$el.append(view.render().$el);
+		
+		return this;
+	},
+
+});
+
+
+/*
+  ************************************************************
+	Table View (Keep track of ONE table object)
+  ************************************************************
+*/
+App.Views.Table = Backbone.View.extend({
+	
+	tagName: 'div',
+	className: 'panel panel-info',
+	template: _.template($('#template-table-view').html()),
+
+	// Scores view nested to this view
+	scoresView: null,
+
+	// Events
+	events: {
+		'click .btn-table-refresh': 'refresh',
+		'click .btn-table-destroy': 'confirmDestroyAction',
+		'click .btn-team-add': 'addTeam',
+	},
+	
+	initialize: function(){
+		console.log('initialized: '+this.model.id);
+		this.listenTo(this.model, 'change', this.render);
+		this.listenTo(this.model, 'destroy', this.destroy);
+
+		// Fields that will force a fetch from server
+		this.listenTo(this.model, 'change:columns', this.refresh);
+		this.listenTo(this.model, 'change:sort', this.refresh);
+		this.listenTo(this.model, 'change:evaluateMethod', this.refresh);
+
+		this.listenTo(this.model, 'request', this.startSync);
+		this.listenTo(this.model, 'sync', this.endSync);
+		this.listenTo(this.model, 'change', this.endSync);
+		this.listenTo(this.model, 'add', this.endSync);
+		this.listenTo(this.model, 'remove', this.endSync);
+		this.listenTo(this.model, 'reset', this.endSync);
+
+		// Save jquery refresh button instance
+		this.$btnRefresh = this.$('btn-table-refresh');
+
+		// Instantiate Scores view for current model
+		this.scoresView = new App.Views.Scores({
+			collection: this.model.scores,
+		});
+	},
+
+	render: function(){
+		console.log('rendering: '+this.model.id);
+		var shouldRenderRoot = (this.$el.html() ? false : true);
+		if(shouldRenderRoot){
+			// Render with data
+			var dict = this.model.toJSON();
+			var html = this.template(dict);
+			this.$el.html(html);
+		}
+
+		// Configure in-place editors
+		this.configureTitleBar()
+			.renderScoresHeader()
+			.makeCollapsible()
+			.configureOptions();
+
+		// Set scoresView element
+		var scoresSpot = this.$('.spot-scores tbody');
+		if(scoresSpot != this.scoresView.$el){
+			console.log('rendering scores egain: '+this.model.id);
+			this.scoresView.setElement(this.$('.spot-scores tbody'));
+			this.scoresView.render();
+		}
+
+		return this;
+	},
+
+	// Setup in place edition and fields callbacks in title bar
+	configureTitleBar: function(){
+		// Configure table name edition
+		var $name = this.$('.table-name');
+		App.Mixins.editInPlace(this.model, $name);
+
+		return this;
+	},
+
+	// Render Scores header
+	templateScoresHeader: _.template($('#template-scores-header').html()),
+	renderScoresHeader: function(){
+		// Find table spot
+		$table = this.$('.spot-scores');
+
+		// Render headers with data
+		var dict = this.model.toJSON();
+
+		var $html = $(this.templateScoresHeader(dict));
+
+		// Create extra score header columns
+		$scoresHeader = $html.find('.anchor-score');
+		for(var i = dict.columns*1; i > 1; i--){
+			var newHeader = $('<th>').text(dict.headerScore + ' ' + i);
+			newHeader.insertAfter($scoresHeader);
+		}
+
+		// Make editable
+		App.Mixins.editInPlace(this.model, $html.find('.editable'), {
+			mode: 'popup',
+		});
+
+		$table.find('thead').html($html);
+
+		return this;
+	},
+
+	makeCollapsible: function(){
+
+		Util.makeCollapsible(this.$('.btn-collapse-scores'), this.$('.collapsible-scores'), {
+			showData: '<i class="glyphicon glyphicon-list"></i> Show Table Scores',
+			hideData: '<i class="glyphicon glyphicon-list"></i> Hide Table Scores',
+		});
+
+		Util.makeCollapsible(this.$('.btn-collapse-options'), this.$('.collapsible-options'), {
+			showData: '<i class="glyphicon glyphicon-wrench"></i> Show Table Options',
+			hideData: '<i class="glyphicon glyphicon-wrench"></i> Hide Table Options',
+		});
+
+		Util.makeCollapsible(this.$('.btn-collapse-help'), this.$('.collapsible-help'), {
+			showData: '<i class="glyphicon glyphicon-question-sign"></i> Show Help',
+			hideData: '<i class="glyphicon glyphicon-question-sign"></i> Hide Help',
+		});
+
+		return this;
+	},
+
+	configureOptions: function(){
+		// Make editable fields
+		App.Mixins.editInPlace(this.model, this.$('.table-columns'), {
+			mode: 'popup',
+		});
+
+		App.Mixins.editInPlace(this.model, this.$('.table-sort'), {
+			type: 'select',
+			mode: 'popup',
+			source: App.sortList,
+			value: this.model.get('sort'),
+		});
+
+		App.Mixins.editInPlace(this.model, this.$('.table-evaluateMethod'), {
+			type: 'textarea',
+			mode: 'popup',
+			showbuttons: true,
+			value: this.model.get('evaluateMethod'),
+		});
+
+		return this;
+	},
+
+	destroy: function(){
+		var view = this;
+		// Animate and remove after
+		this.$el.slideUp(function(){
+			view.$el.remove();
+		});
+	},
+
+	refresh: function(){
+		var view = this;
+		console.log('refreshing: '+this.model.id);
+		this.startSync();
+		this.model.fetch({url: '/tables/associated/'+this.model.id});
+		return this;
+	},
+
+	addTeam: function(){
+		var view = this;
+		this.model.scores.create({tableId: view.model.id}, {wait: true, silent: true, success: function(){
+			view.refresh();
+		}});
+	},
+
+	confirmDestroyAction: function(evt){
+		var view = this;
+		// Stop link
+		evt.preventDefault();
+
+		var message = 'Are you shure that you want to delete the ENTIRE table "'+view.model.get('name')+'"?';
+		App.Mixins.confirmAction(message, false, function(){
+			view.model.destroy({wait: true});
+		});
+	},
+
+	startSync: function(){
+		// Disable refresh button and animate icon
+		this.$btnRefresh.attr('disabled', true);
+		this.$btnRefresh.find('.glyphicon').addClass('icon-rotate');
+	},
+
+	endSync: function(){
+		// Enable button and stop rotating
+		this.$btnRefresh.removeAttr('disabled');
+		this.$btnRefresh.find('.glyphicon').removeClass('icon-rotate');
+	},
+});
+
+
+
+
+
+/*
+  ************************************************************
+	Table Collection views (Keep track of ALL table objects)
+  ************************************************************
+*/
+App.Views.Tables = Backbone.View.extend({
+
+	// Private storage of team views
+	_views: {},
+
+	$tablesSpot: null,
+
+	// Events
+	events: {
+		'click #btn-create-table': 'createTable',
+	},
+
+	initialize: function(){
+		this.listenTo(this.collection, 'add', this.add);
+		this.listenTo(this.collection, 'remove', this.remove);
+		this.listenTo(this.collection, 'reset', this.render);
+
+		this.$tablesSpot = this.$('#spot-tables');
+	},
+
+	render: function(){
+		var view = this;
+
+		// Go through all models inside the collection, adding to the view
+		_(this.collection.models).each(function(model){
+			// Create and add view
+			view.add(model);
+		});
+	},
+
+	refresh: function(){
+		var view = this;
+		this.startSync();
+		this.collection.fetch();
+		return this;
+	},
+
+	createTable: function(){
+		this.collection.create({}, {wait: true});
+	},
+
+	add: function(model, collection, options){
+		// If model exists, skip
+		if(this._views[model.id])
+			return this;
+
+		var tableView = new App.Views.Table({
+			model: model
+		});
+
+		// Register in views and append to views
+		var shouldAnimate = collection ? true : false;
+		this._views[model.id] = tableView;
+		this.appendView(tableView, shouldAnimate);
+		return this;
+	},
+
+	remove: function(model){
+		// If model doesn't exist, skip it
+		if(!this._views[model.id])
+			return this;
+
+		// Sub-view should remove() itself
+		model.trigger('destroy');
+		delete this._views[model.id];
+		return this;
+	},
+
+	appendView: function(view, shouldAnimate){
+		this.$tablesSpot.prepend(view.render().$el.hide());
+		if(shouldAnimate)
+			view.$el.slideDown();
+		else
+			view.$el.show();
+
+		return this;
+	},
+
+});
+
+$(document).ready(function(){
+
+	/*
+		Create collection
+	*/
+	App.tables = new App.Collections.Tables();
+
+	/*
+		Create Views
+	*/
+	App.tablesView = new App.Views.Tables({
+		collection: App.tables,
+		el: '#tables-view'
+	});
+
+	/*
+		Load models
+	*/
+	App.tables.reset(<%- JSON.stringify(tables) %>);
+
+});
+
+});
+</script>

@@ -36,6 +36,30 @@ module.exports = {
 			type: 'string',
 			defaultsTo: 'default'
 		},
+	},
+
+	getTeamsAsList: function(query, next){
+
+		Team.find(afterFind);
+
+		function afterFind(err, data){
+			var teamList = [];
+			var query = (query || '').toLowerCase();
+
+			for(k in data){
+				team = data[k]
+				var insert = 
+				{
+					id: team.id,
+					text: data[k].name
+				};
+
+				if((insert.text || '').toLowerCase().indexOf(query) >= 0)
+					teamList.push(insert);
+			}
+
+			next(teamList);
+		}
 	}
 
 };
