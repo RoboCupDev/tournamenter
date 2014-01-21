@@ -1,0 +1,18 @@
+[
+        {
+            "category": "default",
+            "country": "AO",
+            "createdAt": "2014-01-13T03:22:26.087Z",
+            "name": "Worked",
+            "updatedAt": "2014-01-17T20:03:55.847Z",
+            "id": "52d35bf26bda8a5c8f8a22a8"
+        },
+        {
+            "category": "default",
+            "country": "SE",
+            "createdAt": "2014-01-13T03:23:10.011Z",
+            "name": "XLS",
+            "updatedAt": "2014-01-17T16:16:36.154Z",
+            "id": "52d35c1e6bda8a5c8f8a22a9"
+        }
+]
