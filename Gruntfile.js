@@ -29,7 +29,14 @@ module.exports = function (grunt) {
    */
 
   var cssFilesToInject = [
-    'linker/**/*.css'
+    'linker/**/*.css',
+
+    '/css/bootstrap.css',
+    '/css/template.css',
+    '/css/x-editable.css',
+    '/css/select2.css',
+    '/css/select2-bootstrap.css',
+    // '/css/bootstrap-switch.min.css',
   ];
 
 
@@ -56,7 +63,23 @@ module.exports = function (grunt) {
     // automatic listener for incoming messages from Socket.io.
     'linker/js/app.js',
 
-    // *->    put other dependencies here   <-*
+    /*
+        JS dependencies
+    */
+    '/js/jquery-1.10.2.min.js',
+    '/js/bootstrap.min.js',
+    '/js/x-editable.min.js',
+    '/js/underscore-min.js',
+    '/js/backbone-min.js',
+    '/js/select2.js',
+    // '/js/bootstrap-switch.min.js',
+
+    
+    '/js/socket.io.js',
+    '/js/sails.io.js',
+
+    '/js/util.js',
+    '/js/app.js',
 
     // All of the rest of your app scripts imported here
     'linker/**/*.js'
@@ -237,6 +260,9 @@ module.exports = function (grunt) {
     },
 
     uglify: {
+      options:{
+        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+      },
       dist: {
         src: ['.tmp/public/concat/production.js'],
         dest: '.tmp/public/min/production.js'

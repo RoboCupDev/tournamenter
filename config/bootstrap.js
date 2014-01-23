@@ -46,7 +46,7 @@ module.exports.bootstrap = function (cb) {
 	/*
 		Load View Modules from api/view_modules/
 	*/
-	sails.ViewModules = loadViewModules(__dirname + '/../api/view_modules');
+	sails.ViewModules = loadViewModules(__dirname + '/../view_modules');
 
 	// It's very important to trigger this callack method when you are finished 
 	// with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
