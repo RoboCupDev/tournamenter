@@ -20,7 +20,7 @@
 
 module.exports = {
 	
-	index: function(req, res, next){
+	associated: function(req, res, next){
 
 		var id = req.param('id');
 
@@ -30,6 +30,7 @@ module.exports = {
 
 		View.find(query, function(err, models){
 			if(err) return next(err);
+
 
 			processView(models, afterProcessViews);
 		});
@@ -42,9 +43,9 @@ module.exports = {
 				return next(404);
 
 			var toRender = views;
-			// if(id) toRender = views[0];
+			if(id) toRender = views[0];
 
-			res.send(toRender);
+			res.json(toRender);
 		}
 	},
 
