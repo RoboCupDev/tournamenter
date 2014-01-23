@@ -4,7 +4,7 @@
 */
 exports.process = function (page, next) {
 	// Inject test attrib
-	page.test = true;
+	page.test = page.still*10;
 
 	next(null, page);
 };

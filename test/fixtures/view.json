@@ -22,7 +22,17 @@
     "pages": [
       {
         "module": "test",
-        "still": "1000",
+        "still": "1",
+        "options": {}
+      },
+      {
+        "module": "test",
+        "still": "2",
+        "options": {}
+      },
+      {
+        "module": "test",
+        "still": "3",
         "options": {}
       }
     ]
