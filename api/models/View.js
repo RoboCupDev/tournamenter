@@ -8,12 +8,13 @@
 
 module.exports = {
 
-	tableName: 'teams',
+	tableName: 'views',
 
 	attributes: {
 
 		/*
-			The title of the page to be shown
+			The title of this view
+			('Rescue B', 'My Tournament', ...)
 		*/
 		title: {
 			type: 'string',
@@ -34,7 +35,7 @@ module.exports = {
 			This is the array that contains all pages to be shown
 			on the client. It's structure should follow the following:
 
-			views: [
+			pages: [
 				{
 					module: string,
 					still: int,
@@ -72,7 +73,7 @@ module.exports = {
 				return information about it, return in the 'data' hash.
 
 		*/
-		views: {
+		pages: {
 			type: 'array',
 			defaultsTo: []
 		},
