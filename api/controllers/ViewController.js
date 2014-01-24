@@ -31,7 +31,6 @@ module.exports = {
 		View.find(query, function(err, models){
 			if(err) return next(err);
 
-
 			processView(models, afterProcessViews);
 		});
 
@@ -175,14 +174,14 @@ function processPage(page, next){
 		return next(null, page);
 	}
 
+	// Get module
+	var module = Modules.get('pageview', moduleName);
+
 	// Check if module is installed
-	if(!sails.ViewModules[moduleName]){
+	if(!module){
 		sails.log.info('Module <'+moduleName+'> is required but not installed. skiping');
 		return next(null, page);
 	}
-
-	// Get module
-	var module = sails.ViewModules[moduleName];
 
 	// Check if 'process' method doesn't exist in module
 	if(!_.isFunction(module.process)){

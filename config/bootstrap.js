@@ -9,8 +9,6 @@
  */
 
 var _ = require('lodash');
-var express = require('express');
-var fs = require('fs');
 
 module.exports.bootstrap = function (cb) {
 
@@ -43,69 +41,10 @@ module.exports.bootstrap = function (cb) {
 	constantLocals._menus = _.sortBy(menus, 'order');
 	express.locals(constantLocals);
 
-	/*
-		Load View Modules from api/view_modules/
-	*/
-	sails.ViewModules = loadViewModules(__dirname + '/../view_modules');
-
 	// It's very important to trigger this callack method when you are finished 
 	// with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
 	cb();
 };
-
-/*
-	******************************************
-	   VIEW MODULES LOADING AND INSTALATION
-	******************************************
-*/
-function loadViewModules(root){
-
-	var files = [];
-	try {
-		// Save into files
-		files = fs.readdirSync(root);
-	} catch (e) {
-		// If failed, stop here
-		console.info('Directory not found: '.red + root);
-		return {};
-	}
-
-	// Find directories only
-	var moduleDirs = {};
-	files.forEach(function(file){
-		var dirPath = root + '/' + file;
-
-		// Add module and path if it's a directory
-		if(fs.statSync(dirPath).isDirectory())
-			moduleDirs[file] = dirPath;
-	});
-
-	// Instal modules
-	var loadedModules = {};
-	for(var moduleName in moduleDirs){
-		var modulePath = moduleDirs[moduleName];
-
-		// load server.js and add to loaded resources
-		try{
-			var module = require(modulePath);
-			loadedModules[moduleName] = module;
-		}catch(e){
-			console.info('Could not require module: '.red + moduleName + ' at '.cyan + modulePath);
-		}
-
-		// Serve public assets under /<moduleName> namespace
-		var publicPath = modulePath + '/public';
-		var namespace = '/'+moduleName;
-		sails.express.app.use(namespace, express.static(publicPath));
-	}
-
-	// Iterate through files in the current directory
-	// files.forEach(function(file) {
-	// app.use('/static', express.static(__dirname + '/public'));
-
-	sails.log('View Modules Installed: '.green + (_(loadedModules).keys().join(',')).cyan);
-	return loadedModules;
-}
 
 /*
 	This method will find all Controllers that have 'menus' array inside

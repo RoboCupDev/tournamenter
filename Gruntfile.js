@@ -36,6 +36,7 @@ module.exports = function (grunt) {
     '/css/x-editable.css',
     '/css/select2.css',
     '/css/select2-bootstrap.css',
+    '/css/flag-icon.min.css',
     // '/css/bootstrap-switch.min.css',
   ];
 
@@ -80,6 +81,7 @@ module.exports = function (grunt) {
 
     '/js/util.js',
     '/js/app.js',
+    '/js/countries.js',
 
     // All of the rest of your app scripts imported here
     'linker/**/*.js'
@@ -165,11 +167,17 @@ module.exports = function (grunt) {
       dev: {
         files: [
           {
-          expand: true,
-          cwd: './assets',
-          src: ['**/*.!(coffee)'],
-          dest: '.tmp/public'
-        }
+            expand: true,
+            cwd: './assets',
+            src: ['**/*.!(coffee)'],
+            dest: '.tmp/public'
+          },
+          {
+            expand: true,
+            cwd: './view_modules/**/',
+            src: ['*'],
+            dest: '.tmp/public'
+          }
         ]
       },
       build: {

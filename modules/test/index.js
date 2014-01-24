@@ -3,6 +3,7 @@
 	Simple test view-module
 */
 module.exports = {
+	type: 'pageview',
 
 	initialize: function(sails){
 		// Public js files to inject in templates
