@@ -3,6 +3,7 @@ var Sails = require('sails');
 var barrels = require('barrels');
 var _ = require('lodash');
 var supertest = require("supertest");
+var should = require('should');
 var fixtures;
 
 // Global before hook
@@ -33,6 +34,50 @@ before(function (done) {
 after(function (done) {
 	console.log();
 	sails.lower(done);
+});
+
+/*
+	Test Modules
+*/
+describe('Modules', function() {
+
+	// Check if modules were installed
+	describe('Module controller', function() {
+
+		it ('should have some module installed', function () {
+			should.exist(Modules);
+			should.exist(Modules.modules);
+		});
+
+		it ('should have a special namespace', function () {
+			should.exist(Modules.get('pageview'));
+		});
+
+	});
+
+	// Check if assets are served
+	describe('Public assets', function() {
+
+		var res = null;
+
+		before(function(done){
+			supertest(sails.express.app)
+				.get('/js/test.js')
+				.end(function(err, _res){
+					res = _res;
+					done(err);
+				});
+		});
+
+		it ('should exist', function () {
+			should.exist(res);
+		});
+
+		it ('should have some resources', function () {
+			res.text.should.containEql('__ok');
+		});
+	});
+
 });
 
 /*
