@@ -1,6 +1,5 @@
-
 /*
-	Simple test view-module
+	Simple Module
 */
 module.exports = {
 	type: 'pageview',

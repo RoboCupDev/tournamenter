@@ -1,9 +1,30 @@
 /*
-	Loads all modules within a given root folder.
+	Module controller responsable for modularisation
+	
+	The process of loading modules:
+	 + Seeking modules in given folder
+	 + calling install for each of them
+	
+	The process of installing a module:
+	 + requiring module
+	 + registering module in modules object
+	 + Initializing module (async)
 
-	The process of loading consists of:
-	 + requiring module.
-	 + Adding to modu
+	Here is a basic Module structure:
+		/MyModule			<- Root folder
+		/MyModule/index.js  <- Index file to be loaded (the module itself)
+		/MyModule/public	<- assets folder that will be public (done by Grunt)
+	
+	Here is the basic class of a module:
+		MyModule: {
+			type: 'string'			<- type of module. Will install inside
+									   types[type][moduleName], and also under
+									   'modules' object
+
+			initialize: function 	<- Called when module is installed
+
+			[...]
+		}
 */
 
 var sails = require('sails');
@@ -114,24 +135,10 @@ module.exports = {
 			this.types[type] = {};
 		this.types[type][moduleName] = module;
 
-		// Serve public assets under 'public' directory, if exist
-		// var publicPath = modulePath + '/public';
-		// if(fs.lstatSync(publicPath).isDirectory()){
-		// 	sails.express.app.use(express.static(publicPath));
-		// }
-		// sails.express.app.use(express['static'](publicPath));
-		// sails.express.app.use(function(req, res, next){
-		// 	console.log('AQUI!'.red);
-		// 	next();
-		// });
-
 		// Initialize module
 		if(module.initialize)
 			module.initialize();
 
-		// Iterate through files in the current directory
-		// files.forEach(function(file) {
-		// app.use('/static', express.static(__dirname + '/public'));
 	}
 
 }
