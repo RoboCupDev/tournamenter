@@ -115,10 +115,10 @@ module.exports = {
 		this.types[type][moduleName] = module;
 
 		// Serve public assets under 'public' directory, if exist
-		var publicPath = modulePath + '/public';
-		if(fs.lstatSync(publicPath).isDirectory()){
-			sails.express.app.use(express.static(publicPath));
-		}
+		// var publicPath = modulePath + '/public';
+		// if(fs.lstatSync(publicPath).isDirectory()){
+		// 	sails.express.app.use(express.static(publicPath));
+		// }
 		// sails.express.app.use(express['static'](publicPath));
 		// sails.express.app.use(function(req, res, next){
 		// 	console.log('AQUI!'.red);

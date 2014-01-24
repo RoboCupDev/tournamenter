@@ -174,9 +174,19 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
-            cwd: './view_modules/**/',
-            src: ['*'],
-            dest: '.tmp/public'
+            cwd: 'modules',
+            src: '*/public/**',
+            dest: '.tmp/public',
+            // filter: 'isFile',
+            rename: function(dest, src) {
+              // console.log(src.red + ' -> ' + dest.green);
+              // Split into array, remove modules/*
+              var parts = src.split('/').slice(2);
+              // Prepend tmp
+              parts.unshift(dest);
+              // Rejoin.
+              return parts.join('/');
+            }
           }
         ]
       },
