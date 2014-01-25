@@ -45,9 +45,8 @@
 							<span class="glyphicon glyphicon-plus"></span> <span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu pull-right" role="menu">
-							<li role="presentation" class="dropdown-header">Page Types</li>
-							<li class="divider modules-place"></li>
-							
+							<li role="presentation" class="dropdown-header">Page View Types</li>
+							<li class="create-page-spot divider"></li>
 						</ul>
 					</div>
 				</div>
@@ -70,12 +69,8 @@
 							<span class="glyphicon glyphicon-plus"></span> New Page <span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu pull-right" role="menu">
-							<li role="presentation" class="dropdown-header">Page Types</li>
-							<li class="divider"></li>
-							<li><a href="#">Test</a></li>
-							<li><a href="#">Another action</a></li>
-							<li><a href="#">Something else here</a></li>
-							<li><a href="#">Separated link</a></li>
+							<li role="presentation" class="dropdown-header">Page View Types</li>
+							<li class="create-page-spot divider"></li>
 						</ul>
 					</div>
 				</div>
@@ -88,19 +83,21 @@
 			<span class="panel-title">
 				<strong><span class="view-title" data-name="title" data-title="View title">{{title}}</span></strong>
 			</span>
+			<small><a target="__blank" class="text-muted" href="/views/public/{{id}}">/views/public/{{id}}</a></small>
 		</div>
 
-		<div class="spot-pages collapse">
+		<div class="spot-pages">
 			aa
 		</div>
 	<!-- </div> -->
 </script>
 <!--/ VIEW VIEW TEMPLATE -->
 
-<script type="text/javascript">
+<script type="text/template" id="template-create-page-item">
+	<li><a class="btn-create-page" data-key="{{key}}" href="#">{{name}}</a></li>
+</script>
 
-// Be shure that Global vars are set
-App.PageViews = {};
+<script type="text/javascript">
 
 /*
 	=======================================
@@ -134,16 +131,42 @@ App.PageViews = {};
 
 */
 
-var testPageModule = function(options) {
+// Be shure that Global vars are set
+App.PageViews = {};
+
+var testPageModule = {
 	name: 'Test View',
-	this.itemView = itemView;
+	module: 'test',
+	disabled: false,
+	itemView: Backbone.View.extend({
+		initialize: function(){
+			console.log('Initializing itemView');
+		},
+
+		render: function(){
+			console.log('Rendering itemView');
+			this.$el.html('AEW');
+
+			return this;
+		}
+	})
+	// this.itemView = itemView;
 	// this.barView = barView;
 	// this.configView = configView;
-
 };
 
-App.PageViews['test'] = testPageModule;
 
+var anotherModule = {
+	name: 'Other module',
+	module: 'test',
+	disabled: false,
+	// this.itemView = itemView;
+	// this.barView = barView;
+	// this.configView = configView;
+};
+
+App.PageViews[testPageModule.module] = testPageModule;
+App.PageViews['test2'] = anotherModule;
 
 /*
 	=======================================
@@ -153,13 +176,91 @@ App.PageViews['test'] = testPageModule;
 
 /*
   ******************************************
+  A neasted view in View, to controll Pages
+  ******************************************
+*/
+App.Views.Pages = Backbone.View.extend({
+
+	// Events
+	events: {
+	},
+
+	initialize: function(){
+		this.listenTo(this.collection, 'add', this.add);
+		this.listenTo(this.collection, 'remove', this.remove);
+		this.listenTo(this.collection, 'reset', this.render);
+
+		console.log('initialized Pages view: '+this.collection.view.id);
+	},
+
+	render: function(){
+		var view = this;
+		console.log('rendering Pages view');
+
+		// Clear all
+		this.$el.empty();
+
+		// Go through all models inside the collection, adding to the view
+		_(this.collection.models).each(function(model){
+			// Create and add view
+			view.add(model);
+		});
+	},
+
+	add: function(model, collection, options){
+		// Render acordingly to the module specified
+		var moduleName = model.get('module');
+		var module = App.PageViews[moduleName]
+		var itemView = module.itemView;
+
+		// Check if no itemView is provided
+		if(!itemView){
+			console.error('No itemView provided by PageView module');
+			return this;
+		}
+
+		var view = new itemView({
+			model: model
+		});
+
+		// Register in views and append to views
+		var shouldAnimate = collection ? true : false;
+		this.appendView(view, shouldAnimate);
+		return this;
+	},
+
+	remove: function(model){
+		// If model doesn't exist, skip it
+		if(!this._views[model.id])
+			return this;
+
+		// Sub-view should remove() itself
+		model.trigger('destroy');
+		delete this._views[model.id];
+		return this;
+	},
+
+	appendView: function(view, shouldAnimate){
+		this.$el.prepend(view.render().$el.hide());
+		if(shouldAnimate)
+			view.$el.slideDown();
+		else
+			view.$el.show();
+
+		return this;
+	},
+
+});
+
+/*
+  ******************************************
 	  View keep track of ONE single view
   ******************************************
 */
 App.Views.View = Backbone.View.extend({
 	
 	tagName: 'div',
-	className: 'panel panel-info',
+	className: 'panel panel-warning',
 	template: _.template($('#template-view-view').html()),
 
 	// Events
@@ -169,6 +270,7 @@ App.Views.View = Backbone.View.extend({
 		'click .btn-page-add': 'addPage',
 	},
 	
+	pageViews: null, 
 	initialize: function(){
 		console.log('initialized: '+this.model.id);
 		this.listenTo(this.model, 'change', this.render);
@@ -178,6 +280,12 @@ App.Views.View = Backbone.View.extend({
 
 		// Save jquery refresh button instance
 		this.$btnRefresh = this.$('.btn-view-refresh');
+
+		// Create pagesView
+		this.pagesView = new App.Views.Pages({
+			collection: this.model.pages,
+			el: this.$('.spot-pages'),
+		});
 	},
 
 	render: function(){
@@ -191,7 +299,13 @@ App.Views.View = Backbone.View.extend({
 		// }
 
 		// Configure View
-		this.configureTitleBar();
+		this.configureTitleBar()
+			.renderCreatePageButtons();
+
+		// Render Pages view
+		if(this.pagesView.$el != this.$('.spot-pages'))
+			this.pagesView.setElement(this.$('.spot-pages'));
+		this.pagesView.render();
 
 		// // Set scoresView element
 		// var scoresSpot = this.$('.spot-scores tbody');
@@ -213,6 +327,51 @@ App.Views.View = Backbone.View.extend({
 		});
 
 		return this;
+	},
+
+	// Render a list of HTML items based on available installed modules
+	renderCreatePageButtons: function(){
+		var self = this;
+		// Clean all before rendering buttons
+		$pageItemSpot = this.$('.create-page-spot');
+		$pageItemSpot.nextAll().remove();
+
+
+		// Render button items
+		var itemTemplate = _.template($('#template-create-page-item').html());
+		var count = 0;
+		for(var moduleId in App.PageViews){
+			// If it's disabled, continue
+			var module = App.PageViews[moduleId];
+			if(module.disabled)
+				continue;
+
+			var name = module.name || moduleId;
+			$pageItemSpot.after(itemTemplate({key: moduleId, name: name}));
+			count++;
+		}
+
+		if(!count)
+			$pageItemSpot.after('<li role="presentation" class="dropdown-header">No module found</li>');
+
+		$pageItemSpot.parent().find('.btn-create-page').click(function(evt){
+			console.log('creating...');
+			evt.preventDefault();
+			var moduleId = $(this).attr('data-key');
+			// Delegate action to this View, with the module name
+			self.createPage(moduleId);
+		});
+
+		return this;
+	},
+
+	createPage: function(moduleId){
+		var module = App.PageViews[moduleId];
+
+		console.log(module);
+
+		this.model.pages.add({module: module.module});
+		this.model.save();
 	},
 
 	// makeCollapsible: function(){
@@ -410,6 +569,8 @@ $(document).ready(function(){
 		Load models
 	*/
 	App.views.reset(<%- JSON.stringify(views) %>);
+
+	console.log($('a') == $('a'));
 
 });
 

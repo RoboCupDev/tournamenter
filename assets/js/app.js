@@ -15,6 +15,7 @@ var App = {
 	Collections: {},
 	Views: {},
 	Mixins: {},
+	Util: {},
 };
 
 /*
@@ -253,25 +254,28 @@ App.Collections.Pages = Backbone.Collection.extend({
 App.Models.View = Backbone.Model.extend({
 	urlRoot: '/views/',
 
-	initialize: function(attributes){
-		console.log('initializer');
-		attributes = attributes || {};
-
-		// Create a collection of pages and save itself in it
-		this.pages = new App.Collections.Pages();
-		this.pages.view = this;
-
-		// Delegate save action to this
-		// this.listenTo(this.pages, 'change', function(){
-			// this.save();
-		// });
-
-		// Delegate scores data to scores collection
-		if(attributes.pages){
-			this.pages.reset(attributes.pages || []);
-			delete attributes['pages'];
-		}	
+	defaults: {
+    	pages: new App.Collections.Pages(),
 	},
+
+	// initialize: function(attributes){
+	// 	// console.log('initializer');
+
+	// 	// Create a collection of pages and save itself in it
+	// 	// this.pages = new App.Collections.Pages();
+	// 	// this.get('pages').view = this;
+
+	// 	// Delegate save action to this
+	// 	// this.listenTo(this.pages, 'change', function(){
+	// 		// this.save();
+	// 	// });
+
+	// 	// Delegate scores data to scores collection
+	// 	// if(attributes.pages){
+	// 	// 	this.pages.reset(attributes.pages || []);
+	// 	// 	delete attributes['pages'];
+	// 	// }	
+	// },
 
 	parse: function(data, options) {
 		console.info('parseView');
@@ -287,7 +291,7 @@ App.Models.View = Backbone.Model.extend({
 // Views Collection
 App.Collections.Views = Backbone.Collection.extend({
 	model: App.Models.View,
-	url: '/views/associated',
+	url: '/views/',
 });
 
 
