@@ -18,25 +18,89 @@
 </div>
 <!--/ CONTENT -->
 
+<!--  VIEW VIEW TEMPLATE -->
+<script type="text/template" id="template-view-view">
 
+	<!-- <div class="panel panel-info"> -->
+		<div class="panel-heading">
+
+			<!-- Table tools -->
+			<div class="pull-right">
+				
+				<!-- Shows only in very small screens -->
+				<div class="btn-group visible-xs">
+					<!-- Refresh -->
+					<button class="btn-view-refresh btn btn-xs btn-info">
+						<span class="glyphicon glyphicon-refresh"></span>
+					</button>
+
+					<!-- Delete -->
+					<button class="btn-view-destroy btn btn-xs btn-danger" href="#">
+						<span class="glyphicon glyphicon-trash"></span>
+					</button>
+					
+					<!-- New Page -->
+					<div class="btn-group">
+						<button type="button" class="btn btn-xs btn-success dropdown-toggle" data-toggle="dropdown">
+							<span class="glyphicon glyphicon-plus"></span> <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu pull-right" role="menu">
+							<li role="presentation" class="dropdown-header">Page Types</li>
+							<li class="divider modules-place"></li>
+							
+						</ul>
+					</div>
+				</div>
+
+				<!-- Shows only in big screens -->
+				<div class="btn-group hidden-xs">
+					<!-- Refresh -->
+					<button class="btn-view-refresh btn btn-xs btn-info">
+						<span class="glyphicon glyphicon-refresh"></span> Refresh
+					</button>
+
+					<!-- Delete -->
+					<button class="btn-view-destroy btn btn-xs btn-danger" href="#">
+						<span class="glyphicon glyphicon-trash"></span> Delete View
+					</button>
+					
+					<!-- New Page -->
+					<div class="btn-group">
+						<button type="button" class="btn btn-xs btn-success dropdown-toggle" data-toggle="dropdown">
+							<span class="glyphicon glyphicon-plus"></span> New Page <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu pull-right" role="menu">
+							<li role="presentation" class="dropdown-header">Page Types</li>
+							<li class="divider"></li>
+							<li><a href="#">Test</a></li>
+							<li><a href="#">Another action</a></li>
+							<li><a href="#">Something else here</a></li>
+							<li><a href="#">Separated link</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<!-- <input type="checkbox" class="table-locked switch-mini"
+					data-on="success" data-on-label="<i class='glyphicon glyphicon-pencil'></i>"
+					data-off="danger" data-off-label="<i class='glyphicon glyphicon-ban-circle'></i>"> -->
+			</div>
+
+			<span class="panel-title">
+				<strong><span class="view-title" data-name="title" data-title="View title">{{title}}</span></strong>
+			</span>
+		</div>
+
+		<div class="spot-pages collapse">
+			aa
+		</div>
+	<!-- </div> -->
+</script>
+<!--/ VIEW VIEW TEMPLATE -->
 
 <script type="text/javascript">
 
 // Be shure that Global vars are set
 App.PageViews = {};
-
-
-/*
-	=======================================
-					VIEWS
-	=======================================
-*/
-
-/*
-	Controlls all views in the page
-*/
-App.Views.Views = Backbone.View.extend({
-});
 
 /*
 	=======================================
@@ -70,37 +134,283 @@ App.Views.Views = Backbone.View.extend({
 
 */
 
-// var defaultPageModule = function(options) {
-// 	this.itemView = itemView;
-// 	// this.barView = barView;
-// 	// this.configView = configView;
-// };
+var testPageModule = function(options) {
+	name: 'Test View',
+	this.itemView = itemView;
+	// this.barView = barView;
+	// this.configView = configView;
 
-// App.PageView['default'] = defaultPageView;
+};
+
+App.PageViews['test'] = testPageModule;
+
 
 /*
-	Views.Views is correct. it's the 'Views Collection' view. roger?
-	Keep track of all Views in the page.
+	=======================================
+					VIEWS
+	=======================================
 */
-App.Views.Views = Backbone.View.extend({
 
+/*
+  ******************************************
+	  View keep track of ONE single view
+  ******************************************
+*/
+App.Views.View = Backbone.View.extend({
 	
+	tagName: 'div',
+	className: 'panel panel-info',
+	template: _.template($('#template-view-view').html()),
 
-	create: function(view){
+	// Events
+	events: {
+		'click .btn-view-refresh': 'refresh',
+		'click .btn-view-destroy': 'confirmDestroyAction',
+		'click .btn-page-add': 'addPage',
+	},
+	
+	initialize: function(){
+		console.log('initialized: '+this.model.id);
+		this.listenTo(this.model, 'change', this.render);
+		this.listenTo(this.model, 'destroy', this.destroy);
 
+		this.listenTo(this.model, 'sync', this.endSync);
+
+		// Save jquery refresh button instance
+		this.$btnRefresh = this.$('.btn-view-refresh');
+	},
+
+	render: function(){
+		console.log('rendering: '+this.model.id);
+		// var shouldRenderRoot = (this.$el.html() ? false : true);
+		// if(shouldRenderRoot){
+			// Render with data
+			var dict = this.model.toJSON();
+			var html = this.template(dict);
+			this.$el.html(html);
+		// }
+
+		// Configure View
+		this.configureTitleBar();
+
+		// // Set scoresView element
+		// var scoresSpot = this.$('.spot-scores tbody');
+		// if(scoresSpot != this.scoresView.$el){
+		// 	console.log('rendering scores egain: '+this.model.id);
+		// 	this.scoresView.setElement(this.$('.spot-scores tbody'));
+		// 	this.scoresView.render();
+		// }
+
+		return this;
+	},
+
+	// Setup in place edition and fields callbacks in title bar
+	configureTitleBar: function(){
+		// Configure view title edition
+		var $title = this.$('.view-title');
+		App.Mixins.editInPlace(this.model, $title, {
+			value: this.model.get('title'),
+		});
+
+		return this;
+	},
+
+	// makeCollapsible: function(){
+
+	// 	Util.makeCollapsible(this.$('.btn-collapse-scores'), this.$('.collapsible-scores'), {
+	// 		showData: '<i class="glyphicon glyphicon-list"></i> Show Table Scores',
+	// 		hideData: '<i class="glyphicon glyphicon-list"></i> Hide Table Scores',
+	// 	});
+
+	// 	Util.makeCollapsible(this.$('.btn-collapse-options'), this.$('.collapsible-options'), {
+	// 		showData: '<i class="glyphicon glyphicon-wrench"></i> Show Table Options',
+	// 		hideData: '<i class="glyphicon glyphicon-wrench"></i> Hide Table Options',
+	// 	});
+
+	// 	Util.makeCollapsible(this.$('.btn-collapse-help'), this.$('.collapsible-help'), {
+	// 		showData: '<i class="glyphicon glyphicon-question-sign"></i> Show Help',
+	// 		hideData: '<i class="glyphicon glyphicon-question-sign"></i> Hide Help',
+	// 	});
+
+	// 	return this;
+	// },
+
+	// editInPlace: function(){
+	// 	// Make editable fields
+	// 	// App.Mixins.editInPlace(this.model, this.$('.table-columns'), {
+	// 	// 	mode: 'popup',
+	// 	// });
+
+	// 	// App.Mixins.editInPlace(this.model, this.$('.table-sort'), {
+	// 	// 	type: 'select',
+	// 	// 	mode: 'popup',
+	// 	// 	source: App.sortList,
+	// 	// 	value: this.model.get('sort'),
+	// 	// });
+
+	// 	App.Mixins.editInPlace(this.model, this.$('.view-title'), {
+	// 		value: this.model.get('title'),
+	// 	});
+
+	// 	return this;
+	// },
+
+	destroy: function(){
+		var view = this;
+		// Animate and remove after
+		this.$el.slideUp(function(){
+			view.$el.remove();
+		});
+	},
+
+	refresh: function(){
+		var view = this;
+		console.log('refreshing: '+this.model.id);
+		this.startSync();
+		this.model.fetch({url: '/views/associated/'+this.model.id});
+		return this;
+	},
+
+	addPage: function(){
+		var view = this;
+		this.model.scores.create({tableId: view.model.id}, {wait: true, silent: true, success: function(){
+			view.refresh();
+		}});
+	},
+
+	confirmDestroyAction: function(evt){
+		var view = this;
+		// Stop link
+		evt.preventDefault();
+
+		var message = 'Are you shure that you want to delete the ENTIRE view "'+view.model.get('title')+'"?';
+		App.Mixins.confirmAction(message, false, function(){
+			view.model.destroy({wait: true});
+		});
+	},
+
+	startSync: function(){
+		// Disable refresh button and animate icon
+		this.$btnRefresh.attr('disabled', true);
+		this.$btnRefresh.find('.glyphicon').addClass('icon-rotate');
+	},
+
+	endSync: function(){
+		// Enable button and stop rotating
+		this.$btnRefresh.removeAttr('disabled');
+		this.$btnRefresh.find('.glyphicon').removeClass('icon-rotate');
 	},
 });
 
 
-$(document).ready(function(){
-	var views = new App.Collections.Views();
+/*
+  ******************************************
+  Views view keep track of all views created
+  ******************************************
+*/
+App.Views.Views = Backbone.View.extend({
 
-	views.on('reset', function(model){
-		console.log(model.at(0).pages);
+	// Private storage of dom objects
+	_views: {},
+
+	$tablesSpot: null,
+
+	// Events
+	events: {
+		'click #btn-create-view': 'createView',
+	},
+
+	initialize: function(){
+		this.listenTo(this.collection, 'add', this.add);
+		this.listenTo(this.collection, 'remove', this.remove);
+		this.listenTo(this.collection, 'reset', this.render);
+
+		this.$tablesSpot = this.$('#spot-views');
+	},
+
+	render: function(){
+		var view = this;
+
+		// Go through all models inside the collection, adding to the view
+		_(this.collection.models).each(function(model){
+			// Create and add view
+			view.add(model);
+		});
+	},
+
+	refresh: function(){
+		var view = this;
+		this.startSync();
+		this.collection.fetch();
+		return this;
+	},
+
+	createView: function(){
+		this.collection.create({}, {wait: true});
+	},
+
+	add: function(model, collection, options){
+		// If model exists, skip
+		if(this._views[model.id])
+			return this;
+
+		var view = new App.Views.View({
+			model: model
+		});
+
+		// Register in views and append to views
+		var shouldAnimate = collection ? true : false;
+		this._views[model.id] = view;
+		this.appendView(view, shouldAnimate);
+		return this;
+	},
+
+	remove: function(model){
+		// If model doesn't exist, skip it
+		if(!this._views[model.id])
+			return this;
+
+		// Sub-view should remove() itself
+		model.trigger('destroy');
+		delete this._views[model.id];
+		return this;
+	},
+
+	appendView: function(view, shouldAnimate){
+		this.$tablesSpot.prepend(view.render().$el.hide());
+		if(shouldAnimate)
+			view.$el.slideDown();
+		else
+			view.$el.show();
+
+		return this;
+	},
+
+});
+
+
+
+
+$(document).ready(function(){
+
+	/*
+		Create collection
+	*/
+	App.views = new App.Collections.Views();
+
+	/*
+		Create Views
+	*/
+	App.viewsView = new App.Views.Views({
+		collection: App.views,
+		el: '#views-view'
 	});
 
-	views.reset(<%- JSON.stringify(views) %>);
-	// views.at(0).save();
+	/*
+		Load models
+	*/
+	App.views.reset(<%- JSON.stringify(views) %>);
+
 });
 
 </script>
