@@ -21,18 +21,9 @@
 module.exports = {
 	
 	associated: function(req, res, next){
-
 		var id = req.param('id');
 
-		// Create query
-		if(id) query = {id: id};
-		else   query = {};
-
-		View.find(query, function(err, models){
-			if(err) return next(err);
-
-			processView(models, afterProcessViews);
-		});
+		getProcessedViews(id, afterProcessViews);
 
 		function afterProcessViews(err, views){
 			if(err) return next(err);
@@ -49,9 +40,16 @@ module.exports = {
 	},
 
 	manage: function(req, res, next){
-		res.view({
-			path: req.route.path,
-		});
+		getProcessedViews(null, afterProcessViews);
+
+		function afterProcessViews(err, views){
+
+			res.view({
+				path: req.route.path,
+				views: views
+			});
+
+		}
 	},
 
 
@@ -65,6 +63,23 @@ module.exports = {
 		]
 	}	
 };
+
+/*
+	This method will return an array of PROCESSED Views
+*/
+function getProcessedViews(id, next){
+
+	// Create query
+	if(id) query = {id: id};
+	else   query = {};
+
+	View.find(query, function(err, models){
+		if(err) return next(err);
+
+		processView(models, next);
+	});
+};
+
 
 /*
 	This method receives a view, and will modify it to correspond

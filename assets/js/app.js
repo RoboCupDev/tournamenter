@@ -193,8 +193,11 @@ App.Collections.Teams = Backbone.Collection.extend({
 });
 
 /*
-	Table Module Models
+	=======================================
+					MODELS
+	=======================================
 */
+
 
 // Score
 App.Models.Score = Backbone.Model.extend({
@@ -237,6 +240,58 @@ App.Collections.Tables = Backbone.Collection.extend({
 	model: App.Models.Table,
 	url: '/tables/associated',
 });
+
+// Page Model
+App.Models.Page = Backbone.Model.extend({});
+
+// Pages Collection
+App.Collections.Pages = Backbone.Collection.extend({
+	model: App.Models.Page
+});
+
+// View Model
+App.Models.View = Backbone.Model.extend({
+	urlRoot: '/views/',
+
+	initialize: function(attributes){
+		console.log('initializer');
+		attributes = attributes || {};
+
+		// Create a collection of pages and save itself in it
+		this.pages = new App.Collections.Pages();
+		this.pages.view = this;
+
+		// Delegate save action to this
+		// this.listenTo(this.pages, 'change', function(){
+			// this.save();
+		// });
+
+		// Delegate scores data to scores collection
+		if(attributes.pages){
+			this.pages.reset(attributes.pages || []);
+			delete attributes['pages'];
+		}	
+	},
+
+	parse: function(data, options) {
+		console.info('parseView');
+		// Delegate scores data to scores collection
+		if(data.pages){
+			this.pages.reset(data.pages);
+			delete data['pages'];
+		}
+		return data;
+	},
+});
+
+// Views Collection
+App.Collections.Views = Backbone.Collection.extend({
+	model: App.Models.View,
+	url: '/views/associated',
+});
+
+
+
 
 /*
 	Configure Underscore to use tags {{}}

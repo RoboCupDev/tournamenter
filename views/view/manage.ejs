@@ -1,0 +1,107 @@
+
+<!-- CONTENT -->
+<div class="row clearfix" id="views-view">
+
+	<div class="col-md-12 column">
+
+		<!-- CREATE TABLE -->
+		<p class="pull-right">
+			<button type="button" id="btn-create-view" class="btn btn-success">
+				<span class="glyphicon glyphicon-plus"></span> Create New View
+			</button>
+		</p>
+		<div class="clearfix"></div>
+	</div>
+	
+	<div class="col-md-12 column" id="spot-views">
+	</div>
+</div>
+<!--/ CONTENT -->
+
+
+
+<script type="text/javascript">
+
+// Be shure that Global vars are set
+App.PageViews = {};
+
+
+/*
+	=======================================
+					VIEWS
+	=======================================
+*/
+
+/*
+	Controlls all views in the page
+*/
+App.Views.Views = Backbone.View.extend({
+});
+
+/*
+	=======================================
+				PAGEVIEWS
+	=======================================
+	PageViews will be used by the manager to configure,
+	create, delete... and also by the public views.
+
+	The idea is that every 'kind' of view, has
+	it's own configuration panel, and it's renderer.
+
+	When in the manager, it will create a Collection
+	of Views fetch from server. Each View contain a
+	collection of 'Pages'. Pages are actually
+	PageViews, and represent a single 'Slide'
+	on the presentation. They have properties
+	such as 'still' time, 'enabled'...
+
+	Each View, will have many 'Pages', and
+	the model responsible for each Page, will be delegated
+	to the module specified by it.
+
+	Manager:
+	 + ItemView 		| Represents a single Page item
+	 + ItemBarView  	| A bar inside the ItemView
+	 + ItemConfigView	| Configuration view
+
+	Final View (TV Screen)
+	 + ScreenView		| The final view to generate content
+	 + ScreenConfigView | A optional sidebar view to customise view
+
+*/
+
+// var defaultPageModule = function(options) {
+// 	this.itemView = itemView;
+// 	// this.barView = barView;
+// 	// this.configView = configView;
+// };
+
+// App.PageView['default'] = defaultPageView;
+
+/*
+	Views.Views is correct. it's the 'Views Collection' view. roger?
+	Keep track of all Views in the page.
+*/
+App.Views.Views = Backbone.View.extend({
+
+	
+
+	create: function(view){
+
+	},
+});
+
+
+$(document).ready(function(){
+	var views = new App.Collections.Views();
+
+	views.on('reset', function(model){
+		console.log(model.at(0).pages);
+	});
+
+	views.reset(<%- JSON.stringify(views) %>);
+	// views.at(0).save();
+});
+
+</script>
+
