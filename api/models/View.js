@@ -39,7 +39,7 @@ module.exports = {
 				{
 					module: string,
 					still: int,
-					enabled: boolean,
+					disabled: boolean,
 					options: {},
 					data: {},
 				},
@@ -60,8 +60,8 @@ module.exports = {
 				still is the time (in ms) to be still on the page.
 				After this time, another page will be shown...
 
-			ENABLED:
-				If the view will be shown or not
+			DISABLED:
+				If the view will not be shown
 			
 			OPTIONS:
 				Saved options about this view. This is requrired by the module
@@ -77,6 +77,30 @@ module.exports = {
 			type: 'array',
 			defaultsTo: []
 		},
+	},
+
+	beforeValidation: function(values, next){
+		// Defaults for each page
+		var pageDefaults = {
+			module: 'default',
+			still: 5000,
+			disabled: false,
+			options: {},
+		}
+		var pickKeys = _.keys(pageDefaults);
+		var newPages = [];
+
+		// Add default values to pages
+		_.forEach(values.pages, function(page){
+			_.defaults(page, pageDefaults);
+			// Remove extra fields
+			newPages.push(_.pick(page, pickKeys));
+		});
+
+		// Update pages
+		values.pages = newPages;
+
+		next();
 	},
 
 };
