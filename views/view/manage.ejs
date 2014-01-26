@@ -134,27 +134,6 @@
 // Be shure that Global vars are set
 App.PageViews = {};
 
-var testPageModule = {
-	name: 'Test View',
-	module: 'test',
-	disabled: false,
-	itemView: Backbone.View.extend({
-		initialize: function(){
-			console.log('Initializing itemView');
-		},
-
-		render: function(){
-			console.log('Rendering itemView');
-			this.$el.html('AEW');
-
-			return this;
-		}
-	})
-	// this.itemView = itemView;
-	// this.barView = barView;
-	// this.configView = configView;
-};
-
 
 var anotherModule = {
 	name: 'Other module',
@@ -165,7 +144,7 @@ var anotherModule = {
 	// this.configView = configView;
 };
 
-App.PageViews[testPageModule.module] = testPageModule;
+// App.PageViews[testPageModule.module] = testPageModule;
 App.PageViews['test2'] = anotherModule;
 
 /*
@@ -186,7 +165,7 @@ App.Views.Pages = Backbone.View.extend({
 	},
 
 	initialize: function(){
-		this.listenTo(this.collection, 'add', this.add);
+		this.listenTo(this.collection, 'add', this.render);
 		this.listenTo(this.collection, 'remove', this.remove);
 		this.listenTo(this.collection, 'reset', this.render);
 
@@ -211,6 +190,10 @@ App.Views.Pages = Backbone.View.extend({
 		// Render acordingly to the module specified
 		var moduleName = model.get('module');
 		var module = App.PageViews[moduleName]
+		if(!module){
+			console.warn('No view in module! Setting default one');
+			module = App.PageViews.test;
+		}
 		var itemView = module.itemView;
 
 		// Check if no itemView is provided
@@ -371,7 +354,9 @@ App.Views.View = Backbone.View.extend({
 		console.log(module);
 
 		this.model.pages.add({module: module.module});
-		this.model.save();
+		// this.model.get('pages').push({aew: 1});
+		console.log(this.model.toJSON());
+		this.model.save({wait: true});
 	},
 
 	// makeCollapsible: function(){
