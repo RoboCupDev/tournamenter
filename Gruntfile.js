@@ -99,7 +99,8 @@ module.exports = function (grunt) {
    */
 
   var templateFilesToInject = [
-    'linker/**/*.html'
+    'assets/linker/**/*.html',
+    'modules/**/linker/**/*.html'
   ];
 
 
@@ -142,7 +143,7 @@ module.exports = function (grunt) {
   
   
   templateFilesToInject = templateFilesToInject.map(function (path) {
-    return 'assets/' + path;
+    return /*'assets/' +*/ path;
   });
 
 
@@ -211,11 +212,14 @@ module.exports = function (grunt) {
       dev: {
 
         // To use other sorts of templates, specify the regexp below:
-        // options: {
-        //   templateSettings: {
-        //     interpolate: /\{\{(.+?)\}\}/g
-        //   }
-        // },
+        options: {
+          templateSettings: {
+            interpolate: /\{\{(.+?)\}\}/g
+          },
+          processName: function(filename) {
+            return require('path').basename(filename, '.html');
+          }
+        },
 
         files: {
           '.tmp/public/jst.js': templateFilesToInject
