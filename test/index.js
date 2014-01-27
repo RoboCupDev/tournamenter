@@ -56,7 +56,7 @@ describe('Modules', function() {
 	});
 
 	// Check if assets are served
-	describe('Public assets', function() {
+	/*describe('Public assets', function() {
 
 		it ('should exist and contain stuff', function (done) {
 			supertest(sails.express.app)
@@ -67,7 +67,7 @@ describe('Modules', function() {
 				})
 				.end(done);
 		});
-	});
+	});*/
 
 });
 
