@@ -16,7 +16,10 @@ var App = {
 	Views: {},
 	Mixins: {},
 	Util: {},
+	
+	PageViews: {},
 };
+window.App = App;
 
 /*
 	Mixin to show modal and confirm action
@@ -61,7 +64,7 @@ App.Mixins.confirmAction = function(message, allowSkip, next){
 
 	Usage: editInPlace(ModelToSave, jQueryField, )
 */
-App.Mixins.editInPlace = function(modelToSave, jQueryField, opts){
+App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
 	// Filter and adds default behavior
 	opts = opts || {};
 
@@ -75,7 +78,7 @@ App.Mixins.editInPlace = function(modelToSave, jQueryField, opts){
 			d.promise();
 
 			// This is the default backbone save options object
-			var saveOpts = {
+			saveOpts = _.defaults({
 				patch: true,
 				wait: true,
 				success: function(){
@@ -85,7 +88,7 @@ App.Mixins.editInPlace = function(modelToSave, jQueryField, opts){
 					var msg = 'Something went wrong...';
 					d.reject(msg);
 				}
-			};
+			}, saveOpts);
 
 			var toSave = {};
 			toSave[params.name] = params.value;
@@ -243,7 +246,12 @@ App.Collections.Tables = Backbone.Collection.extend({
 });
 
 // Page Model
-App.Models.Page = Backbone.Model.extend({});
+App.Models.Page = Backbone.Model.extend({
+	save: function(attrs){
+		this.set(attrs);
+		this.collection.view.save();
+	}
+});
 
 // Pages Collection
 App.Collections.Pages = Backbone.Collection.extend({
