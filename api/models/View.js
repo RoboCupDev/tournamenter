@@ -80,25 +80,36 @@ module.exports = {
 	},
 
 	beforeValidation: function(values, next){
-		// Defaults for each page
-		var pageDefaults = {
-			module: 'default',
-			still: 5000,
-			disabled: false,
-			options: {},
+
+		if(values.pages){
+			// Defaults for each page
+			var pageDefaults = {
+				module: 'pageview',
+				still: 5000,
+				disabled: 'false',
+				options: {},
+			}
+			var pickKeys = _.keys(pageDefaults);
+			var newPages = [];
+
+			// Add default values to pages
+			_.forEach(values.pages, function(page){
+				_.defaults(page, pageDefaults);
+				// Remove extra fields
+				newPage = _.pick(page, pickKeys);
+				// Filter still time
+				newPage.still = newPage.still*1 || 0;
+				newPage.still = Math.max(1000, newPage.still);
+
+				if(newPage.disabled != 'true')
+					newPage.disabled = 'false';
+
+				newPages.push(newPage);
+			});
+
+			// Update pages
+			values.pages = newPages;
 		}
-		var pickKeys = _.keys(pageDefaults);
-		var newPages = [];
-
-		// Add default values to pages
-		_.forEach(values.pages, function(page){
-			_.defaults(page, pageDefaults);
-			// Remove extra fields
-			newPages.push(_.pick(page, pickKeys));
-		});
-
-		// Update pages
-		values.pages = newPages;
 
 		next();
 	},
