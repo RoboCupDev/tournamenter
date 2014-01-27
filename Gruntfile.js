@@ -73,6 +73,7 @@ module.exports = function (grunt) {
     '/js/underscore-min.js',
     '/js/backbone.js',
     '/js/select2.js',
+    '/js/countries.js',
     // '/js/bootstrap-switch.min.js',
 
     
@@ -81,7 +82,7 @@ module.exports = function (grunt) {
 
     '/js/util.js',
     '/js/app.js',
-    '/js/countries.js',
+    '/linker/js/pageview.js',
 
     // All of the rest of your app scripts imported here
     'linker/**/*.js'
