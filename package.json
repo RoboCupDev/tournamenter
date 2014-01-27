@@ -23,7 +23,7 @@
   "scripts": {
     "start": "node app.js",
     "debug": "node debug app.js",
-    "test": "PORT=9999 NODE_ENV=test mocha -R spec -b --recursive"
+    "test": "PORT=9999 NODE_ENV=production mocha -R spec -b --recursive"
   },
   "main": "app.js",
   "author": {
