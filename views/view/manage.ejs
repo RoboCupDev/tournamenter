@@ -1,3 +1,6 @@
+<style type="text/css">
+
+</style>
 
 <!-- CONTENT -->
 <div class="row clearfix" id="views-view">
@@ -86,8 +89,25 @@
 			<small><a target="__blank" class="text-muted" href="/views/public/{{id}}">/views/public/{{id}}</a></small>
 		</div>
 
-		<div class="spot-pages">
-			aa
+		<div class="spot-pages panel-body">
+
+			<div class="panel panel-info">
+				<div class="spot-bar-view panel-heading">
+					<strong>Group View</strong> 
+					<small>[1.5s, Active] - [<span class="text-success">Group A, Finals, ASD</span>]</small>
+
+					<div class="pull-right">
+						<!-- Delete -->
+						<button class="btn-page-destroy btn btn-xs btn-danger" href="#">
+							<span class="glyphicon glyphicon-trash"></span> Remove
+						</button>
+					</div>
+				</div>
+				<div class="panel-body">
+					aSDAWE?
+				</div>
+			</div>
+
 		</div>
 	<!-- </div> -->
 </script>
@@ -98,54 +118,6 @@
 </script>
 
 <script type="text/javascript">
-
-/*
-	=======================================
-				PAGEVIEWS
-	=======================================
-	PageViews will be used by the manager to configure,
-	create, delete... and also by the public views.
-
-	The idea is that every 'kind' of view, has
-	it's own configuration panel, and it's renderer.
-
-	When in the manager, it will create a Collection
-	of Views fetch from server. Each View contain a
-	collection of 'Pages'. Pages are actually
-	PageViews, and represent a single 'Slide'
-	on the presentation. They have properties
-	such as 'still' time, 'enabled'...
-
-	Each View, will have many 'Pages', and
-	the model responsible for each Page, will be delegated
-	to the module specified by it.
-
-	Manager:
-	 + ItemView 		| Represents a single Page item
-	 + ItemBarView  	| A bar inside the ItemView
-	 + ItemConfigView	| Configuration view
-
-	Final View (TV Screen)
-	 + ScreenView		| The final view to generate content
-	 + ScreenConfigView | A optional sidebar view to customise view
-
-*/
-
-// Be shure that Global vars are set
-App.PageViews = {};
-
-
-var anotherModule = {
-	name: 'Other module',
-	module: 'test',
-	disabled: false,
-	// this.itemView = itemView;
-	// this.barView = barView;
-	// this.configView = configView;
-};
-
-// App.PageViews[testPageModule.module] = testPageModule;
-App.PageViews['test2'] = anotherModule;
 
 /*
 	=======================================
@@ -160,19 +132,19 @@ App.PageViews['test2'] = anotherModule;
 */
 App.Views.Pages = Backbone.View.extend({
 
+	className: 'list-group',
+
 	// Events
 	events: {
 	},
 
 	initialize: function(){
 		this.listenTo(this.collection, 'add', this.render);
-		this.listenTo(this.collection, 'remove', this.remove);
 		this.listenTo(this.collection, 'reset', this.render);
-
-		console.log('initialized Pages view: '+this.collection.view.id);
 	},
 
 	render: function(){
+		// return;	
 		var view = this;
 		console.log('rendering Pages view');
 
@@ -187,39 +159,29 @@ App.Views.Pages = Backbone.View.extend({
 	},
 
 	add: function(model, collection, options){
-		// Render acordingly to the module specified
+
+		// Render Page view acordingly to the module specified
 		var moduleName = model.get('module');
 		var module = App.PageViews[moduleName]
 		if(!module){
 			console.warn('No view in module! Setting default one');
-			module = App.PageViews.test;
+			module = App.PageViews['pageview'];
 		}
-		var itemView = module.itemView;
 
-		// Check if no itemView is provided
-		if(!itemView){
-			console.error('No itemView provided by PageView module');
+		// Check if no ItemView is provided
+		if(!module){
+			console.error('No module provided by PageView module');
 			return this;
 		}
 
-		var view = new itemView({
+		// Create new view
+		var view = new module.ItemView({
 			model: model
 		});
 
 		// Register in views and append to views
 		var shouldAnimate = collection ? true : false;
 		this.appendView(view, shouldAnimate);
-		return this;
-	},
-
-	remove: function(model){
-		// If model doesn't exist, skip it
-		if(!this._views[model.id])
-			return this;
-
-		// Sub-view should remove() itself
-		model.trigger('destroy');
-		delete this._views[model.id];
 		return this;
 	},
 
@@ -250,7 +212,6 @@ App.Views.View = Backbone.View.extend({
 	events: {
 		'click .btn-view-refresh': 'refresh',
 		'click .btn-view-destroy': 'confirmDestroyAction',
-		'click .btn-page-add': 'addPage',
 	},
 	
 	pageViews: null, 
@@ -259,16 +220,12 @@ App.Views.View = Backbone.View.extend({
 		this.listenTo(this.model, 'change', this.render);
 		this.listenTo(this.model, 'destroy', this.destroy);
 
+		this.listenTo(this.model.pages, 'remove', this.onRemovePage);
+
 		this.listenTo(this.model, 'sync', this.endSync);
 
 		// Save jquery refresh button instance
 		this.$btnRefresh = this.$('.btn-view-refresh');
-
-		// Create pagesView
-		this.pagesView = new App.Views.Pages({
-			collection: this.model.pages,
-			el: this.$('.spot-pages'),
-		});
 	},
 
 	render: function(){
@@ -281,22 +238,22 @@ App.Views.View = Backbone.View.extend({
 			this.$el.html(html);
 		// }
 
+		if(!this.pagesView){
+			// Create pagesView
+			this.pagesView = new App.Views.Pages({
+				view: this.model,
+				collection: this.model.pages,
+				el: this.$('.spot-pages'),
+			});
+		}else{
+			// Set spot
+			this.pagesView.setElement(this.$('.spot-pages'));
+		}
+		this.pagesView.render();
+
 		// Configure View
 		this.configureTitleBar()
 			.renderCreatePageButtons();
-
-		// Render Pages view
-		if(this.pagesView.$el != this.$('.spot-pages'))
-			this.pagesView.setElement(this.$('.spot-pages'));
-		this.pagesView.render();
-
-		// // Set scoresView element
-		// var scoresSpot = this.$('.spot-scores tbody');
-		// if(scoresSpot != this.scoresView.$el){
-		// 	console.log('rendering scores egain: '+this.model.id);
-		// 	this.scoresView.setElement(this.$('.spot-scores tbody'));
-		// 	this.scoresView.render();
-		// }
 
 		return this;
 	},
@@ -351,53 +308,16 @@ App.Views.View = Backbone.View.extend({
 	createPage: function(moduleId){
 		var module = App.PageViews[moduleId];
 
-		console.log(module);
-
 		this.model.pages.add({module: module.module});
 		// this.model.get('pages').push({aew: 1});
 		console.log(this.model.toJSON());
-		this.model.save({wait: true});
+		this.model.save();
 	},
 
-	// makeCollapsible: function(){
+	onRemovePage: function(model){
+		this.model.save();
+	},
 
-	// 	Util.makeCollapsible(this.$('.btn-collapse-scores'), this.$('.collapsible-scores'), {
-	// 		showData: '<i class="glyphicon glyphicon-list"></i> Show Table Scores',
-	// 		hideData: '<i class="glyphicon glyphicon-list"></i> Hide Table Scores',
-	// 	});
-
-	// 	Util.makeCollapsible(this.$('.btn-collapse-options'), this.$('.collapsible-options'), {
-	// 		showData: '<i class="glyphicon glyphicon-wrench"></i> Show Table Options',
-	// 		hideData: '<i class="glyphicon glyphicon-wrench"></i> Hide Table Options',
-	// 	});
-
-	// 	Util.makeCollapsible(this.$('.btn-collapse-help'), this.$('.collapsible-help'), {
-	// 		showData: '<i class="glyphicon glyphicon-question-sign"></i> Show Help',
-	// 		hideData: '<i class="glyphicon glyphicon-question-sign"></i> Hide Help',
-	// 	});
-
-	// 	return this;
-	// },
-
-	// editInPlace: function(){
-	// 	// Make editable fields
-	// 	// App.Mixins.editInPlace(this.model, this.$('.table-columns'), {
-	// 	// 	mode: 'popup',
-	// 	// });
-
-	// 	// App.Mixins.editInPlace(this.model, this.$('.table-sort'), {
-	// 	// 	type: 'select',
-	// 	// 	mode: 'popup',
-	// 	// 	source: App.sortList,
-	// 	// 	value: this.model.get('sort'),
-	// 	// });
-
-	// 	App.Mixins.editInPlace(this.model, this.$('.view-title'), {
-	// 		value: this.model.get('title'),
-	// 	});
-
-	// 	return this;
-	// },
 
 	destroy: function(){
 		var view = this;
@@ -413,13 +333,6 @@ App.Views.View = Backbone.View.extend({
 		this.startSync();
 		this.model.fetch({url: '/views/associated/'+this.model.id});
 		return this;
-	},
-
-	addPage: function(){
-		var view = this;
-		this.model.scores.create({tableId: view.model.id}, {wait: true, silent: true, success: function(){
-			view.refresh();
-		}});
 	},
 
 	confirmDestroyAction: function(evt){
