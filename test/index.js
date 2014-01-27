@@ -58,23 +58,15 @@ describe('Modules', function() {
 	// Check if assets are served
 	describe('Public assets', function() {
 
-		var res = null;
-
-		before(function(done){
+		it ('should exist and contain stuff', function (done) {
 			supertest(sails.express.app)
 				.get('/js/test.js')
-				.end(function(err, _res){
-					res = _res;
-					done(err);
-				});
-		});
-
-		it ('should exist', function () {
-			should.exist(res);
-		});
-
-		it ('should have some resources', function () {
-			res.text.should.containEql('__ok');
+				.expect(200)
+				.expect(function toContainStuff(res){
+					console.log(res.req);
+					return (res.text.indexOf('__ok') >= 0 ? null : 'No content');
+				})
+				.end(done);
 		});
 	});
 
