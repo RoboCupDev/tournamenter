@@ -94,7 +94,7 @@ module.exports = {
 
 			// Add default values to pages
 			_.forEach(values.pages, function(page){
-				_.defaults(page, pageDefaults);
+				_.defaults(page || {}, pageDefaults);
 				// Remove extra fields
 				newPage = _.pick(page, pickKeys);
 				// Filter still time

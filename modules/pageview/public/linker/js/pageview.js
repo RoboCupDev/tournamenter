@@ -72,7 +72,7 @@
 	var module = {
 		name: 'Default View',
 		module: 'pageview',
-		disabled: false,
+		disabled: true,
 	};
 
 	module.BarView = Backbone.View.extend({
