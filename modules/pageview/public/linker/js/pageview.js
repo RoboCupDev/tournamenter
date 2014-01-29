@@ -131,6 +131,61 @@
 	});
 
 	module.ConfigView = Backbone.View.extend({
+		/*
+			This is a HELPER method, used to simplify save under options hash.
+			It is really usefull for ediding fields dinamicaly
+
+			Assign an callback to be run BEFORE the save call, and it will
+			return a method that takes two arguments:
+			 + values (new values to save)
+			 + next (used internally, to callback with or without errors)
+
+			Ex:
+
+			App.Mixins.editInPlaceCustom($editable, {
+				type: 'select2',
+				mode: 'popup',
+				[...]
+			}, this.createSaveWrapper(function(options, newVals){
+				return options['tables'] = _.values(newVals.value);
+			}));
+		*/
+		createSaveWrapper: function(cb){
+			var view = this;
+			return function(values, next){
+				var lastOptions = view.model.get('options');
+
+				// Delegate modifications to callback
+				var newOptions = cb(lastOptions, values);
+				console.log({
+					options: newOptions
+				});
+				view.model.save({
+					options: newOptions
+				}, {
+					success: function(){ next(); },
+					error: function(){ next('Could not save tables'); }
+				});
+			}
+		}, 
+		/*
+			Another helper method used to simplify things.
+
+			This creates a Wrapper of a Wrapper.
+			Example:
+			App.Mixins.editInPlaceCustom($editable, {
+				type: 'select2',
+				mode: 'popup',
+				[...]
+			}, this.createSaveWrapper('tables'));
+		*/
+		createSaveWrapperForField: function(field){
+			return this.createSaveWrapper(function(options, values){
+				options[field] = values.value;
+				console.info(options);
+				return options;
+			});
+		}
 
 	});
 
