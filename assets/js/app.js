@@ -54,17 +54,16 @@ App.Mixins.confirmAction = function(message, allowSkip, next){
 	};
 }
 
+
 /*
 	Mixin to help configuring XEditable fields, for in place editions
 
-	It configures the XEditable field by default, to save to the given
-	model, instead of using it's own method to send by ajax.
+	It is a custom editInPlace, used to callback when changed.
 
-	Also, leave some defaults to facilitate configuration.
-
-	Usage: editInPlace(ModelToSave, jQueryField, )
+	It will call 'next' whenever a change is made to the field. You are
+	supposed to call the callback method on it, and pass erro as param.
 */
-App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
+App.Mixins.editInPlaceCustom = function($field, opts, next){
 	// Filter and adds default behavior
 	opts = opts || {};
 
@@ -77,30 +76,53 @@ App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
 			var d = new $.Deferred;
 			d.promise();
 
-			// This is the default backbone save options object
-			saveOpts = _.defaults({
-				patch: true,
-				wait: true,
-				success: function(){
-					d.resolve();
-				},
-				error: function(response, xhr) {
-					var msg = 'Something went wrong...';
-					d.reject(msg);
-				}
-			}, saveOpts);
+			next(params, returnHere);
 
-			var toSave = {};
-			toSave[params.name] = params.value;
-
-        	modelToSave.save(toSave, saveOpts);
+			function returnHere(err){
+				if(err)
+					return d.reject(err);
+				return d.resolve();
+			}
 
         	return d;
 	    }
 	};
 
 	// Apply options to editable
-	jQueryField.editable(_.defaults(opts, defaults));
+	$field.editable(_.defaults(opts, defaults));
+	return this;
+};
+
+/*
+	Mixin to help configuring XEditable fields, for in place editions
+
+	It configures the XEditable field by default, to save to the given
+	model, instead of using it's own method to send by ajax.
+
+	Also, leave some defaults to facilitate configuration.
+
+	Usage: editInPlace(ModelToSave, jQueryField, )
+*/
+App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
+	App.Mixins.editInPlaceCustom(jQueryField, opts, function cb(params, next){
+		// This is the default backbone save options object
+		saveOpts = _.defaults({
+			patch: true,
+			wait: true,
+			success: function(){
+				next();
+			},
+			error: function(response, xhr) {
+				next('Something went wrong...');
+			}
+		}, saveOpts);
+
+		var toSave = {};
+		toSave[params.name] = params.value;
+
+    	modelToSave.save(toSave, saveOpts);
+	});
+
 	return this;
 };
 
@@ -282,9 +304,9 @@ App.Collections.Tables = Backbone.Collection.extend({
 
 // Page Model
 App.Models.Page = Backbone.Model.extend({
-	save: function(attrs){
+	save: function(attrs, opts){
 		this.set(attrs);
-		this.collection.view.save();
+		this.collection.view.save(null, opts);
 	}
 });
 
