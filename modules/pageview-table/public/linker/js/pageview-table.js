@@ -102,24 +102,42 @@
 		},
 
 		configureEditFields: function(){
-			console.log(module.tablesKeys);
-			// Editable options used for Teams
-			$editable = this.$('.config-tables');
-			App.Mixins.editInPlace(this.model, $editable, {
+			var view = this;
+
+			// Editable options used for Tables
+			$tables = this.$('.config-tables');
+			App.Mixins.editInPlaceCustom($tables, {
 				type: 'select2',
 				mode: 'popup',
 				source: module.tablesKeys,
-				showbuttons: false,
+				showbuttons: true,
+				value: view.model.get('options').tables,
 				select2: {
 					multiple: true,
 					width: 200,
 					placeholder: 'Select Tables',
 					allowClear: true,
-				}
-			});
+				},
+			}, this.createSaveWrapperForField('tables'));
 
-			// $editable.editable('setValue', this.model.get('config').tables);
-			// config-tables
+			// Editable options used table items
+			$rows = this.$('.config-rows');
+			App.Mixins.editInPlaceCustom($rows, {
+				type: 'text',
+				mode: 'popup',
+				showbuttons: true,
+				value: view.model.get('options').rows,
+				emptytext: 'Automatic',
+				validate: function(value) {
+					value = value*1;
+					if(!_.isNumber(value) || value < 1)
+						return 'It must be an positive number!';
+
+					var isRound = (value % 1 === 0);
+					if(!isRound)
+						return 'It must be an integer';
+				}
+			}, this.createSaveWrapperForField('rows'));
 
 			return this;
 		}
