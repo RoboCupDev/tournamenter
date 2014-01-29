@@ -218,24 +218,59 @@ App.Collections.Scores = Backbone.Collection.extend({
 // Table
 App.Models.Table = Backbone.Model.extend({
 	urlRoot: '/tables',
-	initialize: function(attributes){
-		// Create a Backbone model
-		attributes = attributes || {};
-		this.scores = new App.Collections.Scores(attributes.scores || []);
+	// initialize: function(attributes){
+	// 	// Create a Backbone model
+	// 	attributes = attributes || {};
+	// 	this.scores = new App.Collections.Scores(attributes.scores || []);
+
+	// 	// Save this object inside the scores collection, allowing access from it
+	// 	this.scores.table = this;
+	//     this.scores.url = '/scores/find?tableId=' + this.id;
+	// 	delete attributes['scores'];
+	// },
+	// parse: function(data, options) {
+	// 	// Delegate scores data to scores collection
+	// 	if(data.scores){
+	// 		this.scores.reset(data.scores);
+	// 		delete data['scores'];
+	// 	}
+
+	// 	return data;
+	// },
+
+	constructor: function(){
+		var self = this;
+		console.log('Init Table');
+
+		// Create a collection of pages and save itself in it
+		this.scores = new App.Collections.Scores();
+		this.scores.view = this;
 
 		// Save this object inside the scores collection, allowing access from it
 		this.scores.table = this;
 	    this.scores.url = '/scores/find?tableId=' + this.id;
-		delete attributes['scores'];
+
+		Backbone.Model.apply(this, arguments);
 	},
+
+	initialize: function(attributes){
+		if(attributes && attributes.scores)
+			this.scores.reset(attributes.scores)
+	},
+
 	parse: function(data, options) {
 		// Delegate scores data to scores collection
 		if(data.scores){
 			this.scores.reset(data.scores);
-			delete data['scores'];
+			data.scores = this.scores;
 		}
-
 		return data;
+	},
+
+	toJSON: function(){
+		var returnObj = _.clone(this.attributes);
+		returnObj.scores = this.scores.toJSON();
+		return returnObj;
 	},
 });
 
@@ -262,34 +297,28 @@ App.Collections.Pages = Backbone.Collection.extend({
 App.Models.View = Backbone.Model.extend({
 	urlRoot: '/views/',
 
-	// defaults: {
- //    	pages: new App.Collections.Pages(),
-	// },
-
-	initialize: function(attributes){
+	constructor: function(){
 		var self = this;
-		console.log('initializer');
-
-		attributes = attributes || {};
+		console.log('Init View');
 
 		// Create a collection of pages and save itself in it
-		this.pages = new App.Collections.Pages(attributes.pages || []);
+		this.pages = new App.Collections.Pages();
 		this.pages.view = this;
 
 		// Delegate save action to this
 		this.listenTo(this.pages, 'change', function(){
 			self.trigger('change:pages');
-		});
+		});	
 
-		// Delegate scores data to scores collection
-		// if(attributes.pages){
-		// 	this.pages.reset(attributes.pages || []);
-		// 	attributes.pages = this.pages;
-		// }	
+		Backbone.Model.apply(this, arguments);
+	},
+
+	initialize: function(attributes){
+		if(attributes && attributes.pages)
+			this.pages.reset(attributes.pages);
 	},
 
 	parse: function(data, options) {
-		console.info('parseView');
 		// Delegate scores data to scores collection
 		if(data.pages){
 			this.pages.reset(data.pages);

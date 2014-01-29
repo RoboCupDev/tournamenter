@@ -172,7 +172,7 @@
 			this.barView.itemView = this;
 			this.configView.itemView = this;
 
-			console.log(opts);
+			// console.log(opts);
 		},
 
 		render: function(){

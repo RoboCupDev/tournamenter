@@ -14,6 +14,6 @@ module.exports = {
 
 	process: function (page, next) {
 		// page.data = {};
-		next();
+		next(null, page);
 	}
 }
