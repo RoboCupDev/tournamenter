@@ -1,52 +1,51 @@
+<link rel="stylesheet" href="/css/page-transitions.css">
+<script src="/js/page-transitions.js"></script>
 <style type="text/css">
-.perspective {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    perspective: 1200px;
-    transform-style: preserve-3d;
-}
- 
-.page {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    visibility: hidden;
+
+body {
     overflow: hidden;
-    backface-visibility: hidden;
-    transform: translate3d(0, 0, 0);
+    background-color: #333;
 }
- 
-.pt-page-current,
-.no-js .pt-page {
-    visibility: visible;
-}
- 
-/*.no-js body {
-    overflow: auto;
-}*/
- 
-.page-ontop {
-    z-index: 999;
-}
+
+.bg-orange{ background-color: #FF8C00; }
+.bg-blue{ background-color: #00CDCD; }
+.bg-purple{ background-color: #B452CD; }
+.bg-red{ background-color: #DC143C; }
+
 </style>
 
 
-<div id="pages perspective">
-	<div class="page"> A </div>
-	<div class="page"> B </div>
-	<div class="page"> C </div>
-	<div class="page"> D </div>
+<div id="pt-pages" class="pt-perspective">
+	<div class="pt-page bg-orange"> <h1>A</h1> </div>
+	<div class="pt-page bg-blue"> <h1>B</h1> </div>
+	<div class="pt-page bg-purple"> <h1>C</h1> </div>
+	<div class="pt-page bg-red"> <h1>D</h1> </div>
 </div>
 
 
 <script type="text/javascript">
 
-var ViewController = new Backbone.View.extend({
+var GlobalViewController = Backbone.View.extend({
 	initialize: function () {
-		
+		var view = this;
+		this.pageTransitions = new App.Views.PageTransitions();
+
+		var testViews = $('.pt-page');
+		var i = -1;
+		setInterval(function(){
+			if(i++ >= testViews.length - 1)
+				i = 0;
+
+			var $view = testViews.eq(i);
+
+			var animationsKeys = _.keys(view.pageTransitions.animations);
+			// var key = 'rotateSidesOut';
+			var key = _.sample(animationsKeys);
+			var animation = view.pageTransitions.animations[key];
+			view.pageTransitions.changePage($view, {
+				animation: animation
+			});
+		}, 2000);
 	},
 
 	render: function(){
@@ -54,33 +53,10 @@ var ViewController = new Backbone.View.extend({
 	},
 });
 
-App.PageController = Backbone.View.extend({
 
-	// Internal Flags
-	isAnimating: false,
-	endCurrPage: false,
-	endNextPage: false,
-	animEndEventNames: 
-
-	initialize: function () {
-		isAnimating = false,
-		endCurrPage = false,
-		endNextPage = false,
-		animEndEventNames = {
-			'WebkitAnimation' : 'webkitAnimationEnd',
-			'OAnimation' : 'oAnimationEnd',
-			'msAnimation' : 'MSAnimationEnd',
-			'animation' : 'animationend'
-		},
-		// animation end event name
-		animEndEventName = animEndEventNames[ Modernizr.prefixed( 'animation' ) ],
-		// support css animations
-		support = Modernizr.cssanimations;
-	},
-
-	lastPage: null,
-
-});
+$(document).ready(function(){
+	var globalViewController = new GlobalViewController();
+})
 
 
 </script>
