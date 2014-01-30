@@ -125,7 +125,11 @@
 			var view = this;
 			var message = 'Are you shure that you want to delete this page?';
 			App.Mixins.confirmAction(message, true, function(){
-				view.model.destroy();
+				
+				view.itemView.$el.slideUp(function(){
+					view.model.destroy();
+				});
+
 			});
 		},
 	});
@@ -157,9 +161,9 @@
 
 				// Delegate modifications to callback
 				var newOptions = cb(lastOptions, values);
-				console.log({
-					options: newOptions
-				});
+				// console.log({
+				// 	options: newOptions
+				// });
 				view.model.save({
 					options: newOptions
 				}, {
@@ -182,7 +186,7 @@
 		createSaveWrapperForField: function(field){
 			return this.createSaveWrapper(function(options, values){
 				options[field] = values.value;
-				console.info(options);
+				// console.info(options);
 				return options;
 			});
 		}

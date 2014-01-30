@@ -64,7 +64,6 @@
 						text: table.get('name'),
 					});
 				});
-				console.log('done.');
 
 				module.tablesKeys = tablesKeys;
 			}
@@ -81,6 +80,8 @@
 			// Setup model variables
 			if(!this.model.has('options'))
 				this.model.set('options', {});
+
+			this.listenTo(this.model, 'change', this.render);
 		},
 
 		render: function(){

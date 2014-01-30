@@ -262,7 +262,6 @@ App.Models.Table = Backbone.Model.extend({
 
 	constructor: function(){
 		var self = this;
-		console.log('Init Table');
 
 		// Create a collection of pages and save itself in it
 		this.scores = new App.Collections.Scores();
@@ -325,7 +324,6 @@ App.Models.View = Backbone.Model.extend({
 
 	constructor: function(){
 		var self = this;
-		console.log('Init View');
 
 		// Create a collection of pages and save itself in it
 		this.pages = new App.Collections.Pages();

@@ -86,7 +86,7 @@
 			<span class="panel-title">
 				<strong><span class="view-title" data-name="title" data-title="View title">{{title}}</span></strong>
 			</span>
-			<small><a target="__blank" class="text-muted" href="/views/public/{{id}}">/views/public/{{id}}</a></small>
+			<small><a target="__blank" class="text-muted" href="/views/view/{{id}}">/views/view/{{id}}</a></small>
 		</div>
 
 		<div class="spot-pages panel-body">
@@ -139,14 +139,15 @@ App.Views.Pages = Backbone.View.extend({
 	},
 
 	initialize: function(){
-		this.listenTo(this.collection, 'add', this.render);
+		// this.listenTo(this.collection, 'add', this.add);
 		this.listenTo(this.collection, 'reset', this.render);
 	},
 
 	render: function(){
+		// console.log('RENDER | Pages');
+
 		// return;	
 		var view = this;
-		console.log('rendering Pages view');
 
 		// Clear all
 		this.$el.empty();
@@ -159,6 +160,7 @@ App.Views.Pages = Backbone.View.extend({
 	},
 
 	add: function(model, collection, options){
+		// console.log('ADD | Page: '+model.id);
 
 		// Render Page view acordingly to the module specified
 		var moduleName = model.get('module');
@@ -216,8 +218,7 @@ App.Views.View = Backbone.View.extend({
 	
 	pageViews: null, 
 	initialize: function(){
-		console.log('initialized: '+this.model.id);
-		this.listenTo(this.model, 'change', this.render);
+		// this.listenTo(this.model, 'change', this.render);
 		this.listenTo(this.model, 'destroy', this.destroy);
 
 		this.listenTo(this.model.pages, 'remove', this.onRemovePage);
@@ -229,7 +230,7 @@ App.Views.View = Backbone.View.extend({
 	},
 
 	render: function(){
-		console.log('rendering: '+this.model.id);
+		// console.log('RENDER | View: '+this.model.id);
 		// var shouldRenderRoot = (this.$el.html() ? false : true);
 		// if(shouldRenderRoot){
 			// Render with data
@@ -295,7 +296,6 @@ App.Views.View = Backbone.View.extend({
 			$pageItemSpot.after('<li role="presentation" class="dropdown-header">No module found</li>');
 
 		$pageItemSpot.parent().find('.btn-create-page').click(function(evt){
-			console.log('creating...');
 			evt.preventDefault();
 			var moduleId = $(this).attr('data-key');
 			// Delegate action to this View, with the module name
@@ -308,14 +308,13 @@ App.Views.View = Backbone.View.extend({
 	createPage: function(moduleId){
 		var module = App.PageViews[moduleId];
 
-		this.model.pages.add({module: module.module});
+		this.model.pages.add({module: module.module}, {silent: true});
 		// this.model.get('pages').push({aew: 1});
-		console.log(this.model.toJSON());
-		this.model.save();
+		this.model.save(null, {wait: true});
 	},
 
 	onRemovePage: function(model){
-		this.model.save();
+		this.model.save(null, {silent: true, wait: true});
 	},
 
 
@@ -329,7 +328,6 @@ App.Views.View = Backbone.View.extend({
 
 	refresh: function(){
 		var view = this;
-		console.log('refreshing: '+this.model.id);
 		this.startSync();
 		this.model.fetch({url: '/views/associated/'+this.model.id});
 		return this;
@@ -467,8 +465,6 @@ $(document).ready(function(){
 		Load models
 	*/
 	App.views.reset(<%- JSON.stringify(views) %>);
-
-	console.log($('a') == $('a'));
 
 });
 
