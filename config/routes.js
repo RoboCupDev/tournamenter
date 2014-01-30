@@ -35,6 +35,8 @@ module.exports.routes = {
   '/': 'TeamController.manage',
   'GET /teams': 'TeamController.manage',
 
+  '/views/view/:id?': 'ViewController.view',
+
   // PATCH methods for Backbone
   'PATCH /teams/:id': 'TeamController.update',
 

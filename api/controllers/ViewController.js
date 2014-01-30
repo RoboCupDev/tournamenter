@@ -52,6 +52,42 @@ module.exports = {
 		}
 	},
 
+	/*
+		This controller action is responsible for both Listing, and
+		showing the corresponding view.
+
+		If an invalid id is assigned, then it will render an default
+		page listing all the available views, linking to corresponding page
+
+		Otherwise, it will render acordingly to the template choosen.
+	*/
+	view: function(req, res, next){
+		var id = req.param('id');
+
+		// If id is set, then we shall render a single page
+		if(id) return View.find({id: id}, renderView);
+
+		// Else, let's render a list
+		View.find(renderList);
+
+		function renderView(err, views){
+			if(err) return next(err);
+			
+			res.view('view/view', {
+				_layoutFile: '../light.ejs',
+			})
+			// res.send('In development');
+		}
+
+		function renderList(err, views){
+			if(err) return next(err);
+
+			res.view('view/list', {
+				// _layoutFile: 'default',
+				views: views
+			});
+		}
+	},
 
 	/**
 	 * Overrides for the settings in `config/controllers.js`
