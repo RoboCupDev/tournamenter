@@ -69,8 +69,9 @@ module.exports = {
 		menus: [
 			{name: 'Tables', path: '/tables/manage', order: 3},
 		]		
-	}
+	},
 
+	_findAssociated: findAssociated
   
 };
 
