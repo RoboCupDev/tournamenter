@@ -51,8 +51,7 @@ module.exports = function (grunt) {
 
   var jsFilesToInject = [
 
-    // Below, as a demonstration, you'll see the built-in dependencies 
-    // linked in the proper order order
+    '/js/modernizr.js',
 
     // Bring in the socket.io client
     'linker/js/socket.io.js',
