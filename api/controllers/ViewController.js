@@ -17,6 +17,7 @@
 
  var _ = require('lodash');
  var async = require('async');
+ var path = require('path');
 
 module.exports = {
 	
@@ -72,9 +73,24 @@ module.exports = {
 
 		function renderView(err, views){
 			if(err) return next(err);
+			if(views.length <= 0) return next('Could not find view... Are you shure about this view?');
+
+			// Try to get view from modules
+			var viewDir = __dirname+'/../../views';
+			var moduleViewDir = viewDir+'/view/view';
+		
+			var viewModule = Modules.get('view', 'view-default');
+			if(viewModule){
+				moduleViewDir = viewModule.viewPath;
+			}
 			
-			res.view('view/view', {
-				_layoutFile: '../light.ejs',
+			// Find relative path from the viewDirectory, to the modules (or the same) dir
+			var viewToRender = path.relative(path.resolve(viewDir), moduleViewDir);
+			console.log(viewDir.red);
+
+			res.view(viewToRender, {
+				_layoutFile: path.relative(viewToRender, viewDir+'/light.ejs'),
+				view: views[0],
 			})
 			// res.send('In development');
 		}
