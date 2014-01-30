@@ -32,7 +32,7 @@ var express = require('sails/node_modules/express');
 var _ = require('lodash');
 var fs = require('fs');
 
-module.exports = {
+var Modules = {
 
 	/*
 		Global variable to keep instaled modules
@@ -139,6 +139,16 @@ module.exports = {
 		if(module.initialize)
 			module.initialize();
 
-	}
+		// Do whatever else the type needs
+		if(this.middlewares[type])
+			this.middlewares[type](module);
+	},
+
+	middlewares: {},
 
 }
+module.exports = Modules;
+
+/*
+	MiddleWares for instalation
+*/
