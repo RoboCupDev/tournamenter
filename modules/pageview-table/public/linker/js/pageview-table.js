@@ -129,15 +129,37 @@
 				value: view.model.get('options').rows,
 				emptytext: 'Automatic',
 				validate: function(value) {
+					if(!value)
+						return;
 					value = value*1;
 					if(!_.isNumber(value) || value < 1)
-						return 'It must be an positive number!';
+						return 'It must be bigger than 1!';
 
 					var isRound = (value % 1 === 0);
 					if(!isRound)
 						return 'It must be an integer';
 				}
 			}, this.createSaveWrapperForField('rows'));
+
+			// Editable options used table items
+			$still = this.$('.config-still');
+			App.Mixins.editInPlaceCustom($still, {
+				type: 'text',
+				mode: 'popup',
+				showbuttons: true,
+				value: view.model.get('options').still,
+				emptytext: 'Automatic',
+				validate: function(value) {
+					if(!value)
+						return;
+					value = value*1;
+					if(!_.isNumber(value) || value < 1)
+						return 'It must be bigger than 1!';
+				},
+				display: function(value){
+					$(this).text(value ? value + 's' : value);
+				}
+			}, this.createSaveWrapperForField('still'));
 
 			return this;
 		}

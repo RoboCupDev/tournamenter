@@ -14,6 +14,28 @@ module.exports = {
 
 	process: function (page, next) {
 		// page.data = {};
-		next(null, page);
+		// next(null, page);
+		sails.controllers.table._findAssociated(page.table || null, afterAssociate);
+
+		function afterAssociate(data){
+			page.data = data;
+			next(null, page);
+		}
+	},
+
+	beforeValidation: function(page){
+		_.defaults(page.options, {
+			tables: [],
+			rows: '',
+			still: '',
+		});
+
+		// Filter numbers
+		page.options.rows *= 1;
+		page.options.rows = (page.options.rows ? page.options.rows : '');
+		page.options.still *= 1;
+		page.options.still = (page.options.still ? page.options.still : '');
+
+		return newPage;
 	}
 }
