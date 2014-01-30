@@ -104,6 +104,12 @@ module.exports = {
 				if(newPage.disabled != 'true')
 					newPage.disabled = 'false';
 
+				// Call's module beforeValidation method, if exist
+				var module = Modules.get('pageview', newPage.module);
+
+				if(module && module.beforeValidation)
+					newPage = module.beforeValidation(newPage);
+
 				newPages.push(newPage);
 			});
 
@@ -114,4 +120,4 @@ module.exports = {
 		next();
 	},
 
-};
+}
