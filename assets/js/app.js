@@ -307,12 +307,16 @@ App.Models.Page = Backbone.Model.extend({
 	save: function(attrs, opts){
 		this.set(attrs);
 		this.collection.view.save(null, opts);
-	}
+	},
+	// Override sync, since this model is nested to a View model
+	sync: function(){},
 });
 
 // Pages Collection
 App.Collections.Pages = Backbone.Collection.extend({
-	model: App.Models.Page
+	model: App.Models.Page,
+	// Override sync, since this model is nested to a View model
+	sync: function(){},
 });
 
 // View Model

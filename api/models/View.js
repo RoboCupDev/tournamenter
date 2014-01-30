@@ -84,6 +84,7 @@ module.exports = {
 		if(values.pages){
 			// Defaults for each page
 			var pageDefaults = {
+				id: null, 
 				module: 'pageview',
 				still: 5000,
 				disabled: 'false',
@@ -112,6 +113,25 @@ module.exports = {
 
 				newPages.push(newPage);
 			});
+
+			// Add ID field where it's not set
+			_.forEach(newPages, function(page){
+				// Add ID if not exist
+				if(!page.id){
+					var id = getNextID();
+					page.id = id;
+				}
+			});
+
+			// Helper function that will return next available ID
+			function getNextID () {
+				var max = 0;
+				_.forEach(newPages, function(page){
+					if(page.id) max = Math.max(max, page.id*1);
+				});
+				var next = max*1+1;
+				return next;
+			}
 
 			// Update pages
 			values.pages = newPages;
