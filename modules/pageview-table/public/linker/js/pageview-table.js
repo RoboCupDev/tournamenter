@@ -94,6 +94,7 @@
 				
 			// Render view
 			this.$el.html(this.template());
+			this.$el.addClass('list-group');
 
 			// Initialize edit fields
 			this.configureEditFields();
