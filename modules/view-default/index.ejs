@@ -1,26 +1,56 @@
 <link rel="stylesheet" href="/css/page-transitions.css">
+<link rel="stylesheet" href="/css/view-default.css">
 <script src="/js/page-transitions.js"></script>
+
 <style type="text/css">
 
-body {
-    overflow: hidden;
-    background-color: #333;
-}
-
-.bg-orange{ background-color: #FF8C00; }
-.bg-blue{ background-color: #00CDCD; }
-.bg-purple{ background-color: #B452CD; }
-.bg-red{ background-color: #DC143C; }
 
 </style>
 
 
-<div id="pt-pages" class="pt-perspective">
-	<div class="pt-page bg-orange"> <h1>A</h1> </div>
-	<div class="pt-page bg-blue"> <h1>B</h1> </div>
-	<div class="pt-page bg-purple"> <h1>C</h1> </div>
-	<div class="pt-page bg-red"> <h1>D</h1> </div>
+<div id="pages" class="pt-perspective">
+
+	<div class="show round pt-page">
+
+		<!-- FLAG -->
+		<div class="flag-3d">
+			<img class="flag" src="/flags/4x3/br.svg"/>
+		</div>
+
+		<!-- HEADER -->
+		<div class="field-top shadow-md">
+			<div class="field-title">FIELD</div>
+			<div class="field">A</div>
+		</div>
+		<div class="table-name title-top-xs shadow-md">
+			OFICIAL ROUND
+		</div>
+		<div class="timer title-top-lg shadow-lg">
+			15:00
+		</div>
+
+		<!-- ROUND and TEAM -->
+		<div class="info">
+			<div class="round-name shadow-lg">ROUND</div>
+			<div class="round-number">2</div>
+			<div class="round-team">EMEROTECOS</div>
+		</div>
+
+
+	</div>
+
+	<div class="pt-page bg-blue">
+		<h1>B</h1>
+	</div>
+	<!-- <div class="pt-page bg-purple"> <h1>C</h1> </div> -->
+	<!-- <div class="pt-page bg-red"> <h1>D</h1> </div> -->
 </div>
+
+<footer>
+	<img class="logo" src="/img/logo_robocup.png"/>
+	
+	<h1 class="title">Rescue B</h1>
+</footer>
 
 
 <script type="text/javascript">
@@ -55,7 +85,14 @@ var GlobalViewController = Backbone.View.extend({
 
 
 $(document).ready(function(){
-	var globalViewController = new GlobalViewController();
+	var viewController = new GlobalViewController();
+
+	viewController.pageTransitions.changePage($('.pt-page.show'))
+
+	setInterval(function(){
+		$('.flag').toggleClass('show');
+	}, 4000);
+
 })
 
 

@@ -1,0 +1,325 @@
+/*
+	******
+	FONTS
+	******
+*/
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Lato Light'), local('Lato-Light'), url(/fonts/Lato-Light.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url(/fonts/Lato-Regular.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Lato Bold'), local('Lato-Bold'), url(/fonts/Lato-Bold.ttf) format('truetype');
+}
+
+/*
+	******
+	TEMPLATE
+	******
+*/
+
+body {
+    overflow: hidden;
+    background-color: #333;
+    font-family: 'Lato', sans-serif;
+}
+
+#pages{
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 160px;
+	min-height: 800px;
+	height: auto;
+}
+
+footer {
+	position: fixed;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	height: 160px;
+	background-color: #E6E6E6;
+	-webkit-box-shadow: 0 5px 30px 0 #222222;
+			box-shadow: 0 5px 30px 0 #222222;
+}
+
+footer .logo{
+	float: left;
+	height: 100%;
+	padding: 10px;
+	background-color: #FFFFFF;
+	-webkit-box-shadow: -2px 5px 20px 0 #222222;
+			box-shadow: -2px 5px 20px 0 #222222;
+}
+
+footer .title{
+	float: left;
+	line-height: 160px;
+	margin: 0px;
+	padding-left: 30px;
+	font-size: 90px;
+	font-weight: 600;
+	color: #4D4F5B;
+	font-family: 'Lato', sans-serif;
+}
+
+/*
+	******
+	Helper classes
+	******
+*/
+.shadow-xs{
+	-webkit-box-shadow: 0 0 10px 0 #666;
+			box-shadow: 0 0 10px 0 #666;
+}
+
+.shadow,
+.shadow-md{
+	-webkit-box-shadow: 0 0 20px 0 #666;
+			box-shadow: 0 0 20px 0 #666;
+}
+
+.shadow-lg{
+	-webkit-box-shadow: 0 0 30px 0 #666;
+			box-shadow: 0 0 30px 0 #666;
+}
+
+
+/*
+	******
+	Game Round and Match commons
+	******
+*/
+
+.title-top-lg{
+	position: absolute;
+	top: 0px;
+	height: 120px;
+	width: 480px;
+	margin-left: -240px;
+	left: 50%;
+	
+	-webkit-border-radius: 0 0 120px 120px;
+			border-radius: 0 0 120px 120px;
+
+	line-height: 110px;
+	font-size: 100px;
+	text-align: center;
+}
+
+.field-top{
+	position: absolute;
+	top: 0px;
+	height: 100px;
+	width: 400px;
+	left: 50%;
+	
+	-webkit-border-radius: 0 0 160px 160px;
+			border-radius: 0 0 160px 160px;
+
+	font-weight: 700;
+
+}
+
+.field-top .field-title{
+	position: absolute;
+	top: 5px;
+	left: 40px;
+	width: 100px;
+	/*line-height: 100px;*/
+	font-size: 20px;
+	text-align: center;
+}
+
+.field-top .field{
+	position: absolute;
+	top: 30px;
+	left: 40px;
+	width: 100px;
+	line-height: 60px;
+	font-size: 60px;
+	text-align: center;
+}
+
+.title-top-xs{
+	position: absolute;
+	top: 0px;
+	height: 80px;
+	/*width: 480px;*/
+	/*margin-left: -240px;*/
+	/*left: 50%;*/
+	
+	-webkit-border-radius: 0 0 120px 120px;
+			border-radius: 0 0 120px 120px;
+
+	line-height: 75px;
+	font-size: 50px;
+	text-align: center;
+}
+
+/*
+	******
+	Flag animation and comons
+	******
+*/
+
+.flag-3d{
+	   -moz-perspective: 2000;
+	-webkit-perspective: 2000;
+		 -o-perspective: 2000;
+		-ms-perspective: 2000;
+			perspective: 2000;
+
+	z-index: 999;
+
+}
+.flag-3d .flag{
+
+	/*   -moz-filter: blur(20px);
+	-webkit-filter: blur(20px);
+		 -o-filter: blur(20px);
+		-ms-filter: blur(20px);
+			filter: blur(20px);*/
+
+	   -moz-transform-origin: 0 50%;
+	-webkit-transform-origin: 0 50%;
+		 -o-transform-origin: 0 50%;
+		-ms-transform-origin: 0 50%;
+			transform-origin: 0 50%;
+
+	   -moz-transform: rotateY(180deg) translateZ(-100px);
+	-webkit-transform: rotateY(180deg) translateZ(-100px);
+		 -o-transform: rotateY(180deg) translateZ(-100px);
+		-ms-transform: rotateY(180deg) translateZ(-100px);
+			transform: rotateY(180deg) translateZ(-100px);
+
+	transition: all 1s ease-in-out;
+
+	opacity: 0.6;
+
+	z-index: 999;
+
+}
+
+.flag.show{
+	   -moz-transform: rotateY(45deg) translateZ(-100px);
+	-webkit-transform: rotateY(45deg) translateZ(-100px);
+		 -o-transform: rotateY(45deg) translateZ(-100px);
+		-ms-transform: rotateY(45deg) translateZ(-100px);
+			transform: rotateY(45deg) translateZ(-100px);
+}
+
+/*
+	******
+	Game Round classes
+	******
+*/
+.round {
+	background-color: #F4F4F4;
+}
+
+.round .flag,
+.round .flag-3d{
+	height: 100%;
+}
+
+.round .timer{
+	font-weight: 100;
+	background-color: #CF4857;
+	color: #F0F0F0;
+}
+
+.round .field-top{
+	margin-left: -380px;
+	background-color: #65B236;
+	color: #F0F0F0;	
+}
+
+.round .table-name{
+	left: 50%;
+	margin-left: 100px;
+	padding-left: 150px;
+	padding-right: 50px;
+	font-weight: 100;
+	background-color: #AF3144;
+	color: #F0F0F0;
+}
+
+.round .info{
+	position: absolute;
+	left: 30%;
+	top: 50%;
+	height: 220px;
+	margin-top: -110px;
+	z-index: 1;
+}
+
+.round .round-name{
+	position: relative;
+	float: left;
+	width: 380px;
+	height: 120px;
+
+	line-height: 120px;
+	font-size: 85px;
+	font-weight: 700;
+	padding-left: 30px;
+	padding-right: 40px;
+
+	background-color: #AF3144;
+	color: #F0F0F0;
+}
+
+.round .round-number{
+	position: relative;
+	float: left;
+	width: 120px;
+	height: 120px;
+
+	text-align: center;
+	line-height: 120px;
+	font-size: 85px;
+	font-weight: 700;
+
+	background-color: #CF4857;
+	color: #F0F0F0;
+}
+
+.round .round-team{
+	position: relative;
+	/*float: left;*/
+	/*width: 100px;*/
+	clear: both;
+	height: 100px;
+
+	line-height: 100px;
+	font-size: 65px;
+
+	padding-left: 30px;
+	padding-right: 30px;
+	font-weight: 100;
+
+	background-color: #CF4857;
+	color: #F0F0F0;
+	-webkit-box-shadow: 0 0 30px -5px #222;
+			box-shadow: 0 0 30px -5px #222;
+}
+
+
+
+.bg-orange{ background-color: #FF8C00; }
+.bg-blue{ background-color: #00CDCD; }
+.bg-purple{ background-color: #B452CD; }
+.bg-red{ background-color: #DC143C; }
