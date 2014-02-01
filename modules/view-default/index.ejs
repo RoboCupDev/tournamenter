@@ -36,14 +36,28 @@
 			<div class="round-team">EMEROTECOS</div>
 		</div>
 
-
 	</div>
 
-	<div class="pt-page bg-blue">
-		<h1>B</h1>
+	<div class="pt-page bg-blue"  style="text-align: center;">
+		<h1 style="position: relative; margin-top: -200px; top: 50%; font-size: 400px; line-height: 400px; color: #F0F0F0;">B</h1>
+	</div>
+
+	<div class="pt-page bg-red"  style="text-align: center;">
+		<h1 style="position: relative; margin-top: -200px; top: 50%; font-size: 400px; line-height: 400px; color: #F0F0F0;">C</h1>
 	</div>
 	<!-- <div class="pt-page bg-purple"> <h1>C</h1> </div> -->
 	<!-- <div class="pt-page bg-red"> <h1>D</h1> </div> -->
+</div>
+
+<div id="page-navigation" class="dotstyle dotstyle-scaleup">
+	<ul>
+		<li class="current"><a href="#">Home</a></li>
+		<li><a href="#">About</a></li>
+		<li><a href="#">Products</a></li>
+		<li><a href="#">Portfolio</a></li>
+		<li><a href="#">Blog</a></li>
+		<li><a href="#">Contact</a></li>
+	</ul>
 </div>
 
 <footer>
@@ -62,7 +76,9 @@ var GlobalViewController = Backbone.View.extend({
 
 		var testViews = $('.pt-page');
 		var i = -1;
-		setInterval(function(){
+		setInterval(next, 5000);
+		next();
+		function next(){
 			if(i++ >= testViews.length - 1)
 				i = 0;
 
@@ -75,7 +91,7 @@ var GlobalViewController = Backbone.View.extend({
 			view.pageTransitions.changePage($view, {
 				animation: animation
 			});
-		}, 2000);
+		}
 	},
 
 	render: function(){
@@ -87,7 +103,7 @@ var GlobalViewController = Backbone.View.extend({
 $(document).ready(function(){
 	var viewController = new GlobalViewController();
 
-	viewController.pageTransitions.changePage($('.pt-page.show'))
+	// viewController.pageTransitions.changePage($('.pt-page.show'))
 
 	setInterval(function(){
 		$('.flag').toggleClass('show');
