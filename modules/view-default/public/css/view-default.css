@@ -1,5 +1,28 @@
 /*
 	******
+	RESPONSIVE LAYOUT
+	******
+*/
+@media all and (max-width: 992px) {
+	#wrapper{
+		zoom: 0.4;
+	}
+}
+
+@media all and (min-width: 992px) and (max-width: 1200px) {
+	#wrapper{
+		zoom: 0.6;
+	}
+}
+
+@media all and (min-width: 1200px) {
+	#wrapper{
+		zoom: 0.8;
+	}
+}
+
+/*
+	******
 	FONTS
 	******
 */
@@ -522,7 +545,7 @@ footer .footnote{
 */
 .round {
 	background-color: #F4F4F4;
-	zoom: 1.3;
+	zoom: 1.2;
 }
 
 .round .flag,
@@ -560,6 +583,8 @@ footer .footnote{
 	height: 220px;
 	margin-top: -110px;
 	z-index: 999;
+
+	zoom: 1.2;
 }
 
 .round .round-name{
@@ -622,7 +647,7 @@ footer .footnote{
 	background-color: #F4F4F4;
 	-webkit-box-shadow:inset 0 0 300px -20px #000000;
 			box-shadow:inset 0 0 300px -20px #000000;
-	zoom: 1.3;
+	zoom: 1.2;
 }
 
 
@@ -722,8 +747,8 @@ footer .footnote{
 	******
 */
 .groups{
-	background-color: #36A89E;
-	zoom: 1.3;
+	background-color: #16A79D;
+	zoom: 1.2;
 }
 
 .bg-orange{ background-color: #FF8C00; }
