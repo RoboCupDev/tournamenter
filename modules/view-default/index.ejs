@@ -127,7 +127,40 @@
 
 		<div id="pages" class="pt-perspective">
 
-			<div class="show round pt-page">
+			<div class="show match pt-page">
+
+				<!-- HEADER -->
+				<div class="field-top shadow-md">
+					<div class="field-title">FIELD</div>
+					<div class="field">A</div>
+				</div>
+				<div class="group-name title-top-xs shadow-md">
+					GROUP A
+				</div>
+				<div class="timer title-top-lg shadow-lg">
+					15:00
+				</div>
+
+				<!-- TEAMS and SCORES-->
+				<div class="flag-3d flag-3d-left show">
+					<img class="flag" src="/flags/4x3/br.svg"/>
+				</div>
+				<div class="team left">
+					<div class="team-score">2</div>
+					<div class="team-name-container"><div class="team-name">EMEROTECOS TEAM ABC</div></div>
+				</div>
+
+				<div class="flag-3d flag-3d-right show">
+					<img class="flag" src="/flags/4x3/us.svg"/>
+				</div>
+				<div class="team right">
+					<div class="team-score">19</div>
+					<div class="team-name-container"><div class="team-name">THE DOODLES</div></div>
+				</div>
+
+			</div>
+
+			<div class="round pt-page">
 
 				<!-- FLAG -->
 				<div class="flag-3d">
@@ -309,8 +342,8 @@ var GlobalViewController = Backbone.View.extend({
 
 		var testViews = $('.pt-page');
 		var i = -1;
-		setInterval(next, 3000);
-		next();
+		// setInterval(next, 3000);
+		// next();
 		function next(){
 			if(i++ >= testViews.length - 1)
 				i = 0;
@@ -333,14 +366,15 @@ var GlobalViewController = Backbone.View.extend({
 
 $(document).ready(function(){
 
-	// viewController.pageTransitions.changePage($('.pt-page.show'))
 
 	setInterval(function(){
 		// $('#container').toggleClass('menu-open');
+		// $('.flag-3d').toggleClass('flag-hide');
 	}, 3000);
 	// pageIndicator.setCount(10);
 
 	var viewController = new GlobalViewController();
+	viewController.pageTransitions.changePage($('.pt-page.show'))
 
 	viewController.render();
 })
