@@ -162,6 +162,14 @@
 			<div class="pt-page bg-red"  style="text-align: center;">
 				<h1 style="position: relative; margin-top: -200px; top: 50%; font-size: 400px; line-height: 400px; color: #F0F0F0;">C</h1>
 			</div>
+
+			<div class="pt-page bg-orange"  style="text-align: center;">
+				<h1 style="position: relative; margin-top: -200px; top: 50%; font-size: 400px; line-height: 400px; color: #F0F0F0;">D</h1>
+			</div>
+
+			<div class="pt-page bg-purple"  style="text-align: center;">
+				<h1 style="position: relative; margin-top: -200px; top: 50%; font-size: 400px; line-height: 400px; color: #F0F0F0;">E</h1>
+			</div>
 			<!-- <div class="pt-page bg-purple"> <h1>C</h1> </div> -->
 			<!-- <div class="pt-page bg-red"> <h1>D</h1> </div> -->
 		</div>
@@ -178,7 +186,10 @@
 			</span>
 			
 			<h1 class="title">Rescue B</h1>
-			<small class="footnote">Developed by Ivan Seidel | <a href="mailto:ivanseidel@gmail.com">ivanseidel@gmail.com</a></small>
+
+			<p class="footnote">
+				Developed by Ivan Seidel | <a href="mailto:ivanseidel@gmail.com">ivanseidel@gmail.com</a>
+			</p>
 		</footer>
 
 	</div>
@@ -293,14 +304,12 @@ var GlobalViewController = Backbone.View.extend({
 		});
 		this.pageIndicator.setCount(function(){
 			// Adapter function to pages indicator
-			var size = $('.pt-page').length;
-			console.log(size);
-			return size;
+			return $('.pt-page').length;
 		});
 
 		var testViews = $('.pt-page');
 		var i = -1;
-		setInterval(next, 5000);
+		setInterval(next, 3000);
 		next();
 		function next(){
 			if(i++ >= testViews.length - 1)
