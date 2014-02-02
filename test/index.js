@@ -193,7 +193,7 @@ describe('View Controller', function() {
 				if(!res.body.title) return 'Missing View Attribute';
 				if(!res.body.pages) return 'Missing View Pages attribute';
 				if(res.body.pages.length <= 0) return 'No page in View!';
-				if(!res.body.pages[0].still) return 'Missing Page Attribute!';
+				if(!res.body.pages[0].module) return 'Missing Page Attribute!';
 			}
 		})
 	});
