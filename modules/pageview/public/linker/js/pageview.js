@@ -105,8 +105,10 @@
 			App.Mixins.editInPlace(this.model, $still, {
 				mode: 'popup',
 				value: this.model.get('still'),
+				emptytext: 'Automatic',
 				display: function(value){
-					$(this).text(value + 'ms');
+					if(value)
+						$(this).text(value + 's');
 				}
 			});
 

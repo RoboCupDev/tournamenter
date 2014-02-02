@@ -152,19 +152,19 @@ App.Views.PageTransitions = Backbone.View.extend({
 			outClass: 'pt-page-moveToBottom',
 			inClass: 'pt-page-moveFromTop',
 		},
-		'fade': {
+		'fadeRight': {
 			outClass: 'pt-page-fade',
 			inClass: 'pt-page-moveFromRight pt-page-ontop',
 		},
-		'fade': {
+		'fadeLeft': {
 			outClass: 'pt-page-fade',
 			inClass: 'pt-page-moveFromLeft pt-page-ontop',
 		},
-		'fade': {
+		'fadeBottom': {
 			outClass: 'pt-page-fade',
 			inClass: 'pt-page-moveFromBottom pt-page-ontop',
 		},
-		'fade': {
+		'fadeTop': {
 			outClass: 'pt-page-fade',
 			inClass: 'pt-page-moveFromTop pt-page-ontop',
 		},
@@ -200,23 +200,23 @@ App.Views.PageTransitions = Backbone.View.extend({
 			outClass: 'pt-page-moveToBottomEasing pt-page-ontop',
 			inClass: 'pt-page-moveFromTop',
 		},
-		'scaleDown': {
+		'scaleDownRight': {
 			outClass: 'pt-page-scaleDown',
 			inClass: 'pt-page-moveFromRight pt-page-ontop',
 		},
-		'scaleDown': {
+		'scaleDownLeft': {
 			outClass: 'pt-page-scaleDown',
 			inClass: 'pt-page-moveFromLeft pt-page-ontop',
 		},
-		'scaleDown': {
+		'scaleDownBottom': {
 			outClass: 'pt-page-scaleDown',
 			inClass: 'pt-page-moveFromBottom pt-page-ontop',
 		},
-		'scaleDown': {
+		'scaleDownTop': {
 			outClass: 'pt-page-scaleDown',
 			inClass: 'pt-page-moveFromTop pt-page-ontop',
 		},
-		'scaleDown': {
+		'scaleDownDown': {
 			outClass: 'pt-page-scaleDown',
 			inClass: 'pt-page-scaleUpDown pt-page-delay300',
 		},
@@ -224,19 +224,19 @@ App.Views.PageTransitions = Backbone.View.extend({
 			outClass: 'pt-page-scaleDownUp',
 			inClass: 'pt-page-scaleUp pt-page-delay300',
 		},
-		'moveToLeft': {
+		'moveToLeftWithScale': {
 			outClass: 'pt-page-moveToLeft pt-page-ontop',
 			inClass: 'pt-page-scaleUp',
 		},
-		'moveToRight': {
+		'moveToRightWithScale': {
 			outClass: 'pt-page-moveToRight pt-page-ontop',
 			inClass: 'pt-page-scaleUp',
 		},
-		'moveToTop': {
+		'moveToTopWithScale': {
 			outClass: 'pt-page-moveToTop pt-page-ontop',
 			inClass: 'pt-page-scaleUp',
 		},
-		'moveToBottom': {
+		'moveToBottomWithScale': {
 			outClass: 'pt-page-moveToBottom pt-page-ontop',
 			inClass: 'pt-page-scaleUp',
 		},
@@ -312,7 +312,7 @@ App.Views.PageTransitions = Backbone.View.extend({
 			outClass: 'pt-page-rotatePushTop',
 			inClass: 'pt-page-rotatePullBottom pt-page-delay180',
 		},
-		'rotatePushBottom': {
+		'rotatePushBottomPull': {
 			outClass: 'pt-page-rotatePushBottom',
 			inClass: 'pt-page-rotatePullTop pt-page-delay180',
 		},
@@ -332,19 +332,19 @@ App.Views.PageTransitions = Backbone.View.extend({
 			outClass: 'pt-page-rotateFoldBottom',
 			inClass: 'pt-page-moveFromTopFade',
 		},
-		'moveToRightFade': {
+		'moveToRightFadeUnfold': {
 			outClass: 'pt-page-moveToRightFade',
 			inClass: 'pt-page-rotateUnfoldLeft',
 		},
-		'moveToLeftFade': {
+		'moveToLeftFadeUnfold': {
 			outClass: 'pt-page-moveToLeftFade',
 			inClass: 'pt-page-rotateUnfoldRight',
 		},
-		'moveToBottomFade': {
+		'moveToBottomFadeUnfold': {
 			outClass: 'pt-page-moveToBottomFade',
 			inClass: 'pt-page-rotateUnfoldTop',
 		},
-		'moveToTopFade': {
+		'moveToTopFadeUnfold': {
 			outClass: 'pt-page-moveToTopFade',
 			inClass: 'pt-page-rotateUnfoldBottom',
 		},

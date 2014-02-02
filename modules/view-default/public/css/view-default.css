@@ -34,6 +34,12 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
+#wrapper{
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
 #pages{
 	position: fixed;
 	top: 0px;
@@ -133,6 +139,13 @@ footer .title{
 	font-weight: 600;
 	color: #888;
 	font-family: 'Lato', sans-serif;
+}
+
+footer .footnote{
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin: 0 30px 10px;
 }
 
 /*

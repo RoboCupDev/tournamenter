@@ -86,7 +86,8 @@ module.exports = {
 			var pageDefaults = {
 				id: null, 
 				module: 'pageview',
-				still: 5000,
+				// If empty, it will be automatic
+				still: '',
 				disabled: 'false',
 				options: {},
 			}
@@ -99,8 +100,9 @@ module.exports = {
 				// Remove extra fields
 				newPage = _.pick(page, pickKeys);
 				// Filter still time
-				newPage.still = newPage.still*1 || 0;
-				newPage.still = Math.max(1000, newPage.still);
+				newPage.still = newPage.still || '';
+				if(newPage.still)
+					newPage.still = Math.max(0, newPage.still*1);
 
 				if(newPage.disabled != 'true')
 					newPage.disabled = 'false';
