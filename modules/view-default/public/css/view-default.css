@@ -9,15 +9,16 @@
 	}
 }
 
-@media all and (min-width: 992px) and (max-width: 1200px) {
+@media all and (min-width: 992px) and (max-width: 1400px) {
 	#wrapper{
 		zoom: 0.6;
 	}
 }
 
-@media all and (min-width: 1200px) {
+@media all and (min-width: 1400px) {
 	#wrapper{
-		zoom: 0.8;
+		/*zoom: 0.8;*/
+		zoom: 1;
 	}
 }
 
@@ -209,7 +210,9 @@ footer .footnote{
 }
 .table-pretty th,
 .table-pretty td{
-	padding: 2px 5px;
+	padding: 5px 10px;
+	font-size: 14px;
+	font-family: 'Helvetica Neue', 'Lato', 'Helvetica';
 }
 .table-pretty th{
 	font-weight: bold;
@@ -217,8 +220,9 @@ footer .footnote{
 .table-pretty tbody tr:nth-child(2n+1){
 	background-color: #F4F4F4;
 }
-.table-pretty td{
+.table-pretty tr:not(:last-child){
 	border-bottom: 1px solid #EEE;
+	color: #444;
 }
 
 /* BLUE Table Template*/
@@ -289,6 +293,43 @@ footer .footnote{
 	margin-right: 0px;
 }
 
+/*
+	******
+	LISTS and Tags for lists layout
+	******
+*/
+
+.group-tag{
+	display: inline-block;
+	padding-right: 10px;
+	/*line-height: 20px;*/
+	height: 30px;
+
+	color: #F0F0F0;
+	font-size: 16px;
+
+	font-weight: lighter;
+	font-family: 'Helvetica Neue', 'Lato', 'Helvetica';
+}
+/* Give size to icon and fix it */
+.group-tag > span{
+	position: static;
+	width: 30px !important;
+	height: 30px;
+	line-height: 30px;
+	margin-right: 5px;
+	text-align: center;
+}
+
+/* Colors */
+.group-tag.group-tag-orange{ background-color: #F5AB43; }
+.group-tag.group-tag-orange > span{ background-color: #D68E38; }
+
+.group-tag.group-tag-blue{ background-color: #36A89E; }
+.group-tag.group-tag-blue > span{ background-color: #247F74; }
+
+.group-tag.group-tag-green{ background-color: #65B236; }
+.group-tag.group-tag-green > span{ background-color: #339933; }
 
 /*
 	******
@@ -378,11 +419,11 @@ footer .footnote{
 			perspective: 2000;
 }
 .flag-3d .flag{
-	/*   -moz-filter: blur(20px);
-	-webkit-filter: blur(20px);
-		 -o-filter: blur(20px);
-		-ms-filter: blur(20px);
-			filter: blur(20px);*/
+	   -moz-filter: blur(10px);
+	-webkit-filter: blur(10px);
+		 -o-filter: blur(10px);
+		-ms-filter: blur(10px);
+			filter: blur(10px);
 
 	transition: all 1s ease-in-out;
 	opacity: 0.6;
@@ -402,6 +443,8 @@ footer .footnote{
 		-ms-transform: /*translateZ(-1000px)*/ rotateY(45deg);
 		 -o-transform: /*translateZ(-1000px)*/ rotateY(45deg);
 			transform: /*translateZ(-1000px)*/ rotateY(45deg);
+
+	border-radius: 0 10% 10% 0;
 }
 
 .flag-3d-right .flag{
@@ -417,6 +460,8 @@ footer .footnote{
 		-ms-transform: /*translateZ(-1000px)*/ rotateY(-45deg);
 		 -o-transform: /*translateZ(-1000px)*/ rotateY(-45deg);
 			transform: /*translateZ(-1000px)*/ rotateY(-45deg);
+
+	border-radius: 10% 0 0 10%;
 }
 
 /*.flag-3d.show .flag,*/
@@ -746,10 +791,192 @@ footer .footnote{
 	Soccer Group Table classes
 	******
 */
-.groups{
+.pageview-table{
 	background-color: #16A79D;
-	zoom: 1.2;
+	/*zoom: 1.2;*/
 }
+
+.pageview-table .scores-board{
+	-webkit-box-shadow: 0 0px 30px -10px #000;
+			box-shadow: 0 0px 30px -10px #000;
+	-webkit-border-radius: 0 0 10px 10px;
+			border-radius: 0 0 10px 10px;
+	z-index: 2;
+}
+.pageview-table .scores-board table{
+	-webkit-border-radius: 0 0 10px 10px;
+			border-radius: 0 0 10px 10px;
+}
+
+.pageview-table .matches-board{
+	-webkit-box-shadow: 0 0px 30px -10px #000;
+			box-shadow: 0 0px 30px -10px #000;
+	z-index: 1;
+}
+
+.pageview-table .matches-inner{
+	background-color: #DFDFDF;
+	/*padding-bottom: 1px;*/
+}
+
+.pageview-table .group-tag{
+	margin-left: 10px;
+	margin-top: 30px;
+}
+
+/*
+	Match Item common
+*/
+.pageview-table .match-item.match-ended{
+	margin-bottom: 10px
+}
+
+/*
+	Playing Match and Scheduled match
+*/
+.pageview-table .match-playing,
+.pageview-table .match-scheduled{
+	position: relative;
+	height: 40px;
+	color: #999;
+	background-color: #FFF;
+	margin-bottom: 1px;
+}
+
+.pageview-table .match-playing::before,
+.pageview-table .match-scheduled::before{
+	position: absolute;
+	height: 100%;
+	width: 10px;
+	content: "";
+	background-color: #ff0000;
+}
+
+.pageview-table .match-playing > *,
+.pageview-table .match-scheduled > *{
+	margin-left: 20px;
+}
+
+.pageview-table .match-playing .match-field,
+.pageview-table .match-scheduled .match-field{
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 40px;
+	width: 40px;
+
+	font-size: 32px;
+	line-height: 40px;
+	text-align: center;
+	color: #F0F0F0;
+	background-color: #999;
+}
+
+.pageview-table .match-playing .match-place,
+.pageview-table .match-scheduled .match-place{
+	color: #3FA9F5;
+}
+
+.pageview-table .match-playing .match-teams,
+.pageview-table .match-scheduled .match-teams{
+	/*font-weight: bold;*/
+	line-height: 18px;
+	font-size: 18px;
+	color: #666;
+}
+
+/*
+	Playing Match item specific
+*/
+.pageview-table .match-playing .match-field,
+.pageview-table .match-playing::before{
+	background-color: #F5AB43;
+}
+
+/*
+	Scheduled Match item specific
+*/
+.pageview-table .match-scheduled .match-field,
+.pageview-table .match-scheduled::before{
+	background-color: #36A89E;
+}
+
+/*
+	Ended Match item
+*/
+.pageview-table .match-item.match-ended{
+	position: relative;
+	height: 60px;
+	color: #999;
+	background-color: #FFFFFF;
+	-webkit-box-shadow: 0 0px 10px -5px #000;
+			box-shadow: 0 0px 10px -5px #000;
+}
+
+.pageview-table .match-item.match-ended::before{
+	content: "";
+	width: 10px;
+	background-color: #65B236;
+}
+
+.pageview-table .team-data .team-score{
+	position: absolute;
+	top: 0;
+	width: 60px;
+	height: 60px;
+
+	font-size: 32px;
+	font-weight: bold;
+	line-height: 60px;
+	text-align: center;
+	z-index: 1;
+}
+.pageview-table .team-data .team-name{
+	position: absolute;
+	width: 100%;
+	height: 50%;
+
+	font-size: 18px;
+	line-height: 30px;
+	text-align: center;
+	z-index: 0;
+}
+
+/* Win team is colored green and looser is white*/
+.pageview-table .team-data.team-win *{
+	color: #F0F0F0 !important;
+	background-color: #65B236 !important;
+}
+
+.pageview-table .team-data.team-loose *{
+	color: #999 !important;
+	background-color: #FFF !important;
+}
+
+/* left side specific */
+.pageview-table .team-data.team-left *{
+	color: #F0F0F0;
+	background-color: #B3B3B3;
+}
+.pageview-table .team-data.team-left .team-score{
+	left: 0;
+}
+.pageview-table .team-data.team-left .team-name{
+	top: 0;
+}
+
+/* right side specific */
+.pageview-table .team-data.team-right *{
+	color: #999;
+	background-color: #FFF;
+}
+.pageview-table .team-data.team-right .team-score{
+	right: 0;
+}
+.pageview-table .team-data.team-right .team-name{
+	bottom: 0;
+}
+
 
 .bg-orange{ background-color: #FF8C00; }
 .bg-blue{ background-color: #00CDCD; }
