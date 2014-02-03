@@ -4,19 +4,19 @@
 	******
 */
 @media all and (max-width: 992px) {
-	#wrapper{
+	body{
 		zoom: 0.4;
 	}
 }
 
 @media all and (min-width: 992px) and (max-width: 1400px) {
-	#wrapper{
+	body{
 		zoom: 0.6;
 	}
 }
 
 @media all and (min-width: 1400px) {
-	#wrapper{
+	body{
 		/*zoom: 0.8;*/
 		zoom: 1;
 	}
