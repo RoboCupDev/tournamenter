@@ -143,7 +143,7 @@ module.exports = {
 	 */
 	_config: {
 		menus: [
-			{name: 'Groups', path: '/groups', order: 1}
+			{name: 'Groups', path: '/groups/manage', order: 1}
 		]
 	}
 

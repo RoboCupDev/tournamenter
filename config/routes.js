@@ -33,23 +33,27 @@ module.exports.routes = {
   // 
   // (This would also work if you had a file at: `/views/home.ejs`)
   '/': 'TeamController.manage',
-  'GET /teams': 'TeamController.manage',
 
-  '/views/view/:id?': 'ViewController.view',
+  // Specific action override for controllers
+  // 'GET /teams/manage':             'TeamController.manage',
+  'PATCH /teams/:id':       'TeamController.update',
 
-  // PATCH, and Associated methods override
-  'PATCH /teams/:id': 'TeamController.update',
-
-  'PATCH /groups/:id':  'GroupController.update',
+  'PATCH /groups/:id':      'GroupController.update',
+  'GET /groups/find/:id?':  'GroupController.associated',
   'GET /groups/:id?':       'GroupController.associated',
-  'GET /groups/find/:id?':   'GroupController.associated',
 
-  'PATCH /matches/:id': 'MatchController.update',
+  'PATCH /matches/:id':     'MatchController.update',
 
-  'PATCH /tables/:id': 'TableController.update',
-  'PATCH /scores/:id': 'ScoresController.update',
+  'PATCH /tables/:id':      'TableController.update',
+  'GET /tables/find/:id?':  'TableController.associated',
+  'GET /tables/:id?':       'TableController.associated',
 
-  'PATCH /views/:id': 'ViewController.update',
+  'PATCH /scores/:id':      'ScoresController.update',
+
+  'GET /views/view/:id?':   'ViewController.view',
+  'PATCH /views/:id':       'ViewController.update',
+  'GET /views/find/:id?':   'ViewController.associated',
+  'GET /views/:id?':        'ViewController.associated',
 
   /*
   // But what if you want your home page to display

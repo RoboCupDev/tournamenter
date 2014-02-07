@@ -118,13 +118,13 @@ describe('Team', function() {
 describe('View Controller', function() {
 
 	// Try to find all
-	describe('/views/associated', function() {
+	describe('/views', function() {
 
 		var res = null;
 
 		before(function(done){
 			supertest(sails.express.app)
-				.get('/views/associated')
+				.get('/views')
 				.end(function(err, _res){
 					res = _res;
 					done();
@@ -149,13 +149,13 @@ describe('View Controller', function() {
 	});
 
 	// Try to find one
-	describe('/views/associated/:id', function() {
+	describe('/views/:id', function() {
 
 		var res = null;
 
 		before(function(done){
 			supertest(sails.express.app)
-				.get('/views/associated/2')
+				.get('/views/2')
 				.end(function(err, _res){
 					res = _res;
 					done();

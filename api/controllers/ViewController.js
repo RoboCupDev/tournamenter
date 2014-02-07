@@ -20,25 +20,6 @@
  var path = require('path');
 
 module.exports = {
-	
-	associated: function(req, res, next){
-		var id = req.param('id');
-
-		getProcessedViews(id, afterProcessViews);
-
-		function afterProcessViews(err, views){
-			if(err) return next(err);
-
-			// 404 if not found
-			if(id && !views[0])
-				return next(404);
-
-			var toRender = views;
-			if(id) toRender = views[0];
-
-			res.json(toRender);
-		}
-	},
 
 	manage: function(req, res, next){
 		getProcessedViews(null, afterProcessViews);
@@ -50,6 +31,25 @@ module.exports = {
 				views: views
 			});
 
+		}
+	},
+
+	associated: function(req, res, next){
+		var id = req.param('id');
+
+		getProcessedViews(id, afterProcessViews);
+
+		function afterProcessViews(err, views){
+			if(err) return next(err);
+
+			// 404 if not found
+			if(id && !views[0])
+				return next();//'View ID was set, but no view was found');
+
+			var toRender = views;
+			if(id) toRender = views[0];
+
+			res.json(toRender);
 		}
 	},
 
