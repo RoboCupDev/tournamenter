@@ -23,7 +23,7 @@ module.exports = {
 		return XEditable.handle(Group)(req, res, next);
 	},
 
-	index: function (req, res) {
+	manage: function (req, res) {
 		return res.view({
 			path: req.route.path
 		});

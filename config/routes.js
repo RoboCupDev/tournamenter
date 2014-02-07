@@ -37,10 +37,13 @@ module.exports.routes = {
 
   '/views/view/:id?': 'ViewController.view',
 
-  // PATCH methods for Backbone
+  // PATCH, and Associated methods override
   'PATCH /teams/:id': 'TeamController.update',
 
-  'PATCH /groups/:id': 'GroupController.update',
+  'PATCH /groups/:id':  'GroupController.update',
+  'GET /groups/:id?':       'GroupController.associated',
+  'GET /groups/find/:id?':   'GroupController.associated',
+
   'PATCH /matches/:id': 'MatchController.update',
 
   'PATCH /tables/:id': 'TableController.update',
