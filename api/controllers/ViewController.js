@@ -66,40 +66,33 @@ module.exports = {
 		var id = req.param('id');
 
 		// If id is set, then we shall render a single page
-		if(id) return View.find({id: id}, renderView);
-
+		if(id) 
+			return View.find({id: id}, renderView);
 		// Else, let's render a list
-		View.find(renderList);
+		else
+			return View.find(renderList);
+
 
 		function renderView(err, views){
 			if(err) return next(err);
-			if(views.length <= 0) return next('Could not find view... Are you shure about this view?');
+			if(views.length <= 0) return res.redirect('/views/view');//('Could not find view... Are you shure about this view?');
 
-			// Try to get view from modules
-			var viewDir = __dirname+'/../../views';
-			var moduleViewDir = viewDir+'/view/view';
-		
-			var viewModule = Modules.get('view', 'view-default');
-			if(viewModule){
-				moduleViewDir = viewModule.viewPath;
-			}
-			
-			// Find relative path from the viewDirectory, to the modules (or the same) dir
-			var viewToRender = path.relative(path.resolve(viewDir), moduleViewDir);
-			console.log(viewDir.red);
+			// View Module to render with
+			viewModuleName = 'view-default';
+			var viewModule = Modules.get('view', viewModuleName);
 
-			res.view(viewToRender, {
-				_layoutFile: path.relative(viewToRender, viewDir+'/light.ejs'),
-				view: views[0],
-			})
-			// res.send('In development');
+			if(!viewModule) return res.send('Could not load View Module: '+viewModuleName, 500);
+
+			// Delegate render to module
+			var locals = { view: views[0] };
+			return viewModule.render(req, res, next, locals);
 		}
 
 		function renderList(err, views){
 			if(err) return next(err);
 
 			res.view('view/list', {
-				// _layoutFile: 'default',
+				_layoutFile: '../light.ejs',
 				views: views
 			});
 		}
