@@ -16,10 +16,11 @@ var App = {
 	Views: {},
 	Mixins: {},
 	Util: {},
-	
-	PageViews: {},
 };
 window.App = App;
+
+var Modules = {};
+window.Modules = Modules;
 
 /*
 	Mixin to show modal and confirm action

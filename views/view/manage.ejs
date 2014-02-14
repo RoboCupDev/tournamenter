@@ -164,10 +164,10 @@ App.Views.Pages = Backbone.View.extend({
 
 		// Render Page view acordingly to the module specified
 		var moduleName = model.get('module');
-		var module = App.PageViews[moduleName]
+		var module = Modules.PageViews[moduleName]
 		if(!module){
 			console.warn('No view in module! Setting default one');
-			module = App.PageViews['pageview'];
+			module = Modules.PageViews['pageview'];
 		}
 
 		// Check if no ItemView is provided
@@ -281,9 +281,9 @@ App.Views.View = Backbone.View.extend({
 		// Render button items
 		var itemTemplate = _.template($('#template-create-page-item').html());
 		var count = 0;
-		for(var moduleId in App.PageViews){
+		for(var moduleId in Modules.PageViews){
 			// If it's disabled, continue
-			var module = App.PageViews[moduleId];
+			var module = Modules.PageViews[moduleId];
 			if(module.disabled)
 				continue;
 
@@ -306,7 +306,7 @@ App.Views.View = Backbone.View.extend({
 	},
 
 	createPage: function(moduleId){
-		var module = App.PageViews[moduleId];
+		var module = Modules.PageViews[moduleId];
 
 		this.model.pages.add({module: module.module}, {silent: true});
 		// this.model.get('pages').push({aew: 1});

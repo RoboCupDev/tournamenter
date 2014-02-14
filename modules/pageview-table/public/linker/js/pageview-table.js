@@ -11,7 +11,7 @@
 (function () {
 
 	// Get default pageview module to extend
-	defaultModule = _.clone(App.PageViews['pageview']);
+	defaultModule = _.clone(Modules.PageViews['pageview']);
 
 	// Extend default pageview
 	var module = _.extend(defaultModule, {
@@ -172,6 +172,6 @@
 	});
 
 	// Register in modules
-	App.PageViews[module.module] = module;
+	(Modules.PageViews = Modules.PageViews ? Modules.PageViews : {})[module.module] = module;
 
 })();

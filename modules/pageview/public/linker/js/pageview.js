@@ -44,7 +44,7 @@
 
 	To 'extend' this default implementation, do like this:
 
-	App.PageViews['myModuleName'] = _.extend(App.PageViews.pageview, {
+	Modules.PageViews['myModuleName'] = _.extend(Modules.PageViews.pageview, {
 
 		name: 'My New Name',
 		module: 'myModuleName',
@@ -57,12 +57,12 @@
 	});
 
 	// Or, you want to EXTEND it
-	App.PageViews.myModuleName.ItemView = App.PageViews.pageview.extend({
+	Modules.PageViews.myModuleName.ItemView = Modules.PageViews.pageview.extend({
 		*
 			Note that ItemView is defined with default BarView and
 			ConfigView. In order to 'override' it use like this:
 		*
-		ConfigView: App.PageViews.myModuleName.ConfigView
+		ConfigView: Modules.PageViews.myModuleName.ConfigView
 	});
 
 
@@ -74,6 +74,51 @@
 		module: 'pageview',
 		disabled: true,
 	};
+
+	/*
+		Specific Page Model
+	*/
+	module.model = Backbone.View.extend({});
+
+	/*
+		Public view
+
+		There are some defaults methods available for view controllers
+
+			estimateTime
+				Returns the estimated time to show this page
+
+			enabled
+				Returns if this view is enabled
+
+		Some events that are triggered externally:
+
+			show:before
+				Before showing view. Use this to pre-render stuff and prepare view
+
+			show:after, show
+				Sent one after other, usefull for triggering show actions on the view
+
+			hide:before
+				Before starting to hide, this is triggered
+
+			hide:after, hide
+				After hiding animation complete. Use this to stop animations, ...
+
+	*/
+	module.view = Backbone.View.extend({
+		template: JST['pageview.view'],
+		
+		estimateTime: function(){
+			this.model.get('')
+		},
+
+		render: function(){
+			this.$el.html(this.template({}));
+
+			return this;
+		},
+	});
 
 	module.BarView = Backbone.View.extend({
 		template: JST['pageview.barView'],
@@ -220,7 +265,7 @@
 		initialize: function(){
 			// Find proper module
 			var moduleId = this.model.get('module');
-			this.module = App.PageViews[moduleId] || App.PageViews['pageview'];
+			this.module = Modules.PageViews[moduleId] || Modules.PageViews['pageview'];
 			
 			// Initialize sub-views
 			var opts = {
@@ -256,6 +301,6 @@
 	});
 
 	// Register in modules
-	App.PageViews['pageview'] = module;
+	(Modules.PageViews = Modules.PageViews ? Modules.PageViews : {})[module.module] = module;
 
 })();

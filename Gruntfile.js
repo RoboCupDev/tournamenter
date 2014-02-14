@@ -71,6 +71,7 @@ module.exports = function (grunt) {
     '/js/x-editable.min.js',
     '/js/underscore-min.js',
     '/js/backbone.js',
+    '/js/backbone-relational.js',
     '/js/select2.js',
     // '/js/bootstrap-switch.min.js',
 
