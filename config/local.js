@@ -25,6 +25,7 @@
  var _ = require('lodash');
  var Modules = require('../api/services/Modules');
  var sails = require('sails');
+ var express = require('express');
 
 module.exports = {
 
@@ -67,6 +68,9 @@ module.exports = {
       */
       Modules.load(__dirname + '/../modules');
       sails.log('View Modules Installed: '.green + (_(Modules.modules).keys().join(',')).cyan);
+
+      // Enable GZip compression
+      app.use(express.compress());
 
       // console.log("config of Middleware is called")
       // app.use(function (req, res, next) {
