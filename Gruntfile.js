@@ -83,7 +83,7 @@ module.exports = function (grunt) {
     '/js/countries.js',
 
     '/linker/js/pageview.js',
-    // '/linker/js/wallview.js',
+    // '/linker/js/view.js',
 
     // All of the rest of your app scripts imported here
     'linker/**/*.js'
@@ -311,9 +311,10 @@ module.exports = function (grunt) {
         },
         files: {
           '.tmp/public/**/*.html': jsFilesToInject,
-          'modules/public/**/*.ejs': jsFilesToInject,
           'views/**/*.html': jsFilesToInject,
-          'views/**/*.ejs': jsFilesToInject
+          'views/**/*.ejs': jsFilesToInject,
+
+          'modules/**/*.ejs': jsFilesToInject,
         }
       },
 
@@ -326,9 +327,10 @@ module.exports = function (grunt) {
         },
         files: {
           '.tmp/public/**/*.html': ['.tmp/public/min/production.js'],
-          'modules/public/**/*.ejs': ['.tmp/public/min/production.js'],
           'views/**/*.html': ['.tmp/public/min/production.js'],
-          'views/**/*.ejs': ['.tmp/public/min/production.js']
+          'views/**/*.ejs': ['.tmp/public/min/production.js'],
+
+          'modules/**/*.ejs': ['.tmp/public/min/production.js'],
         }
       },
 
@@ -343,9 +345,10 @@ module.exports = function (grunt) {
         // cssFilesToInject defined up top
         files: {
           '.tmp/public/**/*.html': cssFilesToInject,
-          'modules/public/**/*.html': cssFilesToInject,
           'views/**/*.html': cssFilesToInject,
-          'views/**/*.ejs': cssFilesToInject
+          'views/**/*.ejs': cssFilesToInject,
+
+          'modules/**/*.ejs': cssFilesToInject,
         }
       },
 
@@ -358,9 +361,10 @@ module.exports = function (grunt) {
         },
         files: {
           '.tmp/public/index.html': ['.tmp/public/min/production.css'],
-          'modules/public/index.html': ['.tmp/public/min/production.css'],
           'views/**/*.html': ['.tmp/public/min/production.css'],
-          'views/**/*.ejs': ['.tmp/public/min/production.css']
+          'views/**/*.ejs': ['.tmp/public/min/production.css'],
+
+          'modules/**/*.ejs': ['.tmp/public/min/production.css'],
         }
       },
 
@@ -374,9 +378,10 @@ module.exports = function (grunt) {
         },
         files: {
           '.tmp/public/index.html': ['.tmp/public/jst.js'],
-          'modules/public/index.html': ['.tmp/public/jst.js'],
           'views/**/*.html': ['.tmp/public/jst.js'],
-          'views/**/*.ejs': ['.tmp/public/jst.js']
+          'views/**/*.ejs': ['.tmp/public/jst.js'],
+
+          'modules/**/*.ejs': ['.tmp/public/jst.js'],
         }
       },
 
