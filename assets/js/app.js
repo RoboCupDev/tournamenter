@@ -359,6 +359,21 @@ App.Models.View = Backbone.Model.extend({
 	},
 });
 
+// V2 of Page and View
+App.Models.Page2 = Backbone.RelationalModel.extend();
+
+App.Models.View2 = Backbone.RelationalModel.extend({
+	relations: [{
+		type: Backbone.HasMany,
+		key: 'Pages',
+		keySource: 'pages',
+		keyDestination: 'pages',
+		relatedModel: App.Models.Page2,
+		// includeInJSON: 'id',
+	}]
+});
+
+
 // Views Collection
 App.Collections.Views = Backbone.Collection.extend({
 	model: App.Models.View,

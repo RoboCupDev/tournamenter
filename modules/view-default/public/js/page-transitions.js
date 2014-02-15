@@ -48,7 +48,7 @@ App.Views.PageTransitions = Backbone.View.extend({
 		this.isAnimating = true;
 		
 		var $currPage = this.$currentView;
-		var $nextPage = this.saveView(next).addClass( 'pt-page-current' );
+		var $nextPage = (next ? this.saveView(next).addClass( 'pt-page-current' ) : null);
 
 		if(!this.supportAnimation)
 			return self.setPage($nextPage);
@@ -102,8 +102,12 @@ App.Views.PageTransitions = Backbone.View.extend({
 			this.restoreView(this.$currentView);
 
 		// Set nextView as current, with restored css values
-		this.restoreView($nextView);
-		this.$currentView = $nextView.addClass('pt-page-current');
+		if($nextView){
+			this.restoreView($nextView);
+			this.$currentView = $nextView.addClass('pt-page-current');
+		}else{
+			this.$currentView = null;
+		}
 
 		// Reset animate flag
 		this.isAnimating = false;
@@ -118,18 +122,19 @@ App.Views.PageTransitions = Backbone.View.extend({
 		It also checks if the view has it's saved values, if not, then save it
 	*/
 	saveView: function(view){
-		// Find view;
-		var $view = (view.$el ? view.$el : view);
+		if(!view) return null;
 		// If not saved, save it
-		if(!$view.data('originalClassList'))
-			$view.data('originalClassList', $view.attr( 'class' ));
-		return $view;
+		if(!view.data('originalClassList'))
+			view.data('originalClassList', view.attr( 'class' ));
+		return view;
 	},
 
 	/*
 		Restore view default classes 
 	*/
 	restoreView: function(view){
+		if(!view) return null;
+		// Restore
 		var $view = this.saveView(view);
 		$view.attr('class', $view.data('originalClassList'));
 		return $view;

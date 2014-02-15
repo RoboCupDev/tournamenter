@@ -88,8 +88,8 @@
 			estimateTime
 				Returns the estimated time to show this page
 
-			enabled
-				Returns if this view is enabled
+			disabled
+				Returns if this view is disabled (should not be shown)
 
 		Some events that are triggered externally:
 
@@ -109,8 +109,22 @@
 	module.view = Backbone.View.extend({
 		template: JST['pageview.view'],
 		
+		initialize: function(){
+			this.on('all', this.logAction);
+		},
+
+		logAction: function(evt){
+			console.log(evt);
+		},
+
 		estimateTime: function(){
-			this.model.get('')
+			var still = this.model.get('still') || 3000;
+			return still;
+		},
+
+		disabled: function(){
+			var disabled = (this.model.get('disabled') ? true : false);
+			return disabled;
 		},
 
 		render: function(){
