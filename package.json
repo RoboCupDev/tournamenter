@@ -4,6 +4,7 @@
   "description": "Manages Competition Events such as RoboCup",
   "dependencies": {
     "sails": "0.9.7",
+    "express": "3.0.0",
     "grunt": "0.4.1",
     "sails-disk": "~0.9.0",
     "ejs": "0.8.4",
