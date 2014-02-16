@@ -109,21 +109,31 @@
 	module.view = Backbone.View.extend({
 		template: JST['pageview.view'],
 		
-		initialize: function(){
-			this.on('all', this.logAction);
+		_initialize: function(){
+			// this.on('all', this.logAction);
+			this.on('hide show', this.saveState, this);
+			this.listenTo(this.model, 'destroy', this.destroy);
+			this.listenTo(this.model, 'change:disabled', this.changeVisibility);
+			this.$el.addClass('match');
 		},
 
-		logAction: function(evt){
-			console.log(evt);
+		initialize: function(){
+			this._initialize();
+		},
+
+		changeVisibility: function(evt){
+			if(this.disabled()) this.$el.hide();
+			else this.$el.show();
 		},
 
 		estimateTime: function(){
-			var still = this.model.get('still') || 3000;
+			// Still time are saved in secconds
+			var still = this.model.get('still')*1000 || 3000;
 			return still;
 		},
 
 		disabled: function(){
-			var disabled = (this.model.get('disabled') ? true : false);
+			var disabled = (this.model.get('disabled') == 'true' ? true : false);
 			return disabled;
 		},
 
@@ -131,6 +141,10 @@
 			this.$el.html(this.template({}));
 
 			return this;
+		},
+
+		destroy: function(){
+			this.$el.remove();
 		},
 	});
 
