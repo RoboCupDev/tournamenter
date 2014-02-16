@@ -74,6 +74,10 @@ body {
 	height: auto;
 }
 
+.pt-page {
+	background-color: #F0F0F0;
+}
+
 #page-navigation{
 	position: fixed;
 	width: 100%;
@@ -724,6 +728,12 @@ footer .footnote{
 	top: 50%;
 	width: 50%;
 	z-index: 999;
+
+	-webkit-transform: translate3d(0,0,0px);
+	   -moz-transform: translate3d(0,0,0px);
+		-ms-transform: translate3d(0,0,0px);
+		 -o-transform: translate3d(0,0,0px);
+			transform: translate3d(0,0,0px);
 }
 
 .match .team.left{
