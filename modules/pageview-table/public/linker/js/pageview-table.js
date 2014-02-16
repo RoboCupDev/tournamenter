@@ -71,6 +71,25 @@
 	});
 
 
+	/*
+		Public view Class that will render, update and animate
+		tables
+	*/
+	module.view = defaultModule.view.extend({
+		template: JST['pageview.view'],
+
+		initialize: function(){
+			// Call super constructor
+			this._initialize();
+		},
+
+		render: function(){
+			this.$el.html(this.template({}));
+			this.$el.addClass('pageview-table');
+		},
+
+	});
+
 
 	module.ConfigView = defaultModule.ConfigView.extend({
 
