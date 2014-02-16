@@ -363,12 +363,14 @@ App.Models.View = Backbone.Model.extend({
 App.Models.Page2 = Backbone.RelationalModel.extend();
 
 App.Models.View2 = Backbone.RelationalModel.extend({
+	urlRoot: '/views/',
 	relations: [{
 		type: Backbone.HasMany,
 		key: 'Pages',
 		keySource: 'pages',
 		keyDestination: 'pages',
 		relatedModel: App.Models.Page2,
+		parse: true,
 		// includeInJSON: 'id',
 	}]
 });

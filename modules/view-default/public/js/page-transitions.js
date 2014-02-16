@@ -1,4 +1,197 @@
 /*
+  	Copyright 2014 Ivan Seidel
+  
+	Light controll for animations and transitions
+
+	When animating 'fromElement' to 'toElement', with options:
+		$.transition(toElement, fromElement, options);
+		$.transition(toElement, options);
+		$.transition(toElement);
+
+	When animating 'toElement', that is inside 'container', 
+	this library will automatically try to find last element
+	and set it as the fromElement:
+		$('container').transition.to(toElement, options)
+		$('container').transition.to(toElement)
+
+	Note: Options will be saved to container, allowing you
+	to use this method without any options. If you want to
+	setup it your self, use:
+		$('container').setup(options);
+
+	This way, all transitions called from container, will
+	have it's defaults options already set. Ex:
+
+		$('container').transition.setup({
+			visibleClass: 'myVisibleClass'
+		});
+
+		$('container').transition.to(element);
+
+	To override options, use:
+		$.transition.defaults.cssType = 'animation';
+
+	This code was build with Modernizr and Bootstrap, and are
+	only needed to allow the code to know witch eventName
+	adequates the browser.
+	Both options must be a string on:
+		$.support.animation.end, or
+		$.support.transition.end
+
+*/
+(function ( $ ){
+
+	// Find out correct animation end event name (depends on browser)
+	var animEndEventNames = {
+			'WebkitAnimation' : 'webkitAnimationEnd',
+			'OAnimation' : 'oAnimationEnd',
+			'msAnimation' : 'MSAnimationEnd',
+			'animation' : 'animationend'
+	};
+	// Save to global
+	$.support.animation = {end: animEndEventNames[ Modernizr.prefixed('animation') ] };
+
+	// Emulate event if not sent for a given time
+	$.fn.emulateEvent = function (eventName, duration) {
+		var called = false, $el = this
+		$(this).one(eventName, function () { called = true })
+		var callback = function () { if (!called) $($el).trigger(eventName) }
+		setTimeout(callback, duration)
+		return this
+	}
+
+	/*
+		Helper function used to get jQuery view inside view object, or return view itself
+		It also checks if the view has it's saved values, if not, then save it
+	*/
+	var saveClass = function(view){
+		if(!view) return;
+		// If not saved, save it
+		if(!view.data('originalClassList'))
+			view.data('originalClassList', view.attr( 'class' ));
+		return view;
+	};
+
+	/*
+		Restore view default classes 
+	*/
+	var restoreClass = function(view){
+		if(!view) return;
+		// Restore
+		view.attr('class', view.data('originalClassList'));
+		return view;
+	};
+
+	/*
+		Transition method
+	*/
+	$.transition = function(to, from, options){
+		// Adequate for multy param types
+		if(!options) {
+			options = from;
+			from = null;
+		}
+
+		// jQueryfy elements (allow usage as strings)
+		if(to) 	 to = $(to);
+		if(from) from = $(from);
+
+		// Set defaults to options
+		options = $.extend($.transition.defaults, options);
+
+		// saveClass
+		if(options.saveClass && from) 	saveClass(from);
+		if(options.saveClass && to) 	saveClass(to);
+		// restoreClass from class
+		if( options.restoreClass && to )   restoreClass(to).addClass(options.visibleClass);
+		if( options.restoreClass && from ) restoreClass(from).addClass(options.visibleClass);
+
+		// Get event name to listent to
+		var eventName = $.support[options.cssType].end;
+
+		// Set animation properties
+		if(from){
+			from//.off( eventName )
+				.addClass( options.outClass )
+				.one( eventName, onEnd )
+				.emulateEvent(eventName, options.timeout );
+		}
+
+		if(to){
+			  to//.off( eventName )
+				.addClass( options.inClass )
+				.one( eventName, onEnd )
+				.emulateEvent(eventName, options.timeout );
+		}
+
+		var cbCount = 0;
+		var cbTarget = (from ? from.length: 0) + (to.length ? 1 : 0);
+		function onEnd(){
+			if(cbTarget < ++cbCount) return;
+
+			// Restor classes, and set visible and invisible class to elements
+			if(options.restoreClass && from) 	restoreClass(from);
+			if(options.restoreClass && to)		restoreClass(to);
+
+			if(options.visibleClass && to)		to.addClass(options.visibleClass);
+			if(options.invisibleClass && from)	from.addClass(options.invisibleClass);
+
+			if(options.onEnd) options.onEnd();
+		}
+
+		// If no from or to is set, let's trigger it anyway (async)
+		if(cbTarget <= 0) setTimeout(onEnd, 0);
+	}
+
+	// Default options for transitions
+	$.transition.defaults = {
+		// Callback
+		onEnd: null,
+		// Class that will be added to 'from' element
+		outClass: 'pt-page-moveToRight',
+		// Class that will be added to 'to' element
+		inClass: 'pt-page-moveFromLeft',
+		// Set to true, if class will be saved (if not saved yet) into element's data
+		saveClass: true,
+		// Set to true, if, at the START and END, the class will be restored
+		restoreClass: true,
+		// Class that will be added to 'to' element after end
+		visibleClass: 'pt-page-current',
+		// Class that will be added to 'from' element after end
+		invisibleClass: '',
+		// Timeout for animations
+		timeout: 1500,
+		// Type of animation ( animation|transition )
+		cssType: 'animation',
+	};
+
+
+	$.fn.transition = {};
+	// Setup the container to allow automatic transition
+	$.fn.transition.setup = function(options, notOverride){
+		$this = $(this);
+		if(!notOverride || $this.data('transitionOptions'))
+			$(this).data('transitionOptions', options);
+	}
+
+	$.fn.transition.to = function(to, options){
+		// Save if not saved
+		$this = $(this);
+		$this.transition.setup(options, true);
+		// Get options
+		options = $.extend({}, options, $this.data('transitionOptions'));
+
+		// Try to get last element from saved, or elements with the visibleClass
+		var from = $this.data('transitionLast') || $this.find('.'+options.visibleClass) || null;
+		$this.data('transitionLast', to);
+
+		// Transitionate
+		$.transition(to, from, options);
+	}
+
+}( $ ));
+
+/*
 	This controlls animations for Pages
 */
 App.Views.PageTransitions = Backbone.View.extend({
