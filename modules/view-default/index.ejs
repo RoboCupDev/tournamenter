@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="/css/page-transitions.css">
 <link rel="stylesheet" href="/css/view-default.css">
 <script src="/js/page-transitions.js"></script>
+<script src="/js/page-indicator.js"></script>
 
 <style type="text/css">
 
@@ -127,13 +128,10 @@
 
 	<div id="wrapper">
 
-		<div id="pages" class="pt-perspective">
-		</div>
+		<div id="pages" class="pt-perspective"></div>
 			
 		<div id="page-navigation" class="dotstyle dotstyle-scaleup">
-			<ul>
-				
-			</ul>
+			<ul></ul>
 		</div>
 
 		<footer>
@@ -141,10 +139,11 @@
 				<img src="/img/logo_robocup.png"/>
 			</span>
 			
-			<h1 class="title">Rescue B</h1>
+			<h1 id="view-title" class="title"></h1>
 
 			<p class="footnote">
-				Developed by Ivan Seidel | <a href="mailto:ivanseidel@gmail.com">ivanseidel@gmail.com</a>
+				Developed by Ivan Seidel |
+				 <a href="mailto:ivanseidel@gmail.com">ivanseidel@gmail.com</a>
 			</p>
 		</footer>
 
@@ -156,99 +155,6 @@
 
 <script type="text/javascript">
 
-
-/*
-	Page indicator View
-*/
-var PageIndicator = Backbone.View.extend({
-
-	page: -1,
-	count: 0,
-
-	initialize: function(){
-
-	},
-
-	render: function(){
-		// var currentCount  = this.$el.length;
-		var targetTotal = this.getCount();
-
-		// Remove extra items
-		var safe = 0;
-		while(this.$el.children().length > targetTotal){
-			console.log('creating element');
-			this.removeElement();
-			safe++;
-			if(safe > 100) break;
-		}
-		// Add new items
-		safe = 0;
-		while(this.$el.children().length < targetTotal){
-			this.addElement(this.$el.children().length);
-			safe++;
-			if(safe > 100) break;
-		}
-
-		// Reset current item classes
-		var $lis = this.$el.children();
-		$lis.removeClass('current');
-		$lis.eq(this.getPage()).addClass('current');
-
-		return this;
-	},
-
-	// Remove the element "el". If not set, will remove the last one
-	removeElement: function(el){
-		if(!el)
-			el = this.$el.last();
-		else
-			el = $(el);
-
-		el.fadeOut(el.remove);
-	},
-
-	addElement: function(index){
-		var view = this;
-		var element = $('<li><a href="#"></a></li>');
-		this.$el.append(element);
-		// Callback change action
-		element.click(function(){
-			view.trigger('selectpage:'+index, index);
-			view.trigger('selectpage', index);
-		});
-		return element;
-	},
-
-	/*
-		Getters and setters for Page and Count
-	*/
-	getPage: function(){
-		if(_.isFunction(this.page))
-			return this.page();
-		return this.page;
-	},
-	setPage: function(page){
-		this.page = page;
-		this.render();
-		this.trigger('setpage', this.getPage());
-		return this;
-	},
-
-	getCount: function(){
-		if(_.isFunction(this.count))
-			return this.count();
-		return this.count;
-	},
-	setCount: function(count){
-		this.count = count;
-		this.render();
-		this.trigger('setcount', this.getCount());
-		return this;
-	}
-});
-
-
-
 var GlobalViewController = Backbone.View.extend({
 
 	pageIndicator: null,
@@ -259,17 +165,20 @@ var GlobalViewController = Backbone.View.extend({
 		view.pages = this.model.get('Pages');
 
 		// Instantiate the transition object
-		this.pageTransitions = new App.Views.PageTransitions();
+		// this.pageTransitions = new App.Views.PageTransitions();
 
 		// Instantiate the page indicator and setup it
-		this.pageIndicator = new PageIndicator({ el: '#page-navigation ul' });
+		// this.pageIndicator = new PageIndicator({ el: '#page-navigation ul' });
+		this.pageIndicator = $('#page-navigation ul');
 		// Listen to selection on pageIndicator to change pages
-		this.listenTo(this.pageIndicator, 'selectpage', this.setCurrentPage, this);
+		// this.listenTo(this.pageIndicator, 'selectpage', this.changeToPageAt, this);
+		this.pageIndicator.bind('indicator.selectpage', function(e, i){view.changeToPageAt(i)});
 		// Listen for changes on pages to update page indicator
 		this.listenTo(view.pages, 'reset add remove', this.updatePageIndicator);
 
 		// Listen to add/remove/reset on pages
 		this.listenTo(view.pages, 'reset add', this.render);
+		this.listenTo(view.pages, 'remove', this.destroyPage);
 
 		// var testViews = $('.pt-page');
 		// var i = -1;
@@ -291,6 +200,59 @@ var GlobalViewController = Backbone.View.extend({
 		// 		animation: animation
 		// 	});
 		// }
+
+		this.cycle();
+	},
+
+	/*
+		Removes a view
+	*/
+	destroyPage: function(page){
+		// Find corresponding view
+		console.log('destroy page: '+page.id);
+		var pageView = this.pageViews[page.id];
+		if(!pageView) return;
+		// If it's the current page, then cycle it egain
+		if(pageView == this.currentView) this.cycle();
+		delete this.pageViews[page.id];
+
+		page.trigger('destroy');
+	},
+
+	/*
+		Cycler will update and make shure things are rotating.
+	*/
+	cyclerTimer: null,
+	minimumStillTime: 1000,
+	maximumStillTime: 30000,
+	schedule: function(){
+		var view = this;
+		if(this.cyclerTimer) cyclerTimer = clearTimeout(this.cyclerTimer);
+
+		var estimatedTime = this.currentView ? this.currentView.estimateTime() : 0;
+		var filteredTime = estimatedTime*1;
+		filteredTime = Math.max(this.minimumStillTime, filteredTime); // Limit minimum
+		filteredTime = Math.min(this.maximumStillTime, filteredTime); // Limit maximum
+
+		this.cyclerTimer = setTimeout(function(){
+			view.cycle();
+		}, filteredTime);
+	},
+
+	/*
+		Cycle will do the next action on the queue
+	*/
+	cycle: function(){
+		var views = this.getPageViews();
+		if(!views) return console.info('No views to show');
+
+		var nextIndex = this.getCurrentPageIndex() + 1;
+		if(nextIndex >= views.length) nextIndex = 0;
+
+		var nextView = views[nextIndex];
+		this.setCurrentView(nextView);
+
+		this.schedule();
 	},
 
 	pageViews: {},
@@ -303,7 +265,6 @@ var GlobalViewController = Backbone.View.extend({
 
 			// Skip already cached views
 			if(pageViews[page.id]) continue;
-			console.log(k);
 
 			var pageView = new Modules.PageViews[page.get('module')].view({
 				model: page,
@@ -318,54 +279,120 @@ var GlobalViewController = Backbone.View.extend({
 		}
 	},
 
-	// Transition stuff
-	lastView: null,
-	changeToView: function(nextView, optionalDelay){
-		var lastView = this.lastView;
+	/*
+		This method will get the element from the view, and animete to it,
+		triggering all hide/show events on last and current views.
+	*/
+	// Delay to updateIndicator. Set to 0 to be on start. negative to be on end
+	updatePageIndicatorDelay: 200,
+	delayBeforeAnimate: 100,
+	currentView: null,
+	setCurrentView: function(nextView){
+		// Skip if currentView is the same as nextView
+		if(this.currentView == nextView) return;
+			// return console.info('Animate view skipped. Already current');
+
+		var currentView = this.currentView;
 		var view = this;
 
-		if(lastView) lastView.trigger('hide:before');
-		if(nextView) nextView.trigger('show:before');
-
-		setTimeout(transitionate, optionalDelay || 0);
+		// Call it latter, so that the view has time to prepare itself to be shown
+		if(currentView) currentView.trigger('hide:before');
+		if(nextView) 	nextView.trigger('show:before');
+		// Set current view
+		view.currentView = nextView;
+		setTimeout(transitionate, this.delayBeforeAnimate || 0);
 
 		function transitionate(){
-			if(!nextView) return afterChangePage();
 
-			view.listenToOnce(view.pageTransitions, 'page-change', afterChangePage);
-			console.log((nextView.$el ? true : false));
-			view.pageTransitions.changePage(nextView.$el, {
-				animation: view.pageTransitions.animations['rotateCubeTopOut'],
+			if(!nextView) return afterChangePage();
+			var to 	 = nextView ? nextView.$el : null;
+			var from = currentView ? currentView.$el : null;
+
+			$(view.$el).transition.to(to, {
+				onEnd: afterChangePage,
 			});
+
+
+			// $.transition(to, from, {
+			// 	onEnd: afterChangePage,
+			// });
+
+			if(view.updatePageIndicatorDelay >= 0){
+				setTimeout(function(){
+					view.updatePageIndicator()
+				}, view.updatePageIndicatorDelay*1);
+			}
 		}
+
 
 		function afterChangePage(){
-			if(lastView) lastView.trigger('hide:after');
-			if(nextView) nextView.trigger('show:after');
-			if(lastView) lastView.trigger('hide');
-			if(nextView) nextView.trigger('show');
-			view.lastView = nextView;
+			if(currentView) currentView.trigger('hide:after');
+			if(nextView) 	   nextView.trigger('show:after');
+			if(currentView) currentView.trigger('hide');
+			if(nextView) 	   nextView.trigger('show');
+			if(view.updatePageIndicatorDelay < 0) view.updatePageIndicator();
 		}
+	},
+
+	/*
+		Returns views as array.
+
+		This method will return only Views that are visible
+	*/
+	getPageViews: function(){
+		var enabledViews = _.filter(this.pageViews, function(view){
+			return view.model.get('disabled') == 'false';
+		});
+
+		return _.toArray(enabledViews);
+	},
+
+	getCurrentPageIndex: function(){
+		var views = this.getPageViews();
+		for(var k = 0; k < views.length; k++)
+			if(this.currentView == views[k])
+				return k*1;
+		return -1;
 	},
 
 	getCurrentPageCount: function(){
-		return this.pages.length;
+		return this.getPageViews().length;
 	},
 
-	currentPageIndex: -1,
-	setCurrentPage: function(index){
-		// Skip if equal
-		if(this.currentPageIndex == index) return;
-		this.currentPageIndex = index;
+	/*
+		Reverse
+	*/
+	changeToPageAt: function(index){
 		// Change page to the cached view at specified index
-		this.changeToView(_.toArray(this.pageViews)[this.currentPageIndex]);
-		this.updatePageIndicator();
+		var view = _.toArray(this.pageViews)[index];
+		this.setCurrentView(view);
+		this.schedule();
 	},
 
 	updatePageIndicator: function(){
-		this.pageIndicator
-			.setCount(this.getCurrentPageCount())
-			.setPage(this.currentPageIndex);
+		// console.info('Update indicator: '+this.getCurrentPageIndex());
+		this.pageIndicator.indicate(
+			this.getCurrentPageCount(),
+			this.getCurrentPageIndex());
+		return this;
+	},
+});
+
+
+/*
+	Responsible for rendering/updating template-specific stuff
+*/
+var TemplateViewController = Backbone.View.extend({
+	initialize: function(){
+		this.listenTo(this.model, 'change:title', this.updateTitle);
+	},
+
+	render: function(){
+		this.updateTitle();
+	},
+
+	updateTitle: function(){
+		$('#view-title').text(this.model.get('title'));
 		return this;
 	},
 });
@@ -373,8 +400,6 @@ var GlobalViewController = Backbone.View.extend({
 
 $(document).ready(function(){
 
-
-	// setInterval(function(){
 	// 	// $('#container').toggleClass('menu-open');
 	// 	// $('.flag-3d').toggleClass('flag-hide');
 	// }, 3000);
@@ -382,14 +407,22 @@ $(document).ready(function(){
 
 	App.view = new App.Models.View2();
 
-	var viewController = new GlobalViewController({
+	App.viewController = new GlobalViewController({
 		model: App.view,
 		el: '#pages',
 	});
-	// viewController.pageTransitions.changePage($('.pt-page.show'))
+
+	App.templateController = new TemplateViewController({
+		model: App.view,
+		el: 'body',
+	});
 
 	App.view.set(<%- JSON.stringify(view) %>);
-	// viewController.render();
+
+	setInterval(function(){
+		console.info('Fetching...');
+		App.view.fetch();
+	}, 5000);
 })
 
 
