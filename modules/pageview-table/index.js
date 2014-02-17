@@ -15,7 +15,7 @@ module.exports = {
 	process: function (page, next) {
 		// page.data = {};
 		// next(null, page);
-		sails.controllers.table._findAssociated(page.table || null, afterAssociate);
+		sails.controllers.table._findAssociated(page.options.tables || null, afterAssociate);
 
 		function afterAssociate(data){
 			page.data = data;

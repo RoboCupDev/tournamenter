@@ -16,6 +16,7 @@
  */
 
 var async = require('async');
+var _ = require('lodash');
 
 module.exports = {
 
@@ -87,14 +88,12 @@ module.exports = {
 	we can use it's information in data.
 */
 function findAssociated(id, next){
-	// Search for ID if requested
-	options = {where: {}};
-	if(id)
-		options.where.id = id;
+	var where = {id: id};
 
 	// Query Table model, and call afterFindTables when done.
 	var finding = Table
-		.find(options)
+		.find()
+		.where(where)
 		.done(associateScores)
 
 
