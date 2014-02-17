@@ -88,7 +88,7 @@ module.exports = {
 	we can use it's information in data.
 */
 function findAssociated(id, next){
-	var where = {id: id};
+	var where = (id ? {id: id} : null);
 
 	// Query Table model, and call afterFindTables when done.
 	var finding = Table
