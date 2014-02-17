@@ -1,0 +1,21 @@
+/*
+	******
+	Table classes
+	******
+*/
+.pageview-table{
+	background-color: #16A79D;
+	zoom: 1.2;
+}
+
+.pageview-table .scores-board{
+	-webkit-box-shadow: 0 0px 30px -10px #000;
+			box-shadow: 0 0px 30px -10px #000;
+	-webkit-border-radius: 0 0 10px 10px;
+			border-radius: 0 0 10px 10px;
+	z-index: 2;
+}
+.pageview-table .scores-board table{
+	-webkit-border-radius: 0 0 10px 10px;
+			border-radius: 0 0 10px 10px;
+}

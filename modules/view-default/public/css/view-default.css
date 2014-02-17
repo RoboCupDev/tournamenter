@@ -801,35 +801,35 @@ footer .footnote{
 	Soccer Group Table classes
 	******
 */
-.pageview-table{
+.pageview-group{
 	background-color: #16A79D;
 	/*zoom: 1.2;*/
 }
 
-.pageview-table .scores-board{
+.pageview-group .scores-board{
 	-webkit-box-shadow: 0 0px 30px -10px #000;
 			box-shadow: 0 0px 30px -10px #000;
 	-webkit-border-radius: 0 0 10px 10px;
 			border-radius: 0 0 10px 10px;
 	z-index: 2;
 }
-.pageview-table .scores-board table{
+.pageview-group .scores-board table{
 	-webkit-border-radius: 0 0 10px 10px;
 			border-radius: 0 0 10px 10px;
 }
 
-.pageview-table .matches-board{
+.pageview-group .matches-board{
 	-webkit-box-shadow: 0 0px 30px -10px #000;
 			box-shadow: 0 0px 30px -10px #000;
 	z-index: 1;
 }
 
-.pageview-table .matches-inner{
+.pageview-group .matches-inner{
 	background-color: #DFDFDF;
 	/*padding-bottom: 1px;*/
 }
 
-.pageview-table .group-tag{
+.pageview-group .group-tag{
 	margin-left: 10px;
 	margin-top: 30px;
 }
@@ -837,15 +837,15 @@ footer .footnote{
 /*
 	Match Item common
 */
-.pageview-table .match-item.match-ended{
+.pageview-group .match-item.match-ended{
 	margin-bottom: 10px
 }
 
 /*
 	Playing Match and Scheduled match
 */
-.pageview-table .match-playing,
-.pageview-table .match-scheduled{
+.pageview-group .match-playing,
+.pageview-group .match-scheduled{
 	position: relative;
 	height: 40px;
 	color: #999;
@@ -853,8 +853,8 @@ footer .footnote{
 	margin-bottom: 1px;
 }
 
-.pageview-table .match-playing::before,
-.pageview-table .match-scheduled::before{
+.pageview-group .match-playing::before,
+.pageview-group .match-scheduled::before{
 	position: absolute;
 	height: 100%;
 	width: 10px;
@@ -862,13 +862,13 @@ footer .footnote{
 	background-color: #ff0000;
 }
 
-.pageview-table .match-playing > *,
-.pageview-table .match-scheduled > *{
+.pageview-group .match-playing > *,
+.pageview-group .match-scheduled > *{
 	margin-left: 20px;
 }
 
-.pageview-table .match-playing .match-field,
-.pageview-table .match-scheduled .match-field{
+.pageview-group .match-playing .match-field,
+.pageview-group .match-scheduled .match-field{
 	position: absolute;
 	right: 0;
 	top: 0;
@@ -882,13 +882,13 @@ footer .footnote{
 	background-color: #999;
 }
 
-.pageview-table .match-playing .match-place,
-.pageview-table .match-scheduled .match-place{
+.pageview-group .match-playing .match-place,
+.pageview-group .match-scheduled .match-place{
 	color: #3FA9F5;
 }
 
-.pageview-table .match-playing .match-teams,
-.pageview-table .match-scheduled .match-teams{
+.pageview-group .match-playing .match-teams,
+.pageview-group .match-scheduled .match-teams{
 	/*font-weight: bold;*/
 	line-height: 18px;
 	font-size: 18px;
@@ -898,23 +898,23 @@ footer .footnote{
 /*
 	Playing Match item specific
 */
-.pageview-table .match-playing .match-field,
-.pageview-table .match-playing::before{
+.pageview-group .match-playing .match-field,
+.pageview-group .match-playing::before{
 	background-color: #F5AB43;
 }
 
 /*
 	Scheduled Match item specific
 */
-.pageview-table .match-scheduled .match-field,
-.pageview-table .match-scheduled::before{
+.pageview-group .match-scheduled .match-field,
+.pageview-group .match-scheduled::before{
 	background-color: #36A89E;
 }
 
 /*
 	Ended Match item
 */
-.pageview-table .match-item.match-ended{
+.pageview-group .match-item.match-ended{
 	position: relative;
 	height: 60px;
 	color: #999;
@@ -923,13 +923,13 @@ footer .footnote{
 			box-shadow: 0 0px 10px -5px #000;
 }
 
-.pageview-table .match-item.match-ended::before{
+.pageview-group .match-item.match-ended::before{
 	content: "";
 	width: 10px;
 	background-color: #65B236;
 }
 
-.pageview-table .team-data .team-score{
+.pageview-group .team-data .team-score{
 	position: absolute;
 	top: 0;
 	width: 60px;
@@ -941,7 +941,7 @@ footer .footnote{
 	text-align: center;
 	z-index: 1;
 }
-.pageview-table .team-data .team-name{
+.pageview-group .team-data .team-name{
 	position: absolute;
 	width: 100%;
 	height: 50%;
@@ -953,37 +953,37 @@ footer .footnote{
 }
 
 /* Win team is colored green and looser is white*/
-.pageview-table .team-data.team-win *{
+.pageview-group .team-data.team-win *{
 	color: #F0F0F0 !important;
 	background-color: #65B236 !important;
 }
 
-.pageview-table .team-data.team-loose *{
+.pageview-group .team-data.team-loose *{
 	color: #999 !important;
 	background-color: #FFF !important;
 }
 
 /* left side specific */
-.pageview-table .team-data.team-left *{
+.pageview-group .team-data.team-left *{
 	color: #F0F0F0;
 	background-color: #B3B3B3;
 }
-.pageview-table .team-data.team-left .team-score{
+.pageview-group .team-data.team-left .team-score{
 	left: 0;
 }
-.pageview-table .team-data.team-left .team-name{
+.pageview-group .team-data.team-left .team-name{
 	top: 0;
 }
 
 /* right side specific */
-.pageview-table .team-data.team-right *{
+.pageview-group .team-data.team-right *{
 	color: #999;
 	background-color: #FFF;
 }
-.pageview-table .team-data.team-right .team-score{
+.pageview-group .team-data.team-right .team-score{
 	right: 0;
 }
-.pageview-table .team-data.team-right .team-name{
+.pageview-group .team-data.team-right .team-name{
 	bottom: 0;
 }
 

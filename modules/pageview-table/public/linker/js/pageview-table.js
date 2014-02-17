@@ -76,15 +76,44 @@
 		tables
 	*/
 	module.view = defaultModule.view.extend({
-		template: JST['pageview.view'],
+		tableTemplate: JST['pageview-table.table'],
 
 		initialize: function(){
 			// Call super constructor
 			this._initialize();
+			this.listenTo(this.model, 'change:options', this.render);
 		},
 
 		render: function(){
-			this.$el.html(this.template({}));
+			console.log('Rendering pageview-table');
+			// Get Page options and data
+			var options = this.model.get('options');
+			var tables 	= this.model.get('data');
+			console.log(tables);
+
+			// Find out correct layout template for it
+			var template = JST['pageview-table.layout-'+tables.length];
+			// Check if layout template exist
+			if(!template)
+				return console.log('No layout file provided for '+tables.length+' tables');
+
+			// Create Views for tables
+			var tableViews = [];
+			for(var t in tables){
+				var table = tables[t];
+				tableViews.push(this.tableTemplate({
+					// table: tables[t]
+					title: table.name,
+					subtitle: 'Scores',
+				}));
+			}
+
+			var finalLayout = template({
+				tables: tableViews
+			});
+			console.log(finalLayout);
+
+			this.$el.html(finalLayout);
 			this.$el.addClass('pageview-table');
 		},
 

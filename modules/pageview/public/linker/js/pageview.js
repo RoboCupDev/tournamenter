@@ -114,7 +114,7 @@
 			this.on('hide show', this.saveState, this);
 			this.listenTo(this.model, 'destroy', this.destroy);
 			this.listenTo(this.model, 'change:disabled', this.changeVisibility);
-			this.$el.addClass('match');
+			// this.$el.addClass('match');
 		},
 
 		initialize: function(){
