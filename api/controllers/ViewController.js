@@ -44,7 +44,7 @@ module.exports = {
 
 			// 404 if not found
 			if(id && !views[0])
-				return next();//'View ID was set, but no view was found');
+				return next();//('View ID was set, but no view was found', 404);
 
 			var toRender = views;
 			if(id) toRender = views[0];
@@ -67,7 +67,7 @@ module.exports = {
 
 		// If id is set, then we shall render a single page
 		if(id) 
-			return View.find({id: id}, renderView);
+			return getProcessedViews(id, renderView);
 		// Else, let's render a list
 		else
 			return View.find(renderList);
