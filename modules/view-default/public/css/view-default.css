@@ -18,7 +18,7 @@
 @media all and (min-width: 1400px) {
 	body{
 		/*zoom: 0.8;*/
-		zoom: 1;
+		zoom: 0.9;
 	}
 }
 
@@ -221,8 +221,8 @@ footer .footnote{
 .table-pretty th{
 	font-weight: bold;
 }
-.table-pretty tbody tr:nth-child(2n+1){
-	background-color: #F4F4F4;
+.table-pretty tbody tr:nth-child(2n+1) td{
+	background-color: #EEEEEE !important;
 }
 .table-pretty tr:not(:last-child){
 	border-bottom: 1px solid #EEE;
@@ -231,14 +231,14 @@ footer .footnote{
 
 /* BLUE Table Template*/
 .table-blue thead{
-	color: #247F74;
-	border-bottom-color: #247F74;
+	color: #247F74 !important;
+	border-bottom-color: #247F74 !important;
 }
 
 /* BLUE Table Template*/
 .table-orange thead{
-	color: #D68A30;
-	border-bottom-color: #D68A30;
+	color: #D68A30 !important;
+	border-bottom-color: #D68A30 !important;
 }
 
 /*
@@ -814,8 +814,8 @@ footer .footnote{
 	z-index: 2;
 }
 .pageview-group .scores-board table{
-	-webkit-border-radius: 0 0 10px 10px;
-			border-radius: 0 0 10px 10px;
+	/*-webkit-border-radius: 0 0 10px 10px;
+			border-radius: 0 0 10px 10px;*/
 }
 
 .pageview-group .matches-board{
