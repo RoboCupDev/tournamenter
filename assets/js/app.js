@@ -132,11 +132,11 @@ App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
 */
 App.Mixins.createTable = function(headers, content, root){
 	// Try recycling table if set
-	var $table = (root ? root : $('<table>'));
+	var $table = (root ? $(root) : $('<table>'));
 
 	// Make it visible and remove id
-	$table.removeClass('hide');
-	$table.removeAttr('id');
+	// $table.removeClass('hide');
+	// $table.removeAttr('id');
 
 	// Creates thead
 	$thead = $('<thead>');
@@ -147,7 +147,7 @@ App.Mixins.createTable = function(headers, content, root){
 	$thead.append($tr);
 
 	for(var k in headers){
-		$tr.append($('<th>').text(headers[k]));
+		$tr.append($('<th>').text(headers[k].value || headers[k]));
 		headersCount++;
 	}
 
@@ -163,7 +163,10 @@ App.Mixins.createTable = function(headers, content, root){
 		// Go through headers and append to table
 		for(var k in headers){
 			var value = rowData[k];
-			$row.append($('<td>').text(value));
+			var $td = $('<td>').text(value);
+			if(headers[k].style) $td.attr('style', headers[k].style);
+			if(headers[k].class) $td.addClass(headers[k].class);
+			$row.append($td);
 		}
 
 		$tbody.append($row);
@@ -177,6 +180,7 @@ App.Mixins.createTable = function(headers, content, root){
 	}
 
 	$table.empty();
+	// $table.append($colgroup);
 	$table.append($thead);
 	$table.append($tbody);
 
