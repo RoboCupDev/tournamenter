@@ -1,0 +1,40 @@
+[
+  {
+    "title": "one",
+    "template": "default",
+    "createdAt": "2014-01-23T02:41:25.910Z",
+    "updatedAt": "2014-01-23T03:39:22.498Z",
+    "id": 1,
+    "pages": [
+      {
+        "module": "test",
+        "still": "1000",
+        "options": {}
+      }
+    ]
+  },
+  {
+    "title": "two",
+    "template": "default",
+    "createdAt": "2014-01-23T02:41:25.910Z",
+    "updatedAt": "2014-01-23T03:39:22.498Z",
+    "id": 2,
+    "pages": [
+      {
+        "module": "test",
+        "still": "1",
+        "options": {}
+      },
+      {
+        "module": "test",
+        "still": "2",
+        "options": {}
+      },
+      {
+        "module": "test",
+        "still": "3",
+        "options": {}
+      }
+    ]
+  }
+]

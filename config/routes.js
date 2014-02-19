@@ -44,6 +44,8 @@ module.exports.routes = {
   'PATCH /tables/:id': 'TableController.update',
   'PATCH /scores/:id': 'ScoresController.update',
 
+  'PATCH /views/:id': 'ViewController.update',
+
   /*
   // But what if you want your home page to display
   // a signup form located at `views/user/signup.ejs`?

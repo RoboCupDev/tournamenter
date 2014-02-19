@@ -67,7 +67,7 @@ module.exports = {
 	*/
 	_config: {
 		menus: [
-			{name: 'Tables', path: '/tables/manage', order: 999},
+			{name: 'Tables', path: '/tables/manage', order: 3},
 		]		
 	}
 
