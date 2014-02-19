@@ -126,7 +126,6 @@
 				this.stillTime = tableCount*expectedTableStill;
 				this.tableStillTime = expectedTableStill;
 			}
-			console.log('%%%% still: '+this.stillTime+' | tableStill: '+this.tableStillTime);
 		},
 
 		/*
@@ -159,7 +158,6 @@
 			var cellHeight = 30 || (this.$el.find('tr:first').height() || 30);
 			var height = this.$el.height() - this.$el.children(':first').height();
 			rows = Math.round(height / cellHeight) - 2;
-			console.log('@@@ rows: '+rows + ' h1: '+this.$el.height()+ ' h2: '+this.$el.children(':first').height()+' ch: '+cellHeight);
 			return Math.max(5, rows);
 		},
 
@@ -172,7 +170,6 @@
 
 
 		render: function(){
-			console.log('### Rendering pageview-table');
 			// Get Page options and data
 			var options = this.model.get('options');
 			var tables 	= this.model.get('data');
@@ -213,7 +210,6 @@
 			assigned to this Page.
 		*/
 		updateTables: function(){
-			console.log('updateTables');
 			var tables = this.model.get('data');
 			var $tableSpots = this.$el.find('.table-view');
 			for(var t in tables){
@@ -235,10 +231,8 @@
 			var header = this.makeTableHeader(table);
 			// Split data into rows
 			var datas = this.splitTableData(this.makeTableContent(table));
-			console.log('updateTable');
 
 			// Update title
-			console.log($tableView.get());
 			$tableView.find('.table-title').text(table.name);
 
 			// Create a table for each existent 
@@ -291,7 +285,6 @@
 				inClass: 'pt-page-flipInLeft pt-page-delay500',
 				// animate: false,
 			});
-			console.log('@!#!@#! CycEL');
 			this.updatePageIndicators();
 		},
 
@@ -317,7 +310,6 @@
 		*/
 		splitTableData: function(data){
 			var rows = this.calculateRowsNumber();
-			console.info(rows);
 			var datas = [];
 			for(var i = 0; i < data.length; i += rows){
 				datas.push(data.slice(i, i+rows));

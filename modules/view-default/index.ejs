@@ -293,7 +293,6 @@ var GlobalViewController = Backbone.View.extend({
 		if(this.currentView == nextView)
 			if(nextView)
 				nextView.trigger('show:skip');
-			// return console.info('Animate view skipped. Already current');
 
 		var currentView = this.currentView;
 		var view = this;
@@ -324,7 +323,6 @@ var GlobalViewController = Backbone.View.extend({
 
 
 		function afterChangePage(){
-			console.log('afterChangePage');
 			if(currentView) currentView.trigger('hide:after');
 			if(nextView) 	   nextView.trigger('show:after');
 			if(currentView) currentView.trigger('hide');
