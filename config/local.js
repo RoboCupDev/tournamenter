@@ -22,6 +22,11 @@
  * http://sailsjs.org/#documentation
  */
 
+ var _ = require('lodash');
+ var Modules = require('../api/services/Modules');
+ var sails = require('sails');
+ var express = require('express');
+
 module.exports = {
 
 
@@ -52,6 +57,27 @@ module.exports = {
   // By default, Sails sets its environment using the `NODE_ENV` environment variable.
   // If NODE_ENV is not set, Sails will run in the 'development' environment.
 
-  environment: process.env.NODE_ENV || 'development'
+  environment: process.env.NODE_ENV || 'development',
+
+  express: {
+    customMiddleware: function (app) {
+
+      /*
+        Load View Modules from /view_modules
+        Those modules will be stored inside Modules object (it's a service)
+      */
+      Modules.load(__dirname + '/../modules');
+      sails.log('View Modules Installed: '.green + (_(Modules.modules).keys().join(',')).cyan);
+
+      // Enable GZip compression
+      app.use(express.compress());
+
+      // console.log("config of Middleware is called")
+      // app.use(function (req, res, next) {
+      //   console.log("installed customMiddleware is used")
+      //   next()
+      // })
+    }
+  }
 
 };

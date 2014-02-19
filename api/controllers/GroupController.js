@@ -23,7 +23,7 @@ module.exports = {
 		return XEditable.handle(Group)(req, res, next);
 	},
 
-	index: function (req, res) {
+	manage: function (req, res) {
 		return res.view({
 			path: req.route.path
 		});
@@ -143,7 +143,7 @@ module.exports = {
 	 */
 	_config: {
 		menus: [
-			{name: 'Groups', path: '/groups', order: 1}
+			{name: 'Groups', path: '/groups/manage', order: 1}
 		]
 	}
 

@@ -15,7 +15,12 @@ var App = {
 	Collections: {},
 	Views: {},
 	Mixins: {},
+	Util: {},
 };
+window.App = App;
+
+var Modules = {};
+window.Modules = Modules;
 
 /*
 	Mixin to show modal and confirm action
@@ -50,17 +55,16 @@ App.Mixins.confirmAction = function(message, allowSkip, next){
 	};
 }
 
+
 /*
 	Mixin to help configuring XEditable fields, for in place editions
 
-	It configures the XEditable field by default, to save to the given
-	model, instead of using it's own method to send by ajax.
+	It is a custom editInPlace, used to callback when changed.
 
-	Also, leave some defaults to facilitate configuration.
-
-	Usage: editInPlace(ModelToSave, jQueryField, )
+	It will call 'next' whenever a change is made to the field. You are
+	supposed to call the callback method on it, and pass erro as param.
 */
-App.Mixins.editInPlace = function(modelToSave, jQueryField, opts){
+App.Mixins.editInPlaceCustom = function($field, opts, next){
 	// Filter and adds default behavior
 	opts = opts || {};
 
@@ -73,30 +77,53 @@ App.Mixins.editInPlace = function(modelToSave, jQueryField, opts){
 			var d = new $.Deferred;
 			d.promise();
 
-			// This is the default backbone save options object
-			var saveOpts = {
-				patch: true,
-				wait: true,
-				success: function(){
-					d.resolve();
-				},
-				error: function(response, xhr) {
-					var msg = 'Something went wrong...';
-					d.reject(msg);
-				}
-			};
+			next(params, returnHere);
 
-			var toSave = {};
-			toSave[params.name] = params.value;
-
-        	modelToSave.save(toSave, saveOpts);
+			function returnHere(err){
+				if(err)
+					return d.reject(err);
+				return d.resolve();
+			}
 
         	return d;
 	    }
 	};
 
 	// Apply options to editable
-	jQueryField.editable(_.defaults(opts, defaults));
+	$field.editable(_.defaults(opts, defaults));
+	return this;
+};
+
+/*
+	Mixin to help configuring XEditable fields, for in place editions
+
+	It configures the XEditable field by default, to save to the given
+	model, instead of using it's own method to send by ajax.
+
+	Also, leave some defaults to facilitate configuration.
+
+	Usage: editInPlace(ModelToSave, jQueryField, )
+*/
+App.Mixins.editInPlace = function(modelToSave, jQueryField, opts, saveOpts){
+	App.Mixins.editInPlaceCustom(jQueryField, opts, function cb(params, next){
+		// This is the default backbone save options object
+		saveOpts = _.defaults({
+			patch: true,
+			wait: true,
+			success: function(){
+				next();
+			},
+			error: function(response, xhr) {
+				next('Something went wrong...');
+			}
+		}, saveOpts);
+
+		var toSave = {};
+		toSave[params.name] = params.value;
+
+    	modelToSave.save(toSave, saveOpts);
+	});
+
 	return this;
 };
 
@@ -105,11 +132,11 @@ App.Mixins.editInPlace = function(modelToSave, jQueryField, opts){
 */
 App.Mixins.createTable = function(headers, content, root){
 	// Try recycling table if set
-	var $table = (root ? root : $('<table>'));
+	var $table = (root ? $(root) : $('<table>'));
 
 	// Make it visible and remove id
-	$table.removeClass('hide');
-	$table.removeAttr('id');
+	// $table.removeClass('hide');
+	// $table.removeAttr('id');
 
 	// Creates thead
 	$thead = $('<thead>');
@@ -120,7 +147,9 @@ App.Mixins.createTable = function(headers, content, root){
 	$thead.append($tr);
 
 	for(var k in headers){
-		$tr.append($('<th>').text(headers[k]));
+		$th = $('<th>').text(headers[k].value || headers[k]);
+		if(headers[k].style) $th.attr('style', headers[k].style);
+		$tr.append($th);
 		headersCount++;
 	}
 
@@ -136,7 +165,10 @@ App.Mixins.createTable = function(headers, content, root){
 		// Go through headers and append to table
 		for(var k in headers){
 			var value = rowData[k];
-			$row.append($('<td>').text(value));
+			var $td = $('<td>').text(value);
+			if(headers[k].style) $td.attr('style', headers[k].style);
+			if(headers[k].class) $td.addClass(headers[k].class);
+			$row.append($td);
 		}
 
 		$tbody.append($row);
@@ -150,6 +182,7 @@ App.Mixins.createTable = function(headers, content, root){
 	}
 
 	$table.empty();
+	// $table.append($colgroup);
 	$table.append($thead);
 	$table.append($tbody);
 
@@ -193,8 +226,11 @@ App.Collections.Teams = Backbone.Collection.extend({
 });
 
 /*
-	Table Module Models
+	=======================================
+					MODELS
+	=======================================
 */
+
 
 // Score
 App.Models.Score = Backbone.Model.extend({
@@ -211,24 +247,58 @@ App.Collections.Scores = Backbone.Collection.extend({
 // Table
 App.Models.Table = Backbone.Model.extend({
 	urlRoot: '/tables',
-	initialize: function(attributes){
-		// Create a Backbone model
-		attributes = attributes || {};
-		this.scores = new App.Collections.Scores(attributes.scores || []);
+	// initialize: function(attributes){
+	// 	// Create a Backbone model
+	// 	attributes = attributes || {};
+	// 	this.scores = new App.Collections.Scores(attributes.scores || []);
+
+	// 	// Save this object inside the scores collection, allowing access from it
+	// 	this.scores.table = this;
+	//     this.scores.url = '/scores/find?tableId=' + this.id;
+	// 	delete attributes['scores'];
+	// },
+	// parse: function(data, options) {
+	// 	// Delegate scores data to scores collection
+	// 	if(data.scores){
+	// 		this.scores.reset(data.scores);
+	// 		delete data['scores'];
+	// 	}
+
+	// 	return data;
+	// },
+
+	constructor: function(){
+		var self = this;
+
+		// Create a collection of pages and save itself in it
+		this.scores = new App.Collections.Scores();
+		this.scores.view = this;
 
 		// Save this object inside the scores collection, allowing access from it
 		this.scores.table = this;
 	    this.scores.url = '/scores/find?tableId=' + this.id;
-		delete attributes['scores'];
+
+		Backbone.Model.apply(this, arguments);
 	},
+
+	initialize: function(attributes){
+		if(attributes && attributes.scores)
+			this.scores.reset(attributes.scores)
+	},
+
 	parse: function(data, options) {
 		// Delegate scores data to scores collection
 		if(data.scores){
 			this.scores.reset(data.scores);
-			delete data['scores'];
+			data.scores = this.scores;
 		}
-
 		return data;
+	},
+
+	toJSON: function(){
+		var returnObj = _.clone(this.attributes);
+		returnObj.scores = this.scores.toJSON();
+		return returnObj;
 	},
 });
 
@@ -237,6 +307,89 @@ App.Collections.Tables = Backbone.Collection.extend({
 	model: App.Models.Table,
 	url: '/tables/associated',
 });
+
+// Page Model
+App.Models.Page = Backbone.Model.extend({
+	save: function(attrs, opts){
+		this.set(attrs);
+		this.collection.view.save(null, opts);
+	},
+	// Override sync, since this model is nested to a View model
+	sync: function(){},
+});
+
+// Pages Collection
+App.Collections.Pages = Backbone.Collection.extend({
+	model: App.Models.Page,
+	// Override sync, since this model is nested to a View model
+	sync: function(){},
+});
+
+// View Model
+App.Models.View = Backbone.Model.extend({
+	urlRoot: '/views/',
+
+	constructor: function(){
+		var self = this;
+
+		// Create a collection of pages and save itself in it
+		this.pages = new App.Collections.Pages();
+		this.pages.view = this;
+
+		// Delegate save action to this
+		this.listenTo(this.pages, 'change', function(){
+			self.trigger('change:pages');
+		});	
+
+		Backbone.Model.apply(this, arguments);
+	},
+
+	initialize: function(attributes){
+		if(attributes && attributes.pages)
+			this.pages.reset(attributes.pages);
+	},
+
+	parse: function(data, options) {
+		// Delegate scores data to scores collection
+		if(data.pages){
+			this.pages.reset(data.pages);
+			data.pages = this.pages;
+		}
+		return data;
+	},
+
+	toJSON: function(){
+		var returnObj = _.clone(this.attributes);
+		returnObj.pages = this.pages.toJSON();
+		return returnObj;
+	},
+});
+
+// V2 of Page and View
+App.Models.Page2 = Backbone.RelationalModel.extend();
+
+App.Models.View2 = Backbone.RelationalModel.extend({
+	urlRoot: '/views/',
+	relations: [{
+		type: Backbone.HasMany,
+		key: 'Pages',
+		keySource: 'pages',
+		keyDestination: 'pages',
+		relatedModel: App.Models.Page2,
+		parse: true,
+		// includeInJSON: 'id',
+	}]
+});
+
+
+// Views Collection
+App.Collections.Views = Backbone.Collection.extend({
+	model: App.Models.View,
+	url: '/views/',
+});
+
+
+
 
 /*
 	Configure Underscore to use tags {{}}

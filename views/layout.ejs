@@ -8,39 +8,39 @@
     <meta name="author" content="Ivan Seidel">
     <!-- <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png"> -->
 
-    <title><%= title %></title>
+    <title><%= _projectName %></title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!--STYLES-->
+    <link rel="stylesheet" href="/linker/css/pageview-table.css">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/template.css">
+    <link rel="stylesheet" href="/css/x-editable.css">
+    <link rel="stylesheet" href="/css/select2.css">
+    <link rel="stylesheet" href="/css/select2-bootstrap.css">
+    <link rel="stylesheet" href="/css/flag-icon.min.css">
+    <!--STYLES END-->
 
-    <!-- Custom styles for this template -->
-    <link href="/css/template.css" rel="stylesheet">
+    <!--TEMPLATES-->
+    <script type="text/javascript" src="/jst.js"></script>
+    <!--TEMPLATES END-->
 
+    <!--SCRIPTS-->
+    <script src="/js/modernizr.js"></script>
     <script src="/js/jquery-1.10.2.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-
-    <link href="/assets/x-editable/x-editable.css" rel="stylesheet"/>
-    <script src="/assets/x-editable/x-editable.min.js"></script>
-
-    <!-- underscore -->
-    <script src="/js/underscore-min.js"></script>    
-
-    <!-- backbone -->
-    <script src="/js/backbone-min.js"></script>    
-
-    <!-- select2 --> 
-    <link href="/assets/select2/select2.css" rel="stylesheet">
-    <script src="/assets/select2/select2.js"></script>  
-
-    <!-- select2 bootstrap -->
-    <link href="/assets/select2/select2-bootstrap.css" rel="stylesheet">
-
-    <!-- bootstrap switch -->
-    <link href="/css/bootstrap-switch.min.css" rel="stylesheet">
-    <script src="/js/bootstrap-switch.min.js"></script>
-
-    <!-- Custom utility -->
-    <script src="/js/util.js"></script>  
+    <script src="/js/x-editable.min.js"></script>
+    <script src="/js/underscore-min.js"></script>
+    <script src="/js/backbone.js"></script>
+    <script src="/js/backbone-relational.js"></script>
+    <script src="/js/select2.js"></script>
+    <script src="/js/socket.io.js"></script>
+    <script src="/js/sails.io.js"></script>
+    <script src="/js/util.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/countries.js"></script>
+    <script src="/linker/js/pageview.js"></script>
+    <script src="/linker/js/pageview-table.js"></script>
+    <!--SCRIPTS END-->
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -317,13 +317,6 @@
       </div>
     </div>
     <!--/ DESTROY MODAL -->
-
-    <!-- Bring in the socket.io client -->
-    <script type="text/javascript" src="/js/socket.io.js"></script>
-    <!-- then beef it up with some convenience logic for talking to Sails.js -->
-    <script type="text/javascript" src="/js/sails.io.js"></script>
-    <!-- listen on socket.io for incoming messages -->
-    <script type="text/javascript" src="/js/app.js"></script>
 
   </body>
 </html>
