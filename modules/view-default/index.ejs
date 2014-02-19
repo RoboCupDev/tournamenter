@@ -268,6 +268,7 @@ var GlobalViewController = Backbone.View.extend({
 
 			var pageView = new Modules.PageViews[page.get('module')].view({
 				model: page,
+				viewController: this,
 				className: 'pt-page',
 			});
 
@@ -289,17 +290,19 @@ var GlobalViewController = Backbone.View.extend({
 	currentView: null,
 	setCurrentView: function(nextView){
 		// Skip if currentView is the same as nextView
-		if(this.currentView == nextView) return;
+		if(this.currentView == nextView)
+			if(nextView)
+				nextView.trigger('show:skip');
 			// return console.info('Animate view skipped. Already current');
 
 		var currentView = this.currentView;
 		var view = this;
 
-		// Call it latter, so that the view has time to prepare itself to be shown
 		if(currentView) currentView.trigger('hide:before');
 		if(nextView) 	nextView.trigger('show:before');
 		// Set current view
 		view.currentView = nextView;
+		// Call it latter, so that the view has time to prepare itself to be shown
 		setTimeout(transitionate, this.delayBeforeAnimate || 0);
 
 		function transitionate(){
@@ -308,14 +311,9 @@ var GlobalViewController = Backbone.View.extend({
 			var to 	 = nextView ? nextView.$el : null;
 			var from = currentView ? currentView.$el : null;
 
-			$(view.$el).transition.to(to, {
+			view.$el.transitionTo(to, {
 				onEnd: afterChangePage,
 			});
-
-
-			// $.transition(to, from, {
-			// 	onEnd: afterChangePage,
-			// });
 
 			if(view.updatePageIndicatorDelay >= 0){
 				setTimeout(function(){
@@ -326,6 +324,7 @@ var GlobalViewController = Backbone.View.extend({
 
 
 		function afterChangePage(){
+			console.log('afterChangePage');
 			if(currentView) currentView.trigger('hide:after');
 			if(nextView) 	   nextView.trigger('show:after');
 			if(currentView) currentView.trigger('hide');
@@ -420,7 +419,7 @@ $(document).ready(function(){
 	App.view.set(<%- JSON.stringify(view) %>);
 
 	setInterval(function(){
-		console.info('Fetching...');
+		// console.info('Fetching...');
 		App.view.fetch();
 	}, 5000);
 })

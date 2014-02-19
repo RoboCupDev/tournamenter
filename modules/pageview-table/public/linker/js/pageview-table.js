@@ -81,58 +81,195 @@
 		initialize: function(){
 			// Call super constructor
 			this._initialize();
-			this.listenTo(this.model, 'change:options change:data', this.render);
+			this.listenTo(this.model, 'change:options', this.render);
+
+			// this.on('show:before', this.updateTables, this);
+			this.on('show:before show:skip', this.prepare, this);
+			this.on('show:after', 	this.show, this);
+			this.on('hide', 		this.hide, this);
+			this.listenTo(this.model, 'change:data', this.verifyChange);
 			// this.listenTo(this.model, 'change:data', this.updateTables);
+
+			this.$el.addClass('pageview-table');
 		},
 
+		stillTime: null,
+		_timePerRowInTable: 200,
+		tableStillTime: 1000,
+		prepare: function(){
+			// Render always before showing
+			this.render();
+
+			/*
+				In order to estimate time, we must know if:
+				
+				+still time was set?
+					Then we will calculate the tableStillTime
+
+				+still time not set?
+					Calculate/get tableStillTime, and set still time
+			*/
+			var still = this.model.get('still')*1000 || null;
+			var options = this.model.get('options');
+			// Count pages
+			var tableCount = this.$el.find('.table-pages').first().children().length;
+
+			if(still){
+
+				this.stillTime = still;
+				this.tableStillTime = still/tableCount;
+			}else{
+				var expectedTableStill = options.still*1000 || null;
+				if(!expectedTableStill)
+					expectedTableStill = this.calculateRowsNumber() * this._timePerRowInTable;
+
+				this.stillTime = tableCount*expectedTableStill;
+				this.tableStillTime = expectedTableStill;
+			}
+			console.log('%%%% still: '+this.stillTime+' | tableStill: '+this.tableStillTime);
+		},
+
+		/*
+			Return the expected MAXIMUM number of rows for every table
+		*/
+		calculateRowsNumber: function(){
+			var rows = this.model.get('options').rows*1 || null;
+			if(rows) return Math.max(10, rows);
+
+			var cellHeight = 30 || (this.$el.find('tr:first').height() || 30);
+			var height = this.$el.height() - this.$el.children(':first').height();
+			rows = Math.round(height / cellHeight) - 2;
+			console.log('@@@ rows: '+rows + ' h1: '+this.$el.height()+ ' h2: '+this.$el.children(':first').height()+' ch: '+cellHeight);
+			return Math.max(5, rows);
+		},
+
+		/*
+			Return precomputed value
+		*/
+		estimateTime: function(){
+			return this.stillTime;
+		},
+
+
 		render: function(){
-			console.log('Rendering pageview-table');
+			console.log('### Rendering pageview-table');
 			// Get Page options and data
 			var options = this.model.get('options');
 			var tables 	= this.model.get('data');
-			console.log(tables);
 
-			// Find out correct layout template for it
-			var template = JST['pageview-table.layout-'+tables.length];
-			// Check if layout template exist
-			if(!template)
-				return console.log('No layout file provided for '+tables.length+' tables');
+			if(!this.$el.html()){
+				// Find out correct layout template for it
+				var template = JST['pageview-table.layout-'+tables.length];
+				// Check if layout template exist
+				if(!template)
+					return console.log('No layout file provided for '+tables.length+' tables');
 
-			// Create Views for tables
-			var tableViews = [];
-			for(var t in tables){
-				var table = tables[t];
-				tableViews.push(this.tableTemplate({
-					// table: tables[t]
-					title: table.name,
-					subtitle: 'Scores',
-				}));
+				// Create Views for tables
+				var tableViews = [];
+				for(var t in tables){
+					var table = tables[t];
+					tableViews.push(this.tableTemplate({
+						// table: tables[t]
+						title: '--',
+						subtitle: 'Scores',
+					}));
+				}
+
+				var finalLayout = template({
+					tables: tableViews
+				});
+
+				this.$el.empty();
+				this.$el.html(finalLayout);
 			}
-
-			var finalLayout = template({
-				tables: tableViews
-			});
-
-			this.$el.html(finalLayout);
-			this.$el.addClass('pageview-table');
 
 			this.updateTables();
 		},
 
+		/*
+			This method will force the re-rendering of the table,
+			trying to recycle it's tables. It will render all tables
+			assigned to this Page.
+		*/
 		updateTables: function(){
 			console.log('updateTables');
 			var tables = this.model.get('data');
-			var $tables = this.$el.find('table');
+			var $tableSpots = this.$el.find('.table-view');
 			for(var t in tables){
-				if(!$tables[t]) return console.info('Ops... DOM Table not found');
-
-				var table = tables[t];
-				var $table = $tables[t];
-				var header = this.makeTableHeader(table);
-				var data = this.makeTableContent(table);
-
-				App.Mixins.createTable(header, data, $table);
+				// Update a table, with it's table-pages with tables[t] data in tableSpot
+				this.updateTable(tables[t], $($tableSpots[t]));
 			}
+			return this;
+		},
+
+		/*
+			Create HTML-tables with the given table data, in $tableSpot (to recycle)
+		*/
+		updateTable: function(table, $tableView){
+			// var $tableSpot = $($tableSpots[t]);
+			// var table = tables[t];
+			var $tableSpot = $tableView.find('.table-pages');
+			var $tables = $tableSpot.find('table');
+			var tables = [];
+			var header = this.makeTableHeader(table);
+			// Split data into rows
+			var datas = this.splitTableData(this.makeTableContent(table));
+			console.log('updateTable');
+
+			// Update title
+			console.log($tableView.get());
+			$tableView.find('.table-title').text(table.name);
+
+			// Create a table for each existent 
+			for(var d in datas){
+				// Try to recycle table
+				var $newTable = $tables[d];
+				if(!$newTable){
+					$newTable = $('<table class="pt-page table-bordered table-pretty table-orange"></table>');
+					$tableSpot.append($newTable);
+				}
+				App.Mixins.createTable(header, datas[d], $newTable);
+			}
+			// Remove rest of tables (trash from previous render)
+			$($tables[datas.length-1]).nextAll().remove();
+		},
+
+
+		interval: null,
+		show: function(){
+			var self = this;
+			this.interval = clearInterval(this.interval);
+			this.interval = setInterval(function(){
+				self.cycle();
+			}, this.tableStillTime);
+
+			self.cycle();
+		},
+
+		hide: function(){
+			this.interval = clearInterval(this.interval);
+		},
+
+		cycle: function(){
+			$tablesRoots = this.$el.find('.table-pages').first();
+			$tablesRoots.transitionNext({
+				outClass: 'pt-page-flipOutRight',
+				inClass: 'pt-page-flipInLeft pt-page-delay500',
+			});
+		},
+
+		/*
+			Takes a data field, and split it in N fields to
+			match the requirement.
+		*/
+		splitTableData: function(data){
+			var rows = this.calculateRowsNumber();
+			console.info(rows);
+			var datas = [];
+			for(var i = 0; i < data.length; i += rows){
+				datas.push(data.slice(i, i+rows));
+			}
+			return datas;
 		},
 
 		/*

@@ -96,15 +96,27 @@
 		if(to) 	 to = $(to);
 		if(from) from = $(from);
 
-		// Set defaults to options
-		options = $.extend($.transition.defaults, options);
+		// If the same element is being animated, call the callback and return
+		if(to && from && to.get(0) === from.get(0)){
+			return onEnd();
+		}
 
+		// console.log('-----------');
+		// console.log(to ? to.get() : null);
+		// console.log(from ? from.get() : null);
+		// console.log('-----------');
+
+
+		// Set defaults to options
+		options = $.extend({}, $.transition.defaults, options);
+		
 		// saveClass
 		if(options.saveClass && from) 	saveClass(from);
 		if(options.saveClass && to) 	saveClass(to);
 		// restoreClass from class
-		if( options.restoreClass && to )   restoreClass(to).addClass(options.visibleClass);
-		if( options.restoreClass && from ) restoreClass(from).addClass(options.visibleClass);
+		if(options.restoreClass && to )   restoreClass(to).addClass(options.visibleClass);
+		if(options.currentClass && to )   to.addClass(options.currentClass);
+		if(options.restoreClass && from ) restoreClass(from).addClass(options.visibleClass);
 
 		// Get event name to listent to
 		var eventName = $.support[options.cssType].end;
@@ -125,15 +137,18 @@
 		}
 
 		var cbCount = 0;
-		var cbTarget = (from ? from.length: 0) + (to.length ? 1 : 0);
+		var cbTarget = (from ? from.length: 0) + (to ? to.length : 0);
 		function onEnd(){
-			if(cbTarget < ++cbCount) return;
+			// console.log('c: '+(cbCount+1)+' t: '+cbTarget);
+			// console.log(evt);
+			if(++cbCount != cbTarget) return;
 
 			// Restor classes, and set visible and invisible class to elements
 			if(options.restoreClass && from) 	restoreClass(from);
 			if(options.restoreClass && to)		restoreClass(to);
 
 			if(options.visibleClass && to)		to.addClass(options.visibleClass);
+			if(options.currentClass && to )   	to.addClass(options.currentClass);
 			if(options.invisibleClass && from)	from.addClass(options.invisibleClass);
 
 			if(options.onEnd) options.onEnd();
@@ -157,10 +172,12 @@
 		restoreClass: true,
 		// Class that will be added to 'to' element after end
 		visibleClass: 'pt-page-current',
+		// Class that will be added to 'current' element
+		currentClass: 'item-active',
 		// Class that will be added to 'from' element after end
 		invisibleClass: '',
 		// Timeout for animations
-		timeout: 1500,
+		timeout: 3000,
 		// Type of animation ( animation|transition )
 		cssType: 'animation',
 	};
@@ -168,25 +185,41 @@
 
 	$.fn.transition = {};
 	// Setup the container to allow automatic transition
-	$.fn.transition.setup = function(options, notOverride){
+	$.fn.transitionSetup = function(options, notOverride){
 		$this = $(this);
 		if(!notOverride || $this.data('transitionOptions'))
-			$(this).data('transitionOptions', options);
+			$this.data('transitionOptions', options);
 	}
 
-	$.fn.transition.to = function(to, options){
-		// Save if not saved
-		$this = $(this);
-		$this.transition.setup(options, true);
+	$.fn.transitionTo = function(next, options){
+		var $this = $(this);
 		// Get options
-		options = $.extend({}, options, $this.data('transitionOptions'));
+		options = $.extend({}, $.transition.defaults, $this.data('transitionOptions'), options);
 
 		// Try to get last element from saved, or elements with the visibleClass
-		var from = $this.data('transitionLast') || $this.find('.'+options.visibleClass) || null;
-		$this.data('transitionLast', to);
+		var $current = $this.data('transitionLast') || $this.children('.'+options.currentClass);
+		if($current.length <= 0) $current = null;
+		$this.data('transitionLast', next);
 
 		// Transitionate
-		$.transition(to, from, options);
+		$.transition(next, $current, options);
+	}
+
+	$.fn.transitionNext = function(options){
+		var $this = $(this);
+		// Get options
+		options = $.extend({}, $.transition.defaults, $this.data('transitionOptions'), options);
+		
+		// Try to get last element from saved, or elements with the visibleClass
+		var $current = $this.data('transitionLast') || $this.children('.'+options.currentClass);
+
+		// Get the next element. Try to get next element near current, otherwise, first
+		var $next = ($current.length > 0 && $current.next() ? $current.next() : null);
+		if(!$next || $next.length <= 0)
+			$next = $this.children(':first');
+
+		// Transitionate
+		$this.transitionTo($next, options);
 	}
 
 }( $ ));
