@@ -1,6 +1,6 @@
 {
   "name": "tournamenter",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Manages Competition Events such as RoboCup",
   "dependencies": {
     "sails": "0.9.7",
