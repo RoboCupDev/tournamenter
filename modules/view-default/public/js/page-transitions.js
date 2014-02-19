@@ -121,6 +121,10 @@
 		// Get event name to listent to
 		var eventName = $.support[options.cssType].end;
 
+		if(!options.animate){
+			return onEnd();
+		}
+
 		// Set animation properties
 		if(from){
 			from//.off( eventName )
@@ -180,6 +184,8 @@
 		timeout: 3000,
 		// Type of animation ( animation|transition )
 		cssType: 'animation',
+		// If should or not animate (set to false to just change instantly)
+		animate: true,
 	};
 
 
@@ -197,8 +203,13 @@
 		options = $.extend({}, $.transition.defaults, $this.data('transitionOptions'), options);
 
 		// Try to get last element from saved, or elements with the visibleClass
-		var $current = $this.data('transitionLast') || $this.children('.'+options.currentClass);
+		var $current = $this.transitionGetCurrent(options);
 		if($current.length <= 0) $current = null;
+
+		// If next is an number, we shall get the index element
+		if(_.isNumber(next))
+			next = $($this.children()[next]);
+
 		$this.data('transitionLast', next);
 
 		// Transitionate
@@ -211,7 +222,7 @@
 		options = $.extend({}, $.transition.defaults, $this.data('transitionOptions'), options);
 		
 		// Try to get last element from saved, or elements with the visibleClass
-		var $current = $this.data('transitionLast') || $this.children('.'+options.currentClass);
+		var $current = $this.transitionGetCurrent(options);
 
 		// Get the next element. Try to get next element near current, otherwise, first
 		var $next = ($current.length > 0 && $current.next() ? $current.next() : null);
@@ -220,6 +231,15 @@
 
 		// Transitionate
 		$this.transitionTo($next, options);
+	}
+
+	$.fn.transitionGetCurrent = function(options){
+		var $this = $(this);
+		// Get options
+		options = $.extend({}, $.transition.defaults, $this.data('transitionOptions'), options);
+		
+		// Try to get last element from saved, or elements with the visibleClass
+		return $this.data('transitionLast') || $this.children('.'+options.currentClass);
 	}
 
 }( $ ));

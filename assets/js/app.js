@@ -147,7 +147,9 @@ App.Mixins.createTable = function(headers, content, root){
 	$thead.append($tr);
 
 	for(var k in headers){
-		$tr.append($('<th>').text(headers[k].value || headers[k]));
+		$th = $('<th>').text(headers[k].value || headers[k]);
+		if(headers[k].style) $th.attr('style', headers[k].style);
+		$tr.append($th);
 		headersCount++;
 	}
 

@@ -87,14 +87,14 @@
 			this.on('show:before show:skip', this.prepare, this);
 			this.on('show:after', 	this.show, this);
 			this.on('hide', 		this.hide, this);
-			this.listenTo(this.model, 'change:data', this.verifyChange);
+			// this.listenTo(this.model, 'change:data', this.verifyChange);
 			// this.listenTo(this.model, 'change:data', this.updateTables);
 
 			this.$el.addClass('pageview-table');
 		},
 
 		stillTime: null,
-		_timePerRowInTable: 200,
+		_timePerRowInTable: 400,
 		tableStillTime: 1000,
 		prepare: function(){
 			// Render always before showing
@@ -112,7 +112,7 @@
 			var still = this.model.get('still')*1000 || null;
 			var options = this.model.get('options');
 			// Count pages
-			var tableCount = this.$el.find('.table-pages').first().children().length;
+			var tableCount = this.countPages();
 
 			if(still){
 
@@ -130,8 +130,28 @@
 		},
 
 		/*
-			Return the expected MAXIMUM number of rows for every table
+			Helper functions
 		*/
+
+		// Count how many tables exist in table-index
+		countPages: function(table){
+			if(!table) table = 0;
+			return this.getTableContainer(table).children().length;
+		},
+
+		// Get current table for table-index
+		currentPage: function(table){
+			if(!table) table = 0;
+			return this.getTableContainer(table).transitionGetCurrent();
+		},
+
+		// Return the container for table-index
+		getTableContainer: function(table){
+			if(!table) table = 0;
+			return $(this.$el.find('.table-pages')[table]);
+		},
+
+		// Return the expected MAXIMUM number of rows for every table
 		calculateRowsNumber: function(){
 			var rows = this.model.get('options').rows*1 || null;
 			if(rows) return Math.max(10, rows);
@@ -184,6 +204,7 @@
 			}
 
 			this.updateTables();
+			this.updatePageIndicators();
 		},
 
 		/*
@@ -237,13 +258,25 @@
 
 		interval: null,
 		show: function(){
+			this.setupTimer();
+
+			// Set current page
+			$tablePages = this.getTableContainer();
+			$tablePages.transitionSetup({
+				outClass: 'pt-page-flipOutRight',
+				inClass: 'pt-page-flipInLeft pt-page-delay500',
+			});
+			$tablePages.transitionTo(0);
+			this.updatePageIndicators();
+			// self.cycle();
+		},
+
+		setupTimer: function(){
 			var self = this;
 			this.interval = clearInterval(this.interval);
 			this.interval = setInterval(function(){
 				self.cycle();
 			}, this.tableStillTime);
-
-			self.cycle();
 		},
 
 		hide: function(){
@@ -252,9 +285,29 @@
 
 		cycle: function(){
 			$tablesRoots = this.$el.find('.table-pages').first();
+			// Transition
 			$tablesRoots.transitionNext({
 				outClass: 'pt-page-flipOutRight',
 				inClass: 'pt-page-flipInLeft pt-page-delay500',
+				// animate: false,
+			});
+			console.log('@!#!@#! CycEL');
+			this.updatePageIndicators();
+		},
+
+		updatePageIndicators: function(){
+			// Page indicator
+			var view = this;
+			$pageInd = this.$el.find('.page-indicator');
+			$pageInd.indicate(
+				this.countPages(),
+				this.currentPage().index());
+
+			$pageInd.off('indicator.selectpage');
+			$pageInd.bind('indicator.selectpage', function(e, i){
+				view.getTableContainer().transitionTo(i);
+				view.setupTimer();
+				view.updatePageIndicators();
 			});
 		},
 
@@ -294,21 +347,28 @@
 			var headers = {
 				'rank': {
 					value: table.headerRank,
-					class: alignRight
+					class: alignRight,
+					style: 'width: 2%;',
 				},
-				'teamName': table.headerTeam,
+				'teamName': {
+					value: table.headerTeam,
+					style: 'width: 36%;',
+				}
 			};
 			// Create dynamic score fields
+			var percent = (100-40) / table.columns*1;
 			for(var k = 1; k <= table.columns*1; k++){
 				headers['score'+k] = {
 					value: table.headerScore+' '+k,
 					class: alignRight,
+					style: 'width: '+percent+'%;',
 				};
 			}
 
 			headers['final'] = {
 				value: table.headerFinal,
-				class: alignRight
+				class: alignRight,
+				style: 'width: 2%;',
 			};
 
 			return headers;
@@ -404,9 +464,9 @@
 				showbuttons: true,
 				value: view.model.get('options').tables,
 				select2: {
-					multiple: true,
+					multiple: false,
 					width: 200,
-					placeholder: 'Select Tables',
+					placeholder: 'Select Table',
 					allowClear: true,
 				},
 			}, this.createSaveWrapperForField('tables'));
