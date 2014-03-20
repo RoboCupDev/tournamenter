@@ -16,12 +16,12 @@ module.exports.adapters = {
 
   // If you leave the adapter config unspecified 
   // in a model definition, 'default' will be used.
-  'default': 'herokuMongo',
+  'default': 'disk',
 
   // Persistent adapter for DEVELOPMENT ONLY
   // (data is preserved when the server shuts down)
   disk: {
-    module: 'sails-disk'
+    module: 'sails-disk',
   },
 
   herokuMongo: {
