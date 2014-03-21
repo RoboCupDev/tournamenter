@@ -37,23 +37,11 @@ if(argv.adapter){
 sails.lift(argv, function (sails) {
 
 	/*
-		Set backup interval for DB. By default, all models will be
-		'backuped' in a single file.
-		
-		Options:
-			interval: Time in minutes, between backups
-
-			    path: Relative path to folder where backups will be saved, 
-
-			  models: Models to save. A comma separated string of model names
-			  		  If none, all models will be backuped
-		
-		Usage:
-			node app --backup.interval=5 --backup.path=/desktop/backupFolder
-			node app --backup.interval=10 --backup.path=../backupFolder --backup.models="Team,Group"
+		Initialize Backuper.
 	*/
-	if(argv.backup)
+	if(argv.backup){
 		Backup.start(argv.backup);
-
-	console.log('\n\nLifted.'.green);
+		setTimeout(Backup.save, 2000);
+	}
+	
 });
