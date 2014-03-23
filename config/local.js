@@ -59,6 +59,11 @@ module.exports = {
 
   environment: process.env.NODE_ENV || 'development',
 
+  /*
+    App Name (available at sails.config.appName)
+  */
+  appName: process.env.APP_NAME || 'Tournamenter',
+
   express: {
     customMiddleware: function (app) {
 

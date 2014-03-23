@@ -11,8 +11,10 @@
     "optimist": "0.3.4",
 
     "lodash": "*",
-    "sails-mongo": "*",
-    "async": "0.2.9"
+    "sails-mongo": "~0.9.0",
+    "async": "0.2.9",
+
+    "kaiseki": "*"
   },
   "devDependencies": {
     "mocha": "1.14.0",
