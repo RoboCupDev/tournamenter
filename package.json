@@ -13,6 +13,7 @@
     "lodash": "*",
     "sails-mongo": "~0.9.0",
     "async": "0.2.9",
+    "colors": "*",
 
     "kaiseki": "*"
   },
