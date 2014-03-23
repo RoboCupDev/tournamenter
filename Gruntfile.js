@@ -511,7 +511,8 @@ module.exports = function (grunt) {
 
   // When sails is lifted in production
   grunt.registerTask('prod', [
-    'clean:dev',
+    // This is a fix for running multiple instances of sails at the same time
+    // 'clean:dev',
     'jst:dev',
     'less:dev',
     'copy:dev',

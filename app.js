@@ -1,8 +1,16 @@
 
+/*
+	This snippet allows the app to be runned from
+	another directory without concerns to Sails.
+*/
+process.chdir(__dirname);
+
 var sails = require('sails');
 var colors = require('colors');
 var _ = require('lodash');
 var argv = require('optimist').argv;
+
+console.log(argv);
 
 /*
 	Set a password for login purposes. If none is set, will be public
@@ -32,6 +40,16 @@ if(argv.adapter){
 	var adapterConfig = require('./config/adapters.js');
 	adapterConfig.adapters.default = adapter;
 }
+
+/*
+	Set vars in env object to process.env 
+*/
+if(argv.env){
+	for(var k in argv.env)
+		process.env[k] = argv.env[k];
+	// _.extend(process.env, argv.env);
+}
+
 
 // Start sails and pass it command line arguments
 sails.lift(argv, function (sails) {
