@@ -16,7 +16,7 @@ module.exports.adapters = {
 
   // If you leave the adapter config unspecified 
   // in a model definition, 'default' will be used.
-  'default': 'disk',
+  'default': 'localMongo',
 
   // Persistent adapter for DEVELOPMENT ONLY
   // (data is preserved when the server shuts down)
@@ -27,6 +27,11 @@ module.exports.adapters = {
   herokuMongo: {
     module: 'sails-mongo',
     url: 'mongodb://heroku:heroku@dharma.mongohq.com:10036/app19376820'
+  },
+
+  localMongo: {
+    module: 'sails-mongo',
+    url: 'mongodb://localhost:27017/test'
   },
 
   // MySQL is the world's most popular relational database.
