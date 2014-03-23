@@ -181,7 +181,7 @@ describe('View Controller', function() {
 	describe('Create View with defaults', function() {
 
 		 it('should have defaults', function(done){
-		 	var emptyTest = {pages:[{}]};
+		 	var emptyTest = {id: 3, pages:[{}]};
 			supertest(sails.express.app)
 				.post('/views')
 				.send(emptyTest)
