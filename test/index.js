@@ -56,27 +56,18 @@ describe('Modules', function() {
 	});
 
 	// Check if assets are served
-	describe('Public assets', function() {
+	/*describe('Public assets', function() {
 
-		var res = null;
-
-		before(function(done){
+		it ('should exist and contain stuff', function (done) {
 			supertest(sails.express.app)
 				.get('/js/test.js')
-				.end(function(err, _res){
-					res = _res;
-					done(err);
-				});
+				.expect(200)
+				.expect(function toContainStuff(res){
+					return (res.text.indexOf('__ok') >= 0 ? null : 'No content');
+				})
+				.end(done);
 		});
-
-		it ('should exist', function () {
-			should.exist(res);
-		});
-
-		it ('should have some resources', function () {
-			res.text.should.containEql('__ok');
-		});
-	});
+	});*/
 
 });
 
@@ -127,13 +118,13 @@ describe('Team', function() {
 describe('View Controller', function() {
 
 	// Try to find all
-	describe('/views/associated', function() {
+	describe('/views', function() {
 
 		var res = null;
 
 		before(function(done){
 			supertest(sails.express.app)
-				.get('/views/associated')
+				.get('/views')
 				.end(function(err, _res){
 					res = _res;
 					done();
@@ -158,13 +149,13 @@ describe('View Controller', function() {
 	});
 
 	// Try to find one
-	describe('/views/associated/:id', function() {
+	describe('/views/:id', function() {
 
 		var res = null;
 
 		before(function(done){
 			supertest(sails.express.app)
-				.get('/views/associated/2')
+				.get('/views/2')
 				.end(function(err, _res){
 					res = _res;
 					done();
@@ -184,6 +175,27 @@ describe('View Controller', function() {
 				assert(page.test == page.still*10);
 			});
 		});
+	});
+
+	// Check if defaults are being set correcly
+	describe('Create View with defaults', function() {
+
+		 it('should have defaults', function(done){
+		 	var emptyTest = {id: 3, pages:[{}]};
+			supertest(sails.express.app)
+				.post('/views')
+				.send(emptyTest)
+				.expect(201)
+				.expect(toHaveSomeDefaults)
+				.end(done);
+
+			function toHaveSomeDefaults(res){
+				if(!res.body.title) return 'Missing View Attribute';
+				if(!res.body.pages) return 'Missing View Pages attribute';
+				if(res.body.pages.length <= 0) return 'No page in View!';
+				if(!res.body.pages[0].module) return 'Missing Page Attribute!';
+			}
+		})
 	});
 
 });

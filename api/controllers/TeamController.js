@@ -52,7 +52,7 @@ module.exports = {
 	*/
 	_config: {
 		menus: [
-			{name: 'Teams', path: '/teams', order: 0}
+			{name: 'Teams', path: '/teams/manage', order: 0}
 		]
 	}
 

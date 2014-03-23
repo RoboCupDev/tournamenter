@@ -29,7 +29,7 @@ module.exports.bootstrap = function (cb) {
 
 	// Locals that are constant
 	var constantLocals = {
-		_projectName: require('../package.json').name,
+		_projectName: sails.config.appName || require('../package.json').name,
 		_rootUrl: '',
 		_menus: menus,
 		sideMenu: false,

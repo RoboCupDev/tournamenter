@@ -39,7 +39,7 @@ module.exports = {
 				{
 					module: string,
 					still: int,
-					enabled: boolean,
+					disabled: boolean,
 					options: {},
 					data: {},
 				},
@@ -60,8 +60,8 @@ module.exports = {
 				still is the time (in ms) to be still on the page.
 				After this time, another page will be shown...
 
-			ENABLED:
-				If the view will be shown or not
+			DISABLED:
+				If the view will not be shown
 			
 			OPTIONS:
 				Saved options about this view. This is requrired by the module
@@ -79,4 +79,67 @@ module.exports = {
 		},
 	},
 
-};
+	beforeValidation: function(values, next){
+
+		if(values.pages){
+			// Defaults for each page
+			var pageDefaults = {
+				id: null, 
+				module: 'pageview',
+				// If empty, it will be automatic
+				still: '',
+				disabled: 'false',
+				options: {},
+			}
+			var pickKeys = _.keys(pageDefaults);
+			var newPages = [];
+
+			// Add default values to pages
+			_.forEach(values.pages, function(page){
+				_.defaults(page || {}, pageDefaults);
+				// Remove extra fields
+				newPage = _.pick(page, pickKeys);
+				// Filter still time
+				newPage.still = newPage.still || '';
+				if(newPage.still)
+					newPage.still = Math.max(0, newPage.still*1);
+
+				if(newPage.disabled != 'true')
+					newPage.disabled = 'false';
+
+				// Call's module beforeValidation method, if exist
+				var module = Modules.get('pageview', newPage.module);
+
+				if(module && module.beforeValidation)
+					newPage = module.beforeValidation(newPage);
+
+				newPages.push(newPage);
+			});
+
+			// Add ID field where it's not set
+			_.forEach(newPages, function(page){
+				// Add ID if not exist
+				if(!page.id){
+					var id = getNextID();
+					page.id = id;
+				}
+			});
+
+			// Helper function that will return next available ID
+			function getNextID () {
+				var max = 0;
+				_.forEach(newPages, function(page){
+					if(page.id) max = Math.max(max, page.id*1);
+				});
+				var next = max*1+1;
+				return next;
+			}
+
+			// Update pages
+			values.pages = newPages;
+		}
+
+		next();
+	},
+
+}

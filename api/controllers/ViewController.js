@@ -17,29 +17,34 @@
 
  var _ = require('lodash');
  var async = require('async');
+ var path = require('path');
 
 module.exports = {
-	
-	associated: function(req, res, next){
 
+	manage: function(req, res, next){
+		getProcessedViews(null, afterProcessViews);
+
+		function afterProcessViews(err, views){
+
+			res.view({
+				path: req.route.path,
+				views: views
+			});
+
+		}
+	},
+
+	associated: function(req, res, next){
 		var id = req.param('id');
 
-		// Create query
-		if(id) query = {id: id};
-		else   query = {};
-
-		View.find(query, function(err, models){
-			if(err) return next(err);
-
-			processView(models, afterProcessViews);
-		});
+		getProcessedViews(id, afterProcessViews);
 
 		function afterProcessViews(err, views){
 			if(err) return next(err);
 
 			// 404 if not found
 			if(id && !views[0])
-				return next(404);
+				return next();//('View ID was set, but no view was found', 404);
 
 			var toRender = views;
 			if(id) toRender = views[0];
@@ -48,12 +53,50 @@ module.exports = {
 		}
 	},
 
-	manage: function(req, res, next){
-		res.view({
-			path: req.route.path,
-		});
-	},
+	/*
+		This controller action is responsible for both Listing, and
+		showing the corresponding view.
 
+		If an invalid id is assigned, then it will render an default
+		page listing all the available views, linking to corresponding page
+
+		Otherwise, it will render acordingly to the template choosen.
+	*/
+	view: function(req, res, next){
+		var id = req.param('id');
+
+		// If id is set, then we shall render a single page
+		if(id) 
+			return getProcessedViews(id, renderView);
+		// Else, let's render a list
+		else
+			return View.find(renderList);
+
+
+		function renderView(err, views){
+			if(err) return next(err);
+			if(views.length <= 0) return res.redirect('/views/view');//('Could not find view... Are you shure about this view?');
+
+			// View Module to render with
+			viewModuleName = 'view-default';
+			var viewModule = Modules.get('view', viewModuleName);
+
+			if(!viewModule) return res.send('Could not load View Module: '+viewModuleName, 500);
+
+			// Delegate render to module
+			var locals = { view: views[0] };
+			return viewModule.render(req, res, next, locals);
+		}
+
+		function renderList(err, views){
+			if(err) return next(err);
+
+			res.view('view/list', {
+				_layoutFile: '../light.ejs',
+				views: views
+			});
+		}
+	},
 
 	/**
 	 * Overrides for the settings in `config/controllers.js`
@@ -65,6 +108,23 @@ module.exports = {
 		]
 	}	
 };
+
+/*
+	This method will return an array of PROCESSED Views
+*/
+function getProcessedViews(id, next){
+
+	// Create query
+	if(id) query = {id: id};
+	else   query = {};
+
+	View.find(query, function(err, models){
+		if(err) return next(err);
+
+		processView(models, next);
+	});
+};
+
 
 /*
 	This method receives a view, and will modify it to correspond

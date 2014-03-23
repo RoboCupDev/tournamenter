@@ -415,7 +415,12 @@ function GroupViewController(groupController, onBuild){
 
 	// Tables are not usualy updated, but re-created
 	self.makeTable = function(headers, content, recycle){
-		return App.Mixins.createTable(headers, content, (recycle ? recycle : $('#template-table').clone()));
+		var $table = App.Mixins.createTable(headers, content, (recycle ? recycle : $('#template-table').clone()));
+		// Make it visible and remove id
+		$table.removeClass('hide');
+		$table.removeAttr('id');
+
+		return $table;
 	}
 
 	// Creates a single match entry with configuration

@@ -51,8 +51,7 @@ module.exports = function (grunt) {
 
   var jsFilesToInject = [
 
-    // Below, as a demonstration, you'll see the built-in dependencies 
-    // linked in the proper order order
+    '/js/modernizr.js',
 
     // Bring in the socket.io client
     'linker/js/socket.io.js',
@@ -71,7 +70,8 @@ module.exports = function (grunt) {
     '/js/bootstrap.min.js',
     '/js/x-editable.min.js',
     '/js/underscore-min.js',
-    '/js/backbone-min.js',
+    '/js/backbone.js',
+    '/js/backbone-relational.js',
     '/js/select2.js',
     // '/js/bootstrap-switch.min.js',
 
@@ -82,6 +82,9 @@ module.exports = function (grunt) {
     '/js/util.js',
     '/js/app.js',
     '/js/countries.js',
+
+    '/linker/js/pageview.js',
+    // '/linker/js/view.js',
 
     // All of the rest of your app scripts imported here
     'linker/**/*.js'
@@ -99,7 +102,8 @@ module.exports = function (grunt) {
    */
 
   var templateFilesToInject = [
-    'linker/**/*.html'
+    'assets/linker/**/*.html',
+    'modules/**/linker/**/*.html'
   ];
 
 
@@ -142,7 +146,7 @@ module.exports = function (grunt) {
   
   
   templateFilesToInject = templateFilesToInject.map(function (path) {
-    return 'assets/' + path;
+    return /*'assets/' +*/ path;
   });
 
 
@@ -211,11 +215,14 @@ module.exports = function (grunt) {
       dev: {
 
         // To use other sorts of templates, specify the regexp below:
-        // options: {
-        //   templateSettings: {
-        //     interpolate: /\{\{(.+?)\}\}/g
-        //   }
-        // },
+        options: {
+          templateSettings: {
+            interpolate: /\{\{(.+?)\}\}/g
+          },
+          processName: function(filename) {
+            return require('path').basename(filename, '.html');
+          }
+        },
 
         files: {
           '.tmp/public/jst.js': templateFilesToInject
@@ -306,7 +313,9 @@ module.exports = function (grunt) {
         files: {
           '.tmp/public/**/*.html': jsFilesToInject,
           'views/**/*.html': jsFilesToInject,
-          'views/**/*.ejs': jsFilesToInject
+          'views/**/*.ejs': jsFilesToInject,
+
+          'modules/**/*.ejs': jsFilesToInject,
         }
       },
 
@@ -320,7 +329,9 @@ module.exports = function (grunt) {
         files: {
           '.tmp/public/**/*.html': ['.tmp/public/min/production.js'],
           'views/**/*.html': ['.tmp/public/min/production.js'],
-          'views/**/*.ejs': ['.tmp/public/min/production.js']
+          'views/**/*.ejs': ['.tmp/public/min/production.js'],
+
+          'modules/**/*.ejs': ['.tmp/public/min/production.js'],
         }
       },
 
@@ -336,7 +347,9 @@ module.exports = function (grunt) {
         files: {
           '.tmp/public/**/*.html': cssFilesToInject,
           'views/**/*.html': cssFilesToInject,
-          'views/**/*.ejs': cssFilesToInject
+          'views/**/*.ejs': cssFilesToInject,
+
+          'modules/**/*.ejs': cssFilesToInject,
         }
       },
 
@@ -350,7 +363,9 @@ module.exports = function (grunt) {
         files: {
           '.tmp/public/index.html': ['.tmp/public/min/production.css'],
           'views/**/*.html': ['.tmp/public/min/production.css'],
-          'views/**/*.ejs': ['.tmp/public/min/production.css']
+          'views/**/*.ejs': ['.tmp/public/min/production.css'],
+
+          'modules/**/*.ejs': ['.tmp/public/min/production.css'],
         }
       },
 
@@ -365,7 +380,9 @@ module.exports = function (grunt) {
         files: {
           '.tmp/public/index.html': ['.tmp/public/jst.js'],
           'views/**/*.html': ['.tmp/public/jst.js'],
-          'views/**/*.ejs': ['.tmp/public/jst.js']
+          'views/**/*.ejs': ['.tmp/public/jst.js'],
+
+          'modules/**/*.ejs': ['.tmp/public/jst.js'],
         }
       },
 
@@ -448,7 +465,7 @@ module.exports = function (grunt) {
       assets: {
 
         // Assets to watch:
-        files: ['assets/**/*'],
+        files: ['assets/**/*', 'modules/**/*'],
 
         // When assets are changed:
         tasks: ['compileAssets', 'linkAssets']
@@ -494,7 +511,8 @@ module.exports = function (grunt) {
 
   // When sails is lifted in production
   grunt.registerTask('prod', [
-    'clean:dev',
+    // This is a fix for running multiple instances of sails at the same time
+    // 'clean:dev',
     'jst:dev',
     'less:dev',
     'copy:dev',
