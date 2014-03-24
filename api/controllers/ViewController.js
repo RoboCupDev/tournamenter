@@ -53,6 +53,9 @@ module.exports = {
 		}
 	},
 
+	// Let public the findAssociated(id, next)
+	_associated: getProcessedViews,
+
 	/*
 		This controller action is responsible for both Listing, and
 		showing the corresponding view.

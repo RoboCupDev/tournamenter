@@ -15,7 +15,7 @@
     "async": "0.2.9",
     "colors": "*",
 
-    "kaiseki": "*"
+    "parse": "*"
   },
   "devDependencies": {
     "mocha": "1.14.0",

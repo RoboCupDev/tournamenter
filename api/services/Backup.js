@@ -160,7 +160,7 @@ Backup.save = function(config, next){
 			console.log(TAG, 'Could not save backup. '.red, err + ' Writing file: '.red + file.green);
 			if(next) next(err, file);
 		}
-		console.log(TAG, 'Saved: '.cyan, file.green);
+		console.log(TAG, 'Saved'.grey);
 		if(next) next(null, file);
 	}
 
