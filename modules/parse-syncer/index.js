@@ -177,8 +177,8 @@ var ParseSyncer = {
 				success: function(league) {
 					next(null);
 				},
-				error: function(){
-					next(error);
+				error: function(err){
+					next(err);
 				}
 			});
 		}
@@ -277,6 +277,12 @@ var ParseSyncer = {
 			// Convert Parse objects to array
 			for(var k in _teams)
 				teams.push(_teams[k].toJSON());
+
+			// Set id var as objecId
+			for(var k in teams)
+				teams[k].id = teams[k].objectId;
+
+			console.log(teams);
 
 			// Insert all items from the fixture in the model (in parallel using async)
 			async.each(teams, function(item, nextModel) {
