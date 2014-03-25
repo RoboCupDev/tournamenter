@@ -224,9 +224,6 @@ App.Views.View = Backbone.View.extend({
 		this.listenTo(this.model.pages, 'remove', this.onRemovePage);
 
 		this.listenTo(this.model, 'sync', this.endSync);
-
-		// Save jquery refresh button instance
-		this.$btnRefresh = this.$('.btn-view-refresh');
 	},
 
 	render: function(){
@@ -255,6 +252,9 @@ App.Views.View = Backbone.View.extend({
 		// Configure View
 		this.configureTitleBar()
 			.renderCreatePageButtons();
+
+		// Save jquery refresh button instance
+		this.$btnRefresh = this.$('.btn-view-refresh');
 
 		return this;
 	},
@@ -352,7 +352,7 @@ App.Views.View = Backbone.View.extend({
 
 	endSync: function(){
 		// Enable button and stop rotating
-		this.$btnRefresh.removeAttr('disabled');
+		this.$btnRefresh.attr('disabled', false);
 		this.$btnRefresh.find('.glyphicon').removeClass('icon-rotate');
 	},
 });
