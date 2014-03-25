@@ -56,8 +56,10 @@
 
 						<!-- Import/Export actions -->
 						<li class="divider"></li>
-						<li role="presentation" class="dropdown-header">Import/Export</li>
-						<li><a href="#">Import all teams</a></li>
+						<li role="presentation" class="dropdown-header">
+							<span class="glyphicon glyphicon-save"></span> Import/Export
+						</li>
+						<li><a class="btn-table-import-all" href="#">Import all teams</a></li>
 					</ul>
 				</div>
 
@@ -232,6 +234,40 @@
 <!--/ SCORES DATA VIEW TEMPLATE -->
 
 
+<!-- IMPORT TEAMS MODAL -->
+<div id="modal-import-from-teams" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Import From Teams</h4>
+			</div>
+			<div class="modal-body">
+
+				<div class="alert alert-success">
+					<span class="glyphicon glyphicon-question-sign"></span>
+					Use this tool to import all teams into a Table at once. Note that It will not remove duplicate teams. However, you can choose not to import already imported teams.
+				</div>
+
+
+				<div class="checkbox">
+					<label>
+						<input class="avoid-duplicates" type="checkbox"> Don't import teams already on table.
+					</label>
+				</div>
+
+			</div>
+			<div class="modal-footer">
+				<!-- Close and Confirm buttons -->
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn-confirm btn btn-success">
+					<span class="glyphicon glyphicon-save"></span> Import
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!--/ IMPORT TEAMS MODAL -->
 
 <script type="text/javascript">
 
@@ -441,6 +477,7 @@ App.Views.Table = Backbone.View.extend({
 		'click .btn-table-refresh': 'refresh',
 		'click .btn-table-destroy': 'confirmDestroyAction',
 		'click .btn-team-add': 'addTeam',
+		'click .btn-table-import-all': 'importFromTeams',
 	},
 	
 	initialize: function(){
@@ -459,9 +496,6 @@ App.Views.Table = Backbone.View.extend({
 		this.listenTo(this.model, 'add', this.endSync);
 		this.listenTo(this.model, 'remove', this.endSync);
 		this.listenTo(this.model, 'reset', this.endSync);
-
-		// Save jquery refresh button instance
-		this.$btnRefresh = this.$('btn-table-refresh');
 
 		// Instantiate Scores view for current model
 		this.scoresView = new App.Views.Scores({
@@ -492,6 +526,9 @@ App.Views.Table = Backbone.View.extend({
 			this.scoresView.setElement(this.$('.spot-scores tbody'));
 			this.scoresView.render();
 		}
+
+		// Save jquery refresh button instance
+		this.$btnRefresh = this.$('.btn-table-refresh');
 
 		return this;
 	},
@@ -584,11 +621,11 @@ App.Views.Table = Backbone.View.extend({
 		});
 	},
 
-	refresh: function(){
+	refresh: function(next){
 		var view = this;
 		console.log('refreshing: '+this.model.id);
 		this.startSync();
-		this.model.fetch({url: '/tables/associated/'+this.model.id});
+		this.model.fetch({url: '/tables/associated/'+this.model.id, success: next});
 		return this;
 	},
 
@@ -618,9 +655,105 @@ App.Views.Table = Backbone.View.extend({
 
 	endSync: function(){
 		// Enable button and stop rotating
-		this.$btnRefresh.removeAttr('disabled');
+		this.$btnRefresh.attr('disabled', false);
 		this.$btnRefresh.find('.glyphicon').removeClass('icon-rotate');
 	},
+
+	/*
+		Helper method used to import a list of teams at once.
+	*/
+	importList: function(teamIds, next){
+		var self = this;
+
+		// Return if no teamId's
+		if(teamIds.length <= 0)
+			return next && next();
+
+		// Convert to object, and set current tableId (link models)
+		var teams = [];
+		for(var k in teamIds)
+			teams.push({tableId: self.model.id, teamId: teamIds[k]});
+
+		// Callback that will run after all teams have been saved
+		var doRefresh = _.after(teams.length, function(){
+			self.refresh(next);
+		});
+
+		// Save in parallel
+		var ScoresModel = self.model.scores;
+		_.each(teams, function(team) {
+			ScoresModel.create(team, {wait: true, silent: true, success: doRefresh});
+		});
+
+	},
+
+	/*
+		This will open a Import modal, and will wait to trigger it's action
+		Note: Modal are re-used. We must remove events and change it's content
+			  prior to show to the user.
+	*/
+	importFromTeams: function(){
+		var self = this;
+		console.log('Starting import');
+
+		// Find modal objects
+		$modal = $('#modal-import-from-teams')
+		$confirmBtn = $modal.find('.btn-confirm');
+		$avoidDuplicates = $modal.find('.avoid-duplicates');
+
+		// Reset events and states
+		$confirmBtn.unbind('click').click(performImport);
+		$avoidDuplicates.prop('checked', true);
+
+		// Show Modal
+		$modal.modal('show');
+
+		// Callback of button click
+		function performImport(){
+
+			// Get all teams and convert to our format
+			var allTeams = [];
+			var rawTeams = App.teamList;
+			for(var k in rawTeams)
+				allTeams.push(rawTeams[k].id);
+
+			/*
+				To avoid duplicates, we must get all current teams on table,
+				and all existent teams. In 
+			*/
+			var avoidDuplicates = $avoidDuplicates.is(':checked');
+
+			if(avoidDuplicates){
+				var ScoresModel = self.model.scores;
+				var keyedCurrentTeams = {};
+
+				// Get all teamId's in list
+				ScoresModel.forEach(function(score){
+					var teamId = score.get('teamId');
+					if(teamId)
+						keyedCurrentTeams[teamId] = true;
+				});
+
+				// Remove all keys that are currentlu in keyedCurrentTeams
+				var filteredTeams = [];
+				for(var k in allTeams){
+					var teamExist = keyedCurrentTeams[allTeams[k]];
+					if(!teamExist)
+						filteredTeams.push(allTeams[k]);
+				}
+				allTeams = filteredTeams;
+			}
+
+			/*
+				Import teamlist
+			*/
+			self.importList(allTeams, function(){
+				$modal.modal('hide');
+			});
+		}
+	},
+
+
 });
 
 
