@@ -31,7 +31,7 @@ var ParseSyncer = {
 		
 		// Update interval (in seconds)
 		interval: 60 * 2,
-		initializeDelay: 0,
+		initializeDelay: 5000,
 
 		/*
 			Team sync configurations
