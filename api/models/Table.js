@@ -232,11 +232,15 @@ function getScoreHeadersNames(table){
 
 		// Explode string
 		tableHeaders = table.headerScore.split(',');
+		
+		// Remove extra columns
+		for(var i = tableHeaders.length; i > columns ; i--)
+			tableHeaders.pop();
 
 		// Add missing fields automatically
 		for(var i = tableHeaders.length; i < columns; i++)
 			tableHeaders.push((i + 1) + '');
-
+		
 		// Trim values
 		for(var k in tableHeaders)
 			tableHeaders[k] = tableHeaders[k].trim();
@@ -417,7 +421,7 @@ function getMethodFor(methodRaw){
 	// Else, try to return a new function with it
 	try{
 		var method = Function('scores', methodRaw);
-		method();
+		method([]);
 		return method;
 	}catch(err){
 	}

@@ -86,12 +86,6 @@ dd > span{
 
 					<dl class="dl-horizontal">
 					
-					<!-- Columns -->
-					<dt>Score Columns:</dt>
-					<dd>
-						<span class="table-columns" data-title="Data Columns" data-name="columns">{{columns}}</span>
-					</dd>
-
 					<!-- Ranking (sort)-->
 					<dt>Final Score sort:</dt>
 					<dd>
@@ -104,8 +98,14 @@ dd > span{
 						<span class="table-evaluateMethod" data-title="Score Algorithm" data-name="evaluateMethod">{{evaluateMethod}}</span>
 					</dd>
 
+					<!-- Columns -->
+					<dt>Score Columns:</dt>
+					<dd>
+						<span class="table-columns" data-title="Data Columns" data-name="columns">{{columns}}</span>
+					</dd>
+
 					<!-- Score headers -->
-					<dt>Column names:</dt>
+					<dt>Score Column names:</dt>
 					<dd>
 						<span class="table-headerScore" data-title="Score Headers" data-name="headerScore">{{headerScore}}</span>
 					</dd>
@@ -129,15 +129,6 @@ dd > span{
 					<!-- Help -->
 					<div class="collapse collapsible-help">
 					<dl>
-						<dt>Score Columns</dt>
-						<dd>
-							<small>
-								This is the number of <code>matches</code>, <code>rounds</code>, <code>turns</code>, <code>scores</code>... for a single team.<br/>
-								If there are 3 rounds, than this value should be 3.<br/>
-								Notice that the minimum is 1, and the maximum is 20.
-							</small>
-						</dd>
-
 						<dt>Final Score Sort</dt>
 						<dd>
 							<small>
@@ -171,6 +162,31 @@ dd > span{
 							</ul>
 						</small>
 						</dd>
+
+						<dt>Score Columns</dt>
+						<dd>
+							<small>
+								This is the number of <code>matches</code>, <code>rounds</code>, <code>turns</code>, <code>scores</code>... for a single team.<br/>
+								If there are 3 rounds, than this value should be 3.<br/>
+								Notice that the minimum is 1, and the maximum is 20.
+							</small>
+						</dd>
+
+						<dt>Score Columns names</dt>
+						<dd>
+							<p><small>
+								Use this to modify the name of the columns. It can be either created dinamically if you insert a simple string: <code>Round</code>, will generate columns like: <code>Round 1</code>, <code>Round 2</code>, <code>Round N</code>...
+							</small></p>
+
+							<p><small>
+								Also, if you want to specify a different column name for each one, separate with commas: <code>Round 1, Round 2, Extra Round, mycolumns</code> will generate columns like: <code>Round 1</code>, <code>Round 2</code>, <code>Extra Round</code> and <code>mycolumns</code>.
+							</small></p>
+							<p><small>
+								<b>Note:</b> Inserting column names but not modifying the <code>Score Columns</code> field. If you named 4 columns with comma separated, change the Score Columns to 4, or it will be truncated.
+							</small></p>
+						</dd>
+
+
 					</dl>
 					</div>
 
