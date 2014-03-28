@@ -334,16 +334,21 @@ function generateTableDataInsideScores(){
 
 	// Rank Table
 	var pos = 0;
-	var lastScore = -1;
+	var lastRow = null;
 
 	_.forEach(finalData, function(row){
-		// Keeps the same ranking if scores is the same
-		if(lastScore != row.final){
-			pos++;
-			lastScore = row.final;
-		}
+		pos++;
 
-		row.rank = pos;
+		if(lastRow && lastRow.final == row.final){
+			// Keeps the same ranking if scores are the same
+			return row.rank = lastRow.rank;
+		}else{
+			// Set rank as current position
+			row.rank = pos;
+			
+		}
+		// Save current row as last one
+		lastRow = row;
 	});
 
 	// Self assign the table
