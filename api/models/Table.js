@@ -487,7 +487,9 @@ Table.evaluateMethods.only = function(){
 	// Convert to object
 	var indexesToStay = {};
 	for(var k in rawIndexes)
-		indexesToStay[rawIndexes[k]*1+1] = true;
+		indexesToStay[rawIndexes[k]*1-1] = true;
+
+	console.log(indexesToStay);
 
 	return function(scores){
 		return _.filter(scores, function (num, index) {
