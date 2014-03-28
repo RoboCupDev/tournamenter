@@ -347,11 +347,12 @@
 					style: 'width: 36%;',
 				}
 			};
+
 			// Create dynamic score fields
 			var percent = (100-40) / table.columns*1;
-			for(var k = 1; k <= table.columns*1; k++){
+			for(var k = 0; k < table.columns*1; k++){
 				headers['score'+k] = {
-					value: table.headerScore+' '+k,
+					value: table.headers.scores[k],
 					class: alignRight,
 					style: 'width: '+percent+'%;',
 				};

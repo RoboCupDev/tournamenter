@@ -4,6 +4,11 @@
 	margin-bottom: 0px;
 }
 
+/*Fixes x-editable CSS*/
+dd > span{
+	padding-top: 0px !important;
+}
+
 </style>
 
 
@@ -55,11 +60,11 @@
 						</a></li>
 
 						<!-- Import/Export actions -->
-						<li class="divider"></li>
+						<!-- <li class="divider"></li>
 						<li role="presentation" class="dropdown-header">
 							<span class="glyphicon glyphicon-save"></span> Import/Export
 						</li>
-						<li><a class="btn-table-import-all" href="#">Import all teams</a></li>
+						<li><a class="btn-table-import-all" href="#">Import all teams</a></li> -->
 					</ul>
 				</div>
 
@@ -99,10 +104,16 @@
 						<span class="table-evaluateMethod" data-title="Score Algorithm" data-name="evaluateMethod">{{evaluateMethod}}</span>
 					</dd>
 
-					<!-- evaluateMethod -->
+					<!-- Score headers -->
 					<dt>Column names:</dt>
 					<dd>
-						<em>Click on the column header in the table.</em>
+						<span class="table-headerScore" data-title="Score Headers" data-name="headerScore">{{headerScore}}</span>
+					</dd>
+
+					<!-- Column names -->
+					<dt>Other column names:</dt>
+					<dd>
+						<em>Click on the column header in the table bellow.</em>
 					</dd>
 
 					</dl>
@@ -193,21 +204,60 @@
 <!--  SCORES HEADER VIEW TEMPLATE -->
 <script type="text/template" id="template-scores-header">
 	<tr>
-		<th><span class="editable" data-name="headerRank">{{headerRank}}</span></th>
-		<th><span class="editable" data-name="headerTeam">{{headerTeam}}</span></th>
-		<!-- Use the class anchor-score to know where to prepend extra score headers -->
-		<th class="anchor-score">
-			<span class="editable" data-name="headerScore">{{headerScore}}</span> 1
+		<th>
+			<span class="editable" data-name="headerRank">{{headerRank}}</span>
 		</th>
+
+		<th class="anchor-score">
+			<span class="editable" data-name="headerTeam">{{headerTeam}}</span>
+		</th>
+		<!-- Use the class anchor-score to know where to prepend extra score headers -->
+		<!-- <th class="">
+			<span class="editable" data-name="headerScore">{{headerScore}}</span>
+		</th> -->
 		<th><span class="editable" data-name="headerFinal">{{headerFinal}}</span></th>
-		<th class="text-right">
-			<button class="btn-team-add btn btn-xs btn-success">
+		<th class="">
+			<!-- Actions of the table. Only shown when not locked -->
+			<div class="btn-group pull-right">
+				<button class="hidden-xs btn-team-add btn btn-xs btn-success">
+					<span class="glyphicon glyphicon-plus"></span> Add Team
+				</button>
+
+				<button class="visible-xs btn-team-add btn btn-xs btn-success">
+					<span class="glyphicon glyphicon-plus"></span>
+				</button>
+
+				<button type="button" class="btn btn-xs btn-success dropdown-toggle" data-toggle="dropdown">
+					<span class="caret"></span>
+					<span class="sr-only">Toggle Dropdown</span>
+				</button>
+
+				<ul class="dropdown-menu" role="menu">
+					<!-- Import/Export actions -->
+					<!-- <li class="divider"></li> -->
+					<li role="presentation" class="dropdown-header">
+						<span class="glyphicon glyphicon-save"></span> Import/Export
+					</li>
+					<li><a class="btn-table-import-all" href="#">Import all teams</a></li>
+				</ul>
+			</div>
+			<!-- <button class="btn-team-add btn btn-xs btn-success">
 				<span class="glyphicon glyphicon-plus"></span> Add Team
-			</button>
+			</button> -->
 		</th>
 	</tr>
 </script>
 <!--/ SCORES HEADER VIEW TEMPLATE -->
+
+<!--  SCORE VALUE BUTTON TEMPLATE -->
+<script type="text/template" id="template-score-value">
+
+	<button type="button" class="btn-change-score btn btn-xs">
+		<span class="glyphicon glyphicon-pencil"></span> {{value}}
+	</button>
+
+</script>
+<!--/ SCORE VALUE BUTTON TEMPLATE -->
 
 <!--  SCORES DATA VIEW TEMPLATE -->
 <script type="text/template" id="template-scores-row">
@@ -269,6 +319,49 @@
 </div>
 <!--/ IMPORT TEAMS MODAL -->
 
+
+<!-- CREATE SCORE MODAL -->
+<!-- Button trigger modal -->
+<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modal-edit-score">
+  Launch demo modal
+</button>
+<div id="modal-edit-score" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 style="margin: 0;">
+					<span class="score-table label label-default"></span>
+					<small class="glyphicon glyphicon-chevron-right"></small>
+					<span class="score-team label label-info"></span>
+					<small class="glyphicon glyphicon-chevron-right"></small>
+					<span class="score-round label label-warning"></span>
+				</h4>
+				<!-- <h4 class="modal-title">Edit Score</h4> -->
+			</div>
+
+
+			<div class="modal-body">
+
+				<form id="edit-score-form" role="form">
+					<label class="control-label">Score Value </label>
+					<input class="score-value form-control input-lg" type="text" placeholder="Score Value">
+				</form>
+
+			</div>
+
+			<div class="modal-footer">
+				<!-- Close / Confirm / Delete buttons -->
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn-confirm btn btn-success">
+					<span class="glyphicon glyphicon-ok"></span> Save
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!--/ CREATE SCORE MODAL -->
+
 <script type="text/javascript">
 
 // Wait until page load is complet
@@ -289,14 +382,14 @@ App.evaluateMethodsList = [];
 for(var k in App.evaluateMethodsNames){
 	App.evaluateMethodsList.push({value: k, text: App.evaluateMethodsNames[k]});
 }
-console.log(App.evaluateMethodsList);
+// console.log(App.evaluateMethodsList);
 
 // List to allow XEditable to create a select list instead of raw string typing
 App.sortList = [{value: 'asc', text: 'ASCENDING'}, {value: 'desc', text: 'DESCENDING'}];
 
 /*
   ************************************************************
-	Score View (Keep track of ONE score object in a table)
+	Score View (Keep track of ONE score row object in a table)
   ************************************************************
 */
 App.Views.Score = Backbone.View.extend({
@@ -317,6 +410,8 @@ App.Views.Score = Backbone.View.extend({
 
 	templateScoresRow: _.template($('#template-scores-row').html()),
 	render: function(){
+		var self = this;
+
 		var dict = this.model.toJSON();
 		var columns = this.table.get('columns')*1;
 		var scores = dict.scores;
@@ -330,19 +425,56 @@ App.Views.Score = Backbone.View.extend({
 			where to insertBefore scores with jquery
 		*/
 		$scoresAnchor = this.$('.anchor-score');
-		for(var i = 1; i <= columns; i++){
+		for(var i = 0; i < columns; i++){
 
 			// Get score value
-			var scoreValue = (scores[i] ? scores[i].value : null) || '-';
+			// var scoreValue = (scores[i] ? scores[i].value : null) || '-';
 			// Create 
-			var cell = $('<td>').text(scoreValue);
+			// var cell = $('<td>').text(scoreValue);
+			var cell = $('<td>').append(this.createScoreFieldForRound(i));
 			cell.insertBefore($scoresAnchor);
 		}
+
+		// Add listners to every score field
+		this.$('.btn-change-score').unbind('click').click(function(){
+			$this = $(this);
+			var model = $this.data('model');
+			var round = $this.data('round');
+			// Open save window
+			self.openSaveScoreWindow(model, round);
+		});
 
 		// Configure editable field in team
 		this.configureTeamEditable();
 
 		return this;
+	},
+
+	/*
+		This method is responsible for creating a single edit field for scores.
+		It will also need to add 'data' properties to the field:
+			data('round', round)	-> round that it represents (integer)
+			data('model', model)	-> score model that it represents (Score Model)
+
+		Score fields btn's are made with class .btn-change-score
+	*/
+	templateScoreValue: _.template($('#template-score-value').html()),
+	createScoreFieldForRound: function(round){
+		round = round*1;
+		var score = this.model.getScore(round);
+
+		var $btn = $(this.templateScoreValue({
+			value: score ? score.value : '',
+		}));
+
+		// Add data to it
+		$btn.data('round', round);
+		$btn.data('model', this.model);
+
+		// Add custom class for scored fields
+		score ? $btn.addClass('btn-info') : $btn.addClass('btn-default');
+
+		return $btn;
 	},
 
 	configureTeamEditable: function(){
@@ -365,6 +497,59 @@ App.Views.Score = Backbone.View.extend({
 		return this;
 	},
 
+	/*
+		This will open the modal to edit score, update it's value
+		acordingly to the model and round, and update the model
+		once the user press save.
+	*/
+	openSaveScoreWindow: function(score, round){
+		var self = this;
+
+		// Get table inside score
+		var table = score.collection.table;
+		var scoreData = score.getScore(round) || {};
+		var scoreHeader = table.getScoreHeader(round);
+
+		// Find modal
+		$modal = $('#modal-edit-score');
+
+		// Set modal values (title bar and score value)
+		$modal.find('.score-table').text(table.get('name'));
+		$modal.find('.score-team').text(score.get('team').name);
+		$modal.find('.score-round').text(scoreHeader);
+		$modal.find('.score-value').val(scoreData.value);
+
+		setTimeout(function(){
+			$modal.find('.score-value').focus();
+		}, 500);
+		// console.log('openSaveScoreWindow', round);
+
+		// Bind save/destroy events
+		$modal.find('.btn-confirm').unbind('click').click(saveScore);
+		$modal.find('#edit-score-form').unbind('submit').submit(saveScore);
+
+		// Perform save, hide modal and fetch table egain
+		function saveScore(e){
+			e && e.preventDefault();
+			var value = $modal.find('.score-value').val();
+
+			score.setScore(round, value).save(null,{
+				success: function(){
+					$modal.modal('hide');
+					// Update table
+					self.fetchTableLater(1);
+				},
+				error: function(){
+					alert('ops');
+				},
+
+			});
+		}
+
+		$modal.modal('show');
+	},
+
+
 	confirmDestroyAction: function(){
 		var view = this;
 		var message = 'You are about to delete team "' + view.model.get('name') + '" from the table. Are you sure you want to proceed?';
@@ -383,20 +568,22 @@ App.Views.Score = Backbone.View.extend({
 	*/
 	refreshTimeout: null,
 	refreshTimeoutDelay: 1600, // 1.3 seconds
-	fetchTableLater: function(){
+	fetchTableLater: function(time){
 		var view = this;
 		// Clear timeout if exists
 		// if(view.refreshTimeout)
-			clearTimeout(view.refreshTimeout);
+		view.refreshTimeout = clearTimeout(view.refreshTimeout);
 
 		// Sync later
 		view.refreshTimeout = setTimeout(function(){
-			view.table.fetch({url: '/tables/associated/'+view.table.id});
-		}, view.refreshTimeoutDelay);
+			view.table.fetch();//{url: '/tables/associated/'+view.table.id});
+		}, time || view.refreshTimeoutDelay);
 	},
 
 	destroy: function(){
-		this.$el.remove();
+		this.$el.fadeOut('fast', function(){
+			$(this).remove();
+		});
 	},
 
 });
@@ -554,10 +741,18 @@ App.Views.Table = Backbone.View.extend({
 		var $html = $(this.templateScoresHeader(dict));
 
 		// Create extra score header columns
-		$scoresHeader = $html.find('.anchor-score');
-		for(var i = dict.columns*1; i > 1; i--){
-			var newHeader = $('<th>').text(dict.headerScore + ' ' + i);
-			newHeader.insertAfter($scoresHeader);
+		$anchor = $html.find('.anchor-score');
+
+		var scoreHeaders = dict.headers.scores;
+		for(var k in scoreHeaders){
+			// Get the server given name for header
+			var scoreName = scoreHeaders[k];
+
+			var newHeader = $('<th>').text(scoreName);
+			newHeader.insertAfter($anchor);
+
+			// Change anchor, to insert after this element next time
+			$anchor = newHeader;
 		}
 
 		// Make editable
@@ -610,6 +805,10 @@ App.Views.Table = Backbone.View.extend({
 			value: this.model.get('evaluateMethod'),
 		});
 
+		App.Mixins.editInPlace(this.model, this.$('.table-headerScore'), {
+			mode: 'popup',
+		});
+
 		return this;
 	},
 
@@ -625,7 +824,8 @@ App.Views.Table = Backbone.View.extend({
 		var view = this;
 		console.log('refreshing: '+this.model.id);
 		this.startSync();
-		this.model.fetch({url: '/tables/associated/'+this.model.id, success: next});
+		if(!_.isFunction(next)) next = null;
+		this.model.fetch({url: '/tables/associated/'+this.model.id, success: next });
 		return this;
 	},
 

@@ -158,6 +158,13 @@ var Table = {
 		calculate: generateTableDataInsideScores,
 		// headers: generateTableHeaders,
 
+		toJSON: function(){
+			var table = this.toObject();
+
+			generateTableHeaders(table);
+			return table;
+		},
+
 	},
 
 	beforeUpdate: function(attrs, next){
@@ -178,9 +185,9 @@ module.exports = Table;
 /*
 	Generate the table headers
 */
-function generateTableHeaders(){
+function generateTableHeaders(table){
 	// Save to allow in function referencte
-	var table = this;
+	table = table || this;
 	var columns = table.columns*1;
 
 	/*
@@ -192,17 +199,56 @@ function generateTableHeaders(){
 
 	headers['rank'] = table.headerRank;
 	headers['team'] = table.headerTeam;
-	
-	// Create Scores header
-	for(var i = 1; i <= columns; i++)
-		headers['score.'+(i)] = table.headerScore + ' ' + i;
+	headers['scores'] = getScoreHeadersNames(table);
 
 	// Add last header (Final score)
 	headers['final'] = table.headerFinal;
 
 	// Self assign headers and return
-	this.headers = headers;
+	table.headers = headers;
 	return headers;
+}
+
+/*
+	Returns an array of headers computed acordingly to the Table name
+
+	Table can use two ways to indicate names:
+		If table.headerScore contains `,`:
+			It will be splited, and the rest will be filled with a number only
+			ex: `Round 1, Round 2, Test 1, Extra` in a 5 columns table:
+				Round 1 | Round 2 | Test 1 | Extra | 5
+
+		If no `,` is contained in the headerScore
+			It will be used to generate others headers like this:
+			ex: `Round ` in a 4 columns table:
+				Round 1 | Round 2 | Round 3 | Round 3 | Round 4
+*/
+function getScoreHeadersNames(table){
+	var tableHeaders = [];
+	var columns = table.columns*1;
+
+	// Way one, array of strings
+	if(table.headerScore.indexOf(',') >= 0){
+
+		// Explode string
+		tableHeaders = table.headerScore.split(',');
+
+		// Add missing fields automatically
+		for(var i = tableHeaders.length; i < columns; i++)
+			tableHeaders.push((i + 1) + '');
+
+		// Trim values
+		for(var k in tableHeaders)
+			tableHeaders[k] = tableHeaders[k].trim();
+	}else{
+
+		// Generate headers
+		var prepend = table.headerScore + ' ';
+		for(var i = 0; i < columns; i++)
+			tableHeaders.push(prepend + (i + 1));
+	}
+
+	return tableHeaders
 }
 
 /*
@@ -331,8 +377,8 @@ var evSum = function(scores){
 // Average method
 var evAvg = function(scores){
 	return _.reduce(scores, function(sum, num) {
-		return sum + num*1/scores.length;
-	});
+		return sum + num*1;
+	})/scores.length;
 };
 
 /*
@@ -349,7 +395,6 @@ Table.evaluateMethods = {
 	This is helpfull to send to views, allowing them to know
 	defined methods.
 */
-
 Table.evaluateMethodsNames = {
 	'max': 'Maximum',
 	'min': 'Minimum',
