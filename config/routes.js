@@ -44,6 +44,7 @@ module.exports.routes = {
 
   'PATCH /matches/:id':     'MatchController.update',
 
+  'GET /tables/manage/:id?':'TableController.manage',
   'PATCH /tables/:id':      'TableController.update',
   'GET /tables/find/:id?':  'TableController.associated',
   'GET /tables/:id?':       'TableController.associated',

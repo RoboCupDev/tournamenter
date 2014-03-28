@@ -21,10 +21,9 @@ var _ = require('lodash');
 module.exports = {
 
 	manage: function(req, res, next){
-
+		var id = req.param('id', null);
 		// Find tables
-		findAssociated(null, function(tables){
-
+		findAssociated(id, function(tables){
 
 			Team.getTeamsAsList(null, function (teamList){
 				// Render view
@@ -33,6 +32,8 @@ module.exports = {
 					tables: tables,
 					teamList: teamList,
 					evaluateMethodsNames: Table.evaluateMethodsNames,
+
+					title: (id && tables[0] ? tables[0].name : 'Tables'),
 				});
 			});
 

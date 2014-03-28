@@ -59,6 +59,11 @@ dd > span{
 							<span class="glyphicon glyphicon-trash"></span> Delete Table
 						</a></li>
 
+						<li>
+							<a class="btn-table-new-page" target="_blank" href="#">
+							<span class="glyphicon glyphicon-new-window"></span> On new page</a>
+						</li>
+
 						<!-- Import/Export actions -->
 						<!-- <li class="divider"></li>
 						<li role="presentation" class="dropdown-header">
@@ -141,15 +146,35 @@ dd > span{
 
 						<dt>Final Score function</dt>
 						<dd>
-						<small>
-							The <code>Rank</code>, is generated based on the <code>Final</code> score, generally calculated based on the scores obtained by the team. However, depending on the tournament, the final score can be different. Perhaps, the final score, will be the average, or the maximum, or even the avarege, removing the worst and the best score (for example).<br/>
-							In this way, you can either insert some 'default' functions already made, or, create your own with javascript (read the last one).
+						<p><small>
+							The <code>Rank</code>, is generated based on the <code>Final</code> score, generally calculated based on the scores obtained by the team. However, depending on the tournament, the final score can be calculated differently. Perhaps, the final score, will be the average, or the maximum, or even the avarege, removing the worst and the best score (for example).
+						</small></p>
+						<p><small>
+							Here are BASIC methods already implemented:
 							<ul>
 								<li><code>avg</code>: Insert this to calculate an average on all scores</li>
 								<li><code>sum</code>: The final score is the sum of all scores</li>
 								<li><code>min</code>: The final score is the minimum of all scores</li>
 								<li><code>max</code>: The final score is the maximum of all scores</li>
-								<li>
+							</ul>
+
+							You can also use them toguether with some ADVANCED methods, writing them toguether with a <code>.</code> separating them. To pass `params`, use <code>:</code> to separate:
+							<ul>
+								<li><code>remove:[worst|best]:[N]</code>: Remove worst/best scores</li>
+								<li><code>only:[c1][c2][..]</code>: Filter to the given columns. First one is 1</li>
+								<li><code>round:[N]</code>: Round final result to <code>N</code> decilam places </li>
+							</ul>
+
+							Usage examples:
+							<ul>
+								<li><code>remove:best.sum.round:2</code>: Remove best score. Sum the rest. Round 2 decimal places</li>
+								<li><code>remove:best.remove:worst:2.avg</code>: Remove best score. Remove worst 2. Average the result</li>
+								<li><code>only:1:2.sum</code>: Sum columns 1 and 2 only</li>
+								<li><code>remove:worst.only:1:2.sum</code>: Sum best two columns only</li>
+							</ul>
+
+							<b>Note:</b> If your league needs More than this, you can also insert a Literal JavaScript function, where <code>scores</code> is an array of params to receive. You should return a number. Or contact me (ivanseidel@gmail.com).
+								<!-- <li>
 									anything else: Will be threated as 'literal' javascript function, where <code>scores</code> is an array containing all scores. Use <code>scores.length</code> to return the columns.<br/>
 									This function should return a value to be used as final score.<br/>
 									Example of simple sum function.<br/>
@@ -158,9 +183,10 @@ dd > span{
 	&nbsp&nbspfinalScore += scores[k]*1;<br/>
 	}<br/>
 	return finalScore;</code>
-								</li>
+								</li> -->
 							</ul>
-						</small>
+
+						</small></p>
 						</dd>
 
 						<dt>Score Columns</dt>
@@ -729,6 +755,9 @@ App.Views.Table = Backbone.View.extend({
 		// Save jquery refresh button instance
 		this.$btnRefresh = this.$('.btn-table-refresh');
 
+		// Save link to open in new page (inside actions dropdown)
+		this.$('.btn-table-new-page').prop('href', '/tables/manage/'+this.model.id);
+
 		return this;
 	},
 
@@ -811,7 +840,7 @@ App.Views.Table = Backbone.View.extend({
 		});
 
 		App.Mixins.editInPlace(this.model, this.$('.table-evaluateMethod'), {
-			type: 'textarea',
+			// type: 'textarea',
 			mode: 'popup',
 			showbuttons: true,
 			value: this.model.get('evaluateMethod'),
