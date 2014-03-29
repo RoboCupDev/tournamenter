@@ -461,7 +461,6 @@ Table.evaluateMethods.remove = function(type, number){
 
 	return function(scores){
 		var val = scores.sort().slice(number * endOrBegin);
-		console.log('remove', endOrBegin, number, val);
 		return val;
 	}
 }
@@ -488,8 +487,6 @@ Table.evaluateMethods.only = function(){
 	var indexesToStay = {};
 	for(var k in rawIndexes)
 		indexesToStay[rawIndexes[k]*1-1] = true;
-
-	console.log(indexesToStay);
 
 	return function(scores){
 		return _.filter(scores, function (num, index) {

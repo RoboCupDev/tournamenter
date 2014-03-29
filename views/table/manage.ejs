@@ -850,7 +850,7 @@ App.Views.Table = Backbone.View.extend({
 				$this = $(this);
 				$this.empty();
 				var methods = value.split('.');
-				var arrow = '<small class="glyphicon glyphicon-chevron-right"></small>';
+				var arrow = '<small class="glyphicon glyphicon-chevron-right text-muted"></small>';
 				for(var k in methods){
 					// Split params
 					var params = methods[k].split(':');
@@ -859,10 +859,10 @@ App.Views.Table = Backbone.View.extend({
 					for(var i = 1; i < params.length; i++){
 						$param = $('<span class="label label-warning"></span>').text(params[i]);
 
-						if(i > 1) $method.append($(arrow).addClass('text-warning'));
+						if(i > 1) $method.append(' ');
 						$method.append($param);
 					}
-					if(k > 0) $this.append($(arrow).addClass('text-muted'));
+					if(k > 0) $this.append(arrow);
 					$this.append($method);
 
 				}
