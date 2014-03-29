@@ -844,6 +844,29 @@ App.Views.Table = Backbone.View.extend({
 			mode: 'popup',
 			showbuttons: true,
 			value: this.model.get('evaluateMethod'),
+
+			// Facilitate view of the method, by adding labels
+			display: function (value) {
+				$this = $(this);
+				$this.empty();
+				var methods = value.split('.');
+				var arrow = '<small class="glyphicon glyphicon-chevron-right"></small>';
+				for(var k in methods){
+					// Split params
+					var params = methods[k].split(':');
+					var $method = $('<span class="label label-info"></span>');
+					$method.append($('<span>').text(params[0]+' '));
+					for(var i = 1; i < params.length; i++){
+						$param = $('<span class="label label-warning"></span>').text(params[i]);
+
+						if(i > 1) $method.append($(arrow).addClass('text-warning'));
+						$method.append($param);
+					}
+					if(k > 0) $this.append($(arrow).addClass('text-muted'));
+					$this.append($method);
+
+				}
+			}
 		});
 
 		App.Mixins.editInPlace(this.model, this.$('.table-headerScore'), {
