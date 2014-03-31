@@ -371,6 +371,18 @@ App.Models.Page = Backbone.Model.extend({
 	},
 	// Override sync, since this model is nested to a View model
 	sync: function(){},
+
+	// Set and get options
+	setOption: function (option, value) {
+		var options = this.get('options');
+		options[option] = value;
+		this.set('options', options);
+	},
+
+	// Get option
+	getOption: function(option){
+		return this.get('options')[option];
+	},
 });
 
 // Pages Collection
