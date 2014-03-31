@@ -323,6 +323,12 @@
 			this.barView.setElement(this.$('.spot-bar-view')).render();
 			this.configView.setElement(this.$('.spot-config-view')).render();
 
+			// Make configView collapsible
+			// Util.makeCollapsible(this.$('.btn-collapse-options'), this.$('.collapse-options'), {
+			// 	showData: '<span class="caret"></span> Show Options',
+			// 	hideData: 'Hide Options',
+			// });
+
 			return this;
 		},
 
