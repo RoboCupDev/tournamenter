@@ -36,9 +36,30 @@
 		},
 
 		render: function(){
-			$img = $('<img>');
-			$img.prop('src', this.model.get('options').file);
+			var options = this.model.get('options');
+
+			var $img = $('<img>');
+			$img.prop('src', options.file);
 			this.$el.html($img);
+			this.$el.addClass('text-center');
+
+			var sizes = {
+				small: '50%',
+				medium: '70%',
+				big: '100%',
+			}
+			var height = sizes[options.size] || sizes.medium;
+
+			// Give time to update DOM
+			setTimeout(function(){
+				$img.addClass('img-rounded box-shadow');
+				$img.css('position', 'relative');
+				$img.css('top', '50%');
+				$img.css('height', height);
+				// $img.css('left', '50%');
+				$img.css('marginTop', -$img.height()/2);
+				// $img.css('marginLeft', -$img.width()/2);
+			}, 1);
 		},
 
 	});
