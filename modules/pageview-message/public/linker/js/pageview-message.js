@@ -35,6 +35,13 @@
 	};
 
 	/*
+		Custom options and it's defaults
+	*/
+	var customSizeDefault = 1.5;
+	var customAlignDefault = 'center';
+
+
+	/*
 		Public view Class that will render, update and animate
 		tables
 	*/
@@ -57,8 +64,8 @@
 
 			// Setup template props
 			var $inner = this.$('.inner');
-			$inner.addClass( options.align ? ('text-'+options.align) : 'text-center');
-			$inner.css('zoom', options.size*1 || 1.5);
+			$inner.addClass( 'text-' + (options.align ? options.align : customAlignDefault));
+			$inner.css('zoom', options.size*1 || customSizeDefault);
 
 			// Get default markdown renderer
 			var renderMethod = null;
@@ -164,16 +171,16 @@
 				type: 'select',
 				mode: 'popup',
 				source: [
-					{value: 'primary',text: 'Default'},
-					{value: 'info',   text: 'Info'},
-					{value: 'warning',text: 'Warning'},
-					{value: 'success',text: 'Success'},
-					{value: 'danger', text: 'Danger'},
+					{value: 'primary',text: 'Dk Blue'},
+					{value: 'info',   text: 'Lt Blue'},
+					{value: 'warning',text: 'Yellow'},
+					{value: 'success',text: 'Green'},
+					{value: 'danger', text: 'Red'},
 				],
 				// source: module.tablesKeys,
 				showbuttons: true,
 				value: view.model.getOption('type'),
-				emptytext: 'Primary',
+				emptytext: 'Lt Blue',
 			}, this.createSaveWrapperForField('type'));
 
 			// Editable options for text zoom size
@@ -184,7 +191,7 @@
 				// source: module.tablesKeys,
 				showbuttons: true,
 				value: view.model.getOption('size'),
-				emptytext: '1',
+				emptytext: customSizeDefault+'',
 			}, this.createSaveWrapperForField('size'));
 
 			// Editable options for image size
@@ -193,14 +200,14 @@
 				type: 'select',
 				mode: 'popup',
 				source: [
-					{value: 'left',		text: 'Left'},
-					{value: 'center',	text: 'Center'},
-					{value: 'right',	text: 'Right'},
+					{value: 'left',		text: 'left'},
+					{value: 'center',	text: 'center'},
+					{value: 'right',	text: 'right'},
 				],
 				// source: module.tablesKeys,
 				showbuttons: true,
 				value: view.model.getOption('align'),
-				emptytext: 'Left',
+				emptytext: customAlignDefault,
 			}, this.createSaveWrapperForField('align'));
 
 			// Initialize edit field on textarea
