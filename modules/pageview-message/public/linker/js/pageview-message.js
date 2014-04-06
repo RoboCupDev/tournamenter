@@ -20,6 +20,19 @@
 		disabled: false,
 	});
 
+	/*
+		A custom table renderer for markdown
+	*/
+	var customTableRenderer = function(header, body) {
+		return '<table class="table table-striped table-bordered table-responsive" style="background-color: #F0F0F0;">\n'
+		+ '<thead>\n'
+		+ header
+		+ '</thead>\n'
+		+ '<tbody>\n'
+		+ body
+		+ '</tbody>\n'
+		+ '</table>\n';
+	};
 
 	/*
 		Public view Class that will render, update and animate
@@ -47,9 +60,22 @@
 			$inner.addClass( options.align ? ('text-'+options.align) : 'text-center');
 			$inner.css('zoom', options.size*1 || 1.5);
 
+			// Get default markdown renderer
+			var renderMethod = null;
+
+			// This is an workflow to allow multiple markdown libraries
+			if(window.markdown){
+				// markdown.js
+				renderMethod = markdown.toHTML;
+			}else if(window.marked){
+				// marked.js (allows tables, so let's stylize)
+				marked.Renderer.prototype.table = customTableRenderer;
+				renderMethod = marked;
+			}
+
 			// Set template
-			if(options.message)
-				$inner.html(markdown.toHTML( options.message ));
+			if(options.message && renderMethod)
+				$inner.html(renderMethod( options.message ));
 
 			var colors = {
 				primary: '#428bca',
