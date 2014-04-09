@@ -401,7 +401,7 @@
 				var score = table.scores[s];
 				// Add dynamic attributes
 				score.teamName = score.team.name;
-				for(var c = 1; c <= columns; c++){
+				for(var c = 0; c < columns; c++){
 					var scoreValue = (score.scores[c] ? score.scores[c].value : '-');
 					score['score'+c] = scoreValue;
 				}

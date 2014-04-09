@@ -361,7 +361,7 @@ var GlobalViewController = Backbone.View.extend({
 	*/
 	changeToPageAt: function(index){
 		// Change page to the cached view at specified index
-		var view = _.toArray(this.pageViews)[index];
+		var view = this.getPageViews()[index];
 		this.setCurrentView(view);
 		this.schedule();
 	},
