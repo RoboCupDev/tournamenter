@@ -3,7 +3,7 @@ tournamenter
 
 Robocup 2014 Administration panel for leagues
 
-![Build status](https://travis-ci.org/travis-ci/travis-web.png?branch=master)
+[![Build Status](https://travis-ci.org/RoboCupDev/tournamenter.svg?branch=improvements)](https://travis-ci.org/RoboCupDev/tournamenter)
 
 Setting up a development environment
 ====================================
