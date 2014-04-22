@@ -3,13 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to tournamenter's documentation!
-========================================
+tournamenter: the last tool you need to manage your tournament
+==============================================================
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
+
 
 
 
