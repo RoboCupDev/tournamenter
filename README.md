@@ -12,7 +12,7 @@ Setting up a development environment
 
 1. Clone this repository by running
 
-        $ git clone git@github.com:RoboCupDev/tournamenter.git
+        $ git clone https://github.com/RoboCupDev/tournamenter.git
 
 2. Install dependencies
 
