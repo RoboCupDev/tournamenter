@@ -42,3 +42,19 @@ correctly. In order to see if everything works as expected you can type::
 Which will make the server start at http://127.0.0.1:1337 and with a bit of
 luck you should see your own `tournamenter` instance there!
 
+If you are out of luck ...
+--------------------------
+
+Although it should not it might happen that the command above will finish
+with error message. If the error looks like::
+
+    TypeError: Cannot call method 'createCollection' of undefined
+
+then you can easily fix the situation by starting `tournamenter` by
+running::
+
+    $ node app --adapter.module "sails-disk"
+
+which will use your hard drive to save the data you create while playing
+with tournamenter. Again, you can verify that everything is working as
+expected by looking at http://127.0.0.1:1337
