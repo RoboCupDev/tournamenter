@@ -13,3 +13,13 @@ good to know. Here is a collection of helper names with their meaning:
 **Score**: A single entry of points for a team
 **Final Score:** Computed with all its Scores. You can define a custom function to compute it.
 **Module**: A part of the system.
+
+Modules
+=======
+
+We divided the system in four main modules:
+
+- Teams
+- Groups
+- Tables
+- Views

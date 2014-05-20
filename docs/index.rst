@@ -28,6 +28,7 @@ Contents:
    :maxdepth: 2
 
    installation
+   introduction
 
 
 ..  Indices and tables
