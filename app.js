@@ -16,11 +16,11 @@ console.log(argv);
 	Set a password for login purposes. If none is set, will be public
 
 	Usege:
-		node app --password 123456
-		node app --pw 123456
+		node app --env.PASSWORD 123456
 */
-if(argv.password || argv.pw){
-	var password = argv.password || argv.pw;
+if(argv.password) argv.env.PASSWORD = argv.password;
+if(argv.env.PASSWORD){
+	var password = argv.env.PASSWORD;
 	console.log('\n$ Using Password: '.cyan + password);
 }
 
@@ -50,6 +50,13 @@ if(argv.env){
 	// _.extend(process.env, argv.env);
 }
 
+
+/*
+	Set process name as the APP_NAME
+*/
+process.title = 'node | ' + (
+	process.env.APP_NAME ||
+	process.env.PORT || '1337');
 
 // Start sails and pass it command line arguments
 sails.lift(argv, function (sails) {
