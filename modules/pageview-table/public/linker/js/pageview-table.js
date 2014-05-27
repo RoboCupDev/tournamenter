@@ -347,11 +347,12 @@
 					style: 'width: 36%;',
 				}
 			};
+
 			// Create dynamic score fields
 			var percent = (100-40) / table.columns*1;
-			for(var k = 1; k <= table.columns*1; k++){
+			for(var k = 0; k < table.columns*1; k++){
 				headers['score'+k] = {
-					value: table.headerScore+' '+k,
+					value: table.headers.scores[k],
 					class: alignRight,
 					style: 'width: '+percent+'%;',
 				};
@@ -400,7 +401,7 @@
 				var score = table.scores[s];
 				// Add dynamic attributes
 				score.teamName = score.team.name;
-				for(var c = 1; c <= columns; c++){
+				for(var c = 0; c < columns; c++){
 					var scoreValue = (score.scores[c] ? score.scores[c].value : '-');
 					score['score'+c] = scoreValue;
 				}

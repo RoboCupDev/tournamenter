@@ -108,16 +108,37 @@ var Table = {
 
 
 		/*
+			EVALUATE METHODS LOGIC
+
 			evaluateMethod is what actualy 'computes' the final score
 			for each row (team) in the table. There are some 'default' 
-			function used to help, you also can 'write' your JavaScript 
-			method for that.
+			function used to help. You can use nested default methods,
+			or  you also can 'write' your JavaScript method for that.
 
 			Available default methods: 
+			// Expects array, returns single value
 			+ sum    - sum all scores
 			+ max    - the maximum value within scores
 			+ min    - the minimum value within scores
-			+ Anything else is threated as a literal function, with the following pattern:
+			+ avg    - the minimum value within scores
+
+			// Expects single value, returns single value
+			+ round:places?	- round a value. Default places is 1
+
+			// Expects array, returns array
+			remove:[worst|best]:N?	- Remove best/worst N scores. Default N is 1
+			only:[n1][n2][..]		- Filter columns.
+
+			If none of deafults matched, we will attempt to separate methods:
+				This will sum worst 2 scores and round with 2 decimal places
+					`sum:bot:2.round:2`, would execute:
+						- Sum method with params ('bot', 2), and send result to:
+						- Round with params (2);
+
+				This would remove best score, and worst score, average and round
+					`remove:best.remove:worst.avg.round`
+
+			Anything else is threated as a literal function, with the following pattern:
 
 			  	function(scores){
 					// Literal method is inserted here
@@ -158,6 +179,13 @@ var Table = {
 		calculate: generateTableDataInsideScores,
 		// headers: generateTableHeaders,
 
+		toJSON: function(){
+			var table = this.toObject();
+
+			generateTableHeaders(table);
+			return table;
+		},
+
 	},
 
 	beforeUpdate: function(attrs, next){
@@ -178,9 +206,9 @@ module.exports = Table;
 /*
 	Generate the table headers
 */
-function generateTableHeaders(){
+function generateTableHeaders(table){
 	// Save to allow in function referencte
-	var table = this;
+	table = table || this;
 	var columns = table.columns*1;
 
 	/*
@@ -192,17 +220,60 @@ function generateTableHeaders(){
 
 	headers['rank'] = table.headerRank;
 	headers['team'] = table.headerTeam;
-	
-	// Create Scores header
-	for(var i = 1; i <= columns; i++)
-		headers['score.'+(i)] = table.headerScore + ' ' + i;
+	headers['scores'] = getScoreHeadersNames(table);
 
 	// Add last header (Final score)
 	headers['final'] = table.headerFinal;
 
 	// Self assign headers and return
-	this.headers = headers;
+	table.headers = headers;
 	return headers;
+}
+
+/*
+	Returns an array of headers computed acordingly to the Table name
+
+	Table can use two ways to indicate names:
+		If table.headerScore contains `,`:
+			It will be splited, and the rest will be filled with a number only
+			ex: `Round 1, Round 2, Test 1, Extra` in a 5 columns table:
+				Round 1 | Round 2 | Test 1 | Extra | 5
+
+		If no `,` is contained in the headerScore
+			It will be used to generate others headers like this:
+			ex: `Round ` in a 4 columns table:
+				Round 1 | Round 2 | Round 3 | Round 3 | Round 4
+*/
+function getScoreHeadersNames(table){
+	var tableHeaders = [];
+	var columns = table.columns*1;
+
+	// Way one, array of strings
+	if(table.headerScore.indexOf(',') >= 0){
+
+		// Explode string
+		tableHeaders = table.headerScore.split(',');
+		
+		// Remove extra columns
+		for(var i = tableHeaders.length; i > columns ; i--)
+			tableHeaders.pop();
+
+		// Add missing fields automatically
+		for(var i = tableHeaders.length; i < columns; i++)
+			tableHeaders.push((i + 1) + '');
+		
+		// Trim values
+		for(var k in tableHeaders)
+			tableHeaders[k] = tableHeaders[k].trim();
+	}else{
+
+		// Generate headers
+		var prepend = table.headerScore + ' ';
+		for(var i = 0; i < columns; i++)
+			tableHeaders.push(prepend + (i + 1));
+	}
+
+	return tableHeaders
 }
 
 /*
@@ -270,7 +341,7 @@ function generateTableDataInsideScores(){
 		}
 
 		// Compute final score and adds to scoreData
-		score['final'] = evalMethod(scoreValues);
+		score['final'] = evalMethod(scoreValues) || 0;
 
 		// Add to table data
 		// tableRows.push(score)
@@ -284,16 +355,21 @@ function generateTableDataInsideScores(){
 
 	// Rank Table
 	var pos = 0;
-	var lastScore = -1;
+	var lastRow = null;
 
 	_.forEach(finalData, function(row){
-		// Keeps the same ranking if scores is the same
-		if(lastScore != row.final){
-			pos++;
-			lastScore = row.final;
-		}
+		pos++;
 
-		row.rank = pos;
+		if(lastRow && lastRow.final == row.final){
+			// Keeps the same ranking if scores are the same
+			return row.rank = lastRow.rank;
+		}else{
+			// Set rank as current position
+			row.rank = pos;
+			
+		}
+		// Save current row as last one
+		lastRow = row;
 	});
 
 	// Self assign the table
@@ -306,76 +382,204 @@ function generateTableDataInsideScores(){
 
 /*
 	Evaluate methods calculators (Defaults)
+
+	All methods should return a function.
+	Each method can accept params on it's creation.
+	Every function returned, should have a single param named 'scores'
 */
+// Save methods in this object
+Table.evaluateMethods = {};
+
 // Max method
-var evMax = function(scores){
-	return _.max(scores, function(val) {
-		return val*1;
-	});
+Table.evaluateMethods.max = function(){
+	return function(scores){
+		return _.max(scores, function(val) {
+			return val*1;
+		});
+	}
+
 };
 
 // Min method
-var evMin = function(scores){
-	return _.min(scores, function(val) {
-		return val*1;
-	});
+Table.evaluateMethods.min = function(scores){
+	return function(scores){
+		return _.min(scores, function(val) {
+			return val*1;
+		});
+	}
 };
 
 // Sum method
-var evSum = function(scores){
-	return _.reduce(scores, function(sum, num) {
-		return sum + num*1;
-	});
+Table.evaluateMethods.sum = function(scores){
+	return function(scores){
+		return _.reduce(scores, function(sum, num) {
+			return sum + num*1;
+		});
+	}
 };
 
 // Average method
-var evAvg = function(scores){
-	return _.reduce(scores, function(sum, num) {
-		return sum + num*1/scores.length;
-	});
+Table.evaluateMethods.avg = function(scores){
+	return function(scores){
+		return _.reduce(scores, function(sum, num) {
+			return sum + num*1;
+		})/scores.length;
+	}
 };
 
 /*
-	Default methods instantiation
+	Round method
+
+	Input:  VALUE
+	Output: VALUE
 */
-Table.evaluateMethods = {
-	max: evMax,
-	min: evMin,
-	sum: evSum,
-	avg: evAvg,
+Table.evaluateMethods.round = function(places){
+	places = places*1 ? places : 0;
+	return function(score){
+		return parseFloat(score).toFixed(places);
+	}
 };
+
+/*
+	Remove worst and best scores
+	Examples:
+		remove:best:2
+		remove:top:2
+		remove:max
+		remove:worst:3
+		remove:bad:4
+
+	Input:  ARRAY
+	Output: ARRAY
+*/
+Table.evaluateMethods.remove = function(type, number){
+
+	// Filter params
+	var endOrBegin = 1;
+	if(type == 'best' || type == 'top' || type == 'max') -1;
+	number = number ? parseFloat(number) : 1;
+
+	return function(scores){
+		var val = scores.sort().slice(number * endOrBegin);
+		return val;
+	}
+}
+
+/*
+	Filter array fields. Start is 1, not 0
+	Examples:
+		only:1:2:3:4
+		only:1,2,3,4
+		only:1
+
+	Input:  ARRAY
+	Output: ARRAY
+*/
+Table.evaluateMethods.only = function(){
+
+	// Filter params
+	if(arguments.length > 1)
+		var rawIndexes = arguments;
+	else
+		var rawIndexes = (arguments[0] || '').split(',');
+
+	// Convert to object
+	var indexesToStay = {};
+	for(var k in rawIndexes)
+		indexesToStay[rawIndexes[k]*1-1] = true;
+
+	return function(scores){
+		return _.filter(scores, function (num, index) {
+			return indexesToStay[index];
+		});
+	}
+}
 
 /*
 	This is helpfull to send to views, allowing them to know
 	defined methods.
 */
-
 Table.evaluateMethodsNames = {
+	// Methods that returns a single value
 	'max': 'Maximum',
 	'min': 'Minimum',
 	'sum': 'Sum',
 	'avg': 'Average',
+	'round': 'Round',
 };
 
 /*
-	This will try to find a default method.
-	If not succeed, will try to parse as a function.
-	If not succeeded, will return null.
+	Returns an function for the given method as string given.
 
-	In sum: Will return a function if succeeds, otherwise, 'null'
+	Read on top (EVALUATE METHODS LOGIC) to know more about what
+	this is doing.
 */
 function getMethodFor(methodRaw){
+
+	// Split method in dots
+	var methods = methodRaw.split('.');
+
+	/*
+		Try to parse as separate functions.
+		We expect at least two methods separated by `.` (dots)
+
+		If not, we will thread it right after, as a default function
+		or a custom one
+	*/
+	if(methods.length > 1){
+
+		// Default function to resolve methods
+		function resolveMethod(wrapedMethod, methodRaw){
+
+			// Get method string and `methodify` it recursivelly
+			var method = getMethodFor(methodRaw);
+			
+			// Check if method is ok to continue, or, return null
+			if(!method) throw Exception('Could not parse method: '+methodRaw);
+			
+			// Create a wrapped method of the current one, with this one
+			return function(scores){
+				return wrapedMethod(method(scores));
+			}
+		}
+
+		// Go trough array, wraping methods
+		var finalMethod = _.reduceRight(
+			methods,
+			// Called for every function
+			resolveMethod,
+			// Define initial method. Just returns value
+			function(scores){
+				return scores;
+			}
+		);
+
+		// Return serie methods
+		return finalMethod;
+	}
+
+	/*
+		If only one method, resolves it like a simple function
+	*/
+	// Get methodName, and params
+	var explodedMethod = methodRaw.split(':');
+	var methodName = explodedMethod[0].trim();
+	var methodParams = Array.prototype.slice.call(explodedMethod, 1);
+	
 	// Try to find in defaults
-	if(Table.evaluateMethods[methodRaw])
-		return Table.evaluateMethods[methodRaw];
+	if(Table.evaluateMethods[methodName])
+		return Table.evaluateMethods[methodName].apply(null, methodParams);
 
 	// Else, try to return a new function with it
 	try{
 		var method = Function('scores', methodRaw);
-		method();
+		method([]);
 		return method;
 	}catch(err){
 	}
+
+
+
 	return null;
 }
 

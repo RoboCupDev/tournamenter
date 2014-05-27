@@ -89,15 +89,19 @@
 			<small><a target="__blank" class="text-muted" href="/views/view/{{id}}">/views/view/{{id}}</a></small>
 		</div>
 
-		<div class="spot-pages panel-body">
+		<button type="button" class="btn-collapse-pages btn btn-warning btn-xs btn-block">
+			Show Pages
+		</button>
 
-			<div class="panel panel-info">
+		<div class="collapse spot-pages panel-body" style="padding-bottom: 0px; padding-top: 0px; margin-top: 15px;">
+
+			<!-- <div class="panel panel-info">
 				<div class="spot-bar-view panel-heading">
 					<strong>Group View</strong> 
 					<small>[1.5s, Active] - [<span class="text-success">Group A, Finals, ASD</span>]</small>
 
 					<div class="pull-right">
-						<!-- Delete -->
+						Delete
 						<button class="btn-page-destroy btn btn-xs btn-danger" href="#">
 							<span class="glyphicon glyphicon-trash"></span> Remove
 						</button>
@@ -106,7 +110,7 @@
 				<div class="panel-body">
 					aSDAWE?
 				</div>
-			</div>
+			</div> -->
 
 		</div>
 	<!-- </div> -->
@@ -224,9 +228,6 @@ App.Views.View = Backbone.View.extend({
 		this.listenTo(this.model.pages, 'remove', this.onRemovePage);
 
 		this.listenTo(this.model, 'sync', this.endSync);
-
-		// Save jquery refresh button instance
-		this.$btnRefresh = this.$('.btn-view-refresh');
 	},
 
 	render: function(){
@@ -255,6 +256,15 @@ App.Views.View = Backbone.View.extend({
 		// Configure View
 		this.configureTitleBar()
 			.renderCreatePageButtons();
+
+		// Save jquery refresh button instance
+		this.$btnRefresh = this.$('.btn-view-refresh');
+
+		// Make pages collapsible
+		Util.makeCollapsible(this.$('.btn-collapse-pages'), this.$('.spot-pages'), {
+			showData: '<span class="caret"></span> Show Pages',
+			hideData: 'Hide Pages',
+		});
 
 		return this;
 	},
@@ -352,7 +362,7 @@ App.Views.View = Backbone.View.extend({
 
 	endSync: function(){
 		// Enable button and stop rotating
-		this.$btnRefresh.removeAttr('disabled');
+		this.$btnRefresh.attr('disabled', false);
 		this.$btnRefresh.find('.glyphicon').removeClass('icon-rotate');
 	},
 });

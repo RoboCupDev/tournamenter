@@ -32,7 +32,9 @@ module.exports.routes = {
   // located at `views/home/index.ejs`
   // 
   // (This would also work if you had a file at: `/views/home.ejs`)
-  '/': 'TeamController.manage',
+  '/':                      'TeamController.manage',
+  '/login':                 'UserController.login',
+  '/logout':                'UserController.logout',
 
   // Specific action override for controllers
   // 'GET /teams/manage':             'TeamController.manage',
@@ -44,6 +46,7 @@ module.exports.routes = {
 
   'PATCH /matches/:id':     'MatchController.update',
 
+  'GET /tables/manage/:id?':'TableController.manage',
   'PATCH /tables/:id':      'TableController.update',
   'GET /tables/find/:id?':  'TableController.associated',
   'GET /tables/:id?':       'TableController.associated',
@@ -54,6 +57,7 @@ module.exports.routes = {
   'PATCH /views/:id':       'ViewController.update',
   'GET /views/find/:id?':   'ViewController.associated',
   'GET /views/:id?':        'ViewController.associated',
+
 
   /*
   // But what if you want your home page to display

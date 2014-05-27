@@ -121,7 +121,7 @@ var Modules = {
 		try{
 			module = require(modulePath);
 		}catch(e){
-			console.info('Could not require module: '.red + moduleName + ' at '.cyan + module);
+			console.info('Could not require module: '.red + moduleName + ' at '.cyan + module, e);
 			return;
 		}
 	

@@ -66,8 +66,8 @@ module.exports = {
 
                 // Compute points ONLY if match is not 'scheduled'
                 // logycaly, it's 'ended' or 'playing', so we compute it
-                // if(match.state == 'scheduled')
-                    // return;
+                if(match.state == 'scheduled')
+                    return;
 
                 // Increment Plays
                 teamRow.P++;

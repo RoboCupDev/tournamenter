@@ -235,6 +235,55 @@ App.Collections.Teams = Backbone.Collection.extend({
 // Score
 App.Models.Score = Backbone.Model.extend({
 	urlRoot: '/scores',
+
+	/*
+		Helper method used to save score to scores object.
+		you can either assign an score object, or a string/number:
+		Note that 1st round is 1, and not 0
+		Valid: 
+			score.setScore(1, 10);
+			score.setScore(1, {value: 10, data: {}});
+			score.setScore(1, '10');
+			score.setScore(1, '10', data);
+	*/
+	setScore: function(round, _score, data){
+		// Get all scores
+		var scores = this.get('scores') || {};
+
+		// Filter scores, allow multiple method calls
+		var score = _score;
+		if(!_.isObject(score))
+			score = {
+				value: _score * 1,
+				data: data || {},
+			};
+
+		// Filter round
+		round = round * 1;
+		if(round < 0) return console.error('Could not set data for round '+round);
+
+		// Delete or update score
+		if(!_score){
+			// Deleting
+			delete scores[round];
+		}else{
+			// Save to object and to model
+			scores[round] = score;
+		}
+
+		this.set('scores', scores);
+
+		return this;
+	},
+
+	/*
+		Returns a score object
+	*/
+	getScore: function(round){
+		var scores = this.get('scores') || {};
+		round = round*1;
+		return (scores[round] || null);
+	},
 });
 
 // Scores Collection
@@ -300,6 +349,12 @@ App.Models.Table = Backbone.Model.extend({
 		returnObj.scores = this.scores.toJSON();
 		return returnObj;
 	},
+
+	getScoreHeader: function(score){
+		var headers = this.get('headers');
+		if(!headers) return '';
+		return headers.scores[score*1] || '';
+	},
 });
 
 // Table Collection
@@ -316,6 +371,18 @@ App.Models.Page = Backbone.Model.extend({
 	},
 	// Override sync, since this model is nested to a View model
 	sync: function(){},
+
+	// Set and get options
+	setOption: function (option, value) {
+		var options = this.get('options');
+		options[option] = value;
+		this.set('options', options);
+	},
+
+	// Get option
+	getOption: function(option){
+		return this.get('options')[option];
+	},
 });
 
 // Pages Collection
