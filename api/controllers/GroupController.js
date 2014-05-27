@@ -61,7 +61,12 @@ module.exports = {
 			// Load Matches for each Group and associates
 			data.forEach(function(group){
 
-				findAssociated(Match, 'groupId', group.id, function(matches){
+				Match.find()
+					.where({'groupId': group.id})
+					.sort('day ASC')
+					.sort('hour ASC')
+					.sort('id')
+					.then(function(matches){
 					// Associate matches with groups
 					group.matches = matches;
 
@@ -149,20 +154,3 @@ module.exports = {
 
 	
 };
-
-
-// Find in Model, where 'key' is equal to id
-function findAssociated(Model, key, id, cb){
-	// Create where clause
-	var options = {
-		where: {}
-	};
-	options.where[key] = id;
-
-	var finding = Model.find(options);
-
-	finding.done(function afterFound(err, models) {
-		if(cb)
-			cb(models);
-	});
-}
