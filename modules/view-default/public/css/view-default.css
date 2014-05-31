@@ -5,19 +5,19 @@
 */
 
 @media all and (max-width: 992px) {
-	body{
+	html{
 		zoom: 0.4;
 	}
 }
 
 @media all and (min-width: 992px) and (max-width: 1400px) {
-	body{
-		zoom: 0.6;
+	html{
+		/*zoom: 0.5;*/
 	}
 }
 
 @media all and (min-width: 1400px) {
-	body{
+	html{
 		/*zoom: 0.8;*/
 		/*zoom: 0.9;*/
 	}
@@ -165,7 +165,7 @@ footer .title{
 	margin: 0px;
 	padding-left: 60px;
 	font-size: 90px;
-	font-weight: 600;
+	font-weight: 400;
 	color: #888;
 	font-family: 'Lato', sans-serif;
 }
@@ -272,8 +272,9 @@ footer .footnote{
 
 /*Fix for page indicator in headings (adjust vertical center) */
 .board-heading .dotstyle{
-	padding: 10px 0px;
-	zoom: 0.7;
+	margin-top: 4px;
+	/*padding: 10px 0px;*/
+	/*zoom: 0.7;*/
 }
 
 /* BOARD ORANGE template */
@@ -514,8 +515,8 @@ footer .footnote{
 	display: block;
 	float: left;
 	margin: 0 16px;
-	width: 16px;
-	height: 16px;
+	width: 12px;
+	height: 12px;
 	cursor: pointer;
 }
 
@@ -594,7 +595,7 @@ footer .footnote{
 	Game Round classes
 	******
 */
-.round {
+/*.round {
 	background-color: #F4F4F4;
 	zoom: 1.2;
 }
@@ -671,8 +672,6 @@ footer .footnote{
 
 .round .round-team{
 	position: relative;
-	/*float: left;*/
-	/*width: 100px;*/
 	clear: both;
 	height: 100px;
 
@@ -687,14 +686,14 @@ footer .footnote{
 	color: #F0F0F0;
 	-webkit-box-shadow: 0 0 30px -5px #222;
 			box-shadow: 0 0 30px -5px #222;
-}
+}*/
 
 /*
 	******
 	Match classes
 	******
 */
-.match {
+/*.match {
 	background-color: #F4F4F4;
 	-webkit-box-shadow:inset 0 0 300px -20px #000000;
 			box-shadow:inset 0 0 300px -20px #000000;
@@ -771,7 +770,7 @@ footer .footnote{
 	text-align: center;
 	/*height: 85px;*/
 }
-.match .team-name{
+/*.match .team-name{
 	display: inline-block;
 	margin: 0 auto;
 	text-align: center;
@@ -784,8 +783,6 @@ footer .footnote{
 
 	-webkit-box-shadow: 0 0 20px 0 #000;
 			box-shadow: 0 0 20px 0 #000;
-	/*-webkit-box-shadow:inset 0 0 70px -25px #000000;
-			box-shadow:inset 0 0 70px -25px #000000;*/
 }
 
 .match .flag,
@@ -796,7 +793,7 @@ footer .footnote{
 
 .match .flag-3d-right{	right: 0; }
 .match .flag-3d-left{	left: 0; }
-
+*/
 
 /*
 	******
@@ -813,7 +810,7 @@ footer .footnote{
 			box-shadow: 0 0px 30px -10px #000;
 	-webkit-border-radius: 0 0 10px 10px;
 			border-radius: 0 0 10px 10px;
-	z-index: 2;
+	/*z-index: 2;*/
 }
 .pageview-group .scores-board table{
 	/*-webkit-border-radius: 0 0 10px 10px;
@@ -823,7 +820,7 @@ footer .footnote{
 .pageview-group .matches-board{
 	-webkit-box-shadow: 0 0px 30px -10px #000;
 			box-shadow: 0 0px 30px -10px #000;
-	z-index: 1;
+	/*z-index: 1;*/
 }
 
 .pageview-group .matches-inner{
