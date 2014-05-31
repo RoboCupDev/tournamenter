@@ -264,7 +264,20 @@
 				// console.info(options);
 				return options;
 			});
-		}
+		},
+
+		saveField: function(field, value, next){
+			var view = this;
+			var options = view.model.get('options');
+			options[field] = value;
+
+			view.model.save({
+				options: options
+			}, {
+				success: function(){ next && next(); },
+				error: function(){ next && next('Could not save tables'); }
+			});
+		},
 
 	});
 
