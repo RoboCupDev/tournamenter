@@ -456,11 +456,12 @@ Table.evaluateMethods.remove = function(type, number){
 
 	// Filter params
 	var endOrBegin = 1;
-	if(type == 'best' || type == 'top' || type == 'max') -1;
+	if(type == 'best' || type == 'top' || type == 'max')
+		endOrBegin = -1;
 	number = number ? parseFloat(number) : 1;
 
 	return function(scores){
-		var val = scores.sort().slice(number * endOrBegin);
+		var val = scores.sort(function(a, b){return a-b}).slice(number * endOrBegin);
 		return val;
 	}
 }
