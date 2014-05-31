@@ -142,8 +142,7 @@
 			<h1 id="view-title" class="title"></h1>
 
 			<p class="footnote">
-				Developed by Ivan Seidel |
-				 <a href="mailto:ivanseidel@gmail.com">ivanseidel@gmail.com</a>
+				Developed by <a href="mailto:ivanseidel@gmail.com">Ivan Seidel</a> and <a href="http://github.com/RoboCupDev">RoboCupDev</a>.
 			</p>
 		</footer>
 
@@ -172,7 +171,7 @@ var GlobalViewController = Backbone.View.extend({
 		this.pageIndicator = $('#page-navigation ul');
 		// Listen to selection on pageIndicator to change pages
 		// this.listenTo(this.pageIndicator, 'selectpage', this.changeToPageAt, this);
-		this.pageIndicator.bind('indicator.selectpage', function(e, i){view.changeToPageAt(i)});
+		this.pageIndicator.bind('indicator.selectpage', function(e, i){view.changeToPageAt(i, 10000)});
 		// Listen for changes on pages to update page indicator
 		this.listenTo(view.pages, 'reset add remove', this.updatePageIndicator);
 
@@ -225,7 +224,7 @@ var GlobalViewController = Backbone.View.extend({
 	cyclerTimer: null,
 	minimumStillTime: 1000,
 	maximumStillTime: 30000,
-	schedule: function(){
+	schedule: function(extraDelay){
 		var view = this;
 		if(this.cyclerTimer) cyclerTimer = clearTimeout(this.cyclerTimer);
 
@@ -233,6 +232,7 @@ var GlobalViewController = Backbone.View.extend({
 		var filteredTime = estimatedTime*1;
 		filteredTime = Math.max(this.minimumStillTime, filteredTime); // Limit minimum
 		filteredTime = Math.min(this.maximumStillTime, filteredTime); // Limit maximum
+		filteredTime += (extraDelay ? extraDelay*1 : 0);
 
 		this.cyclerTimer = setTimeout(function(){
 			view.cycle();
@@ -312,6 +312,8 @@ var GlobalViewController = Backbone.View.extend({
 
 			view.$el.transitionTo(to, {
 				onEnd: afterChangePage,
+				outClass: 'pt-page-moveToRight pt-page-ontop',
+				inClass: 'pt-page-scaleUp',
 			});
 
 			if(view.updatePageIndicatorDelay >= 0){
@@ -359,11 +361,11 @@ var GlobalViewController = Backbone.View.extend({
 	/*
 		Reverse
 	*/
-	changeToPageAt: function(index){
+	changeToPageAt: function(index, postDelay){
 		// Change page to the cached view at specified index
 		var view = this.getPageViews()[index];
 		this.setCurrentView(view);
-		this.schedule();
+		this.schedule(postDelay);
 	},
 
 	updatePageIndicator: function(){
@@ -416,9 +418,11 @@ $(document).ready(function(){
 
 	App.view.set(<%- JSON.stringify(view) %>);
 
+	window.sync = true;
 	setInterval(function(){
 		// console.info('Fetching...');
-		App.view.fetch();
+		if(window.sync)
+			App.view.fetch();
 	}, 5000);
 })
 
