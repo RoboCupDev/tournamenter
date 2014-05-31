@@ -33,9 +33,7 @@ var GroupController = module.exports = {
 	associated: function(req, res, next){
 
 		// Search for ID if requested
-		options = {where: {}};
 		var id = req.param('id');
-		if(id) options.where.id = id;
 
 		findAssociated(id, finishRendering);
 
@@ -73,6 +71,8 @@ var GroupController = module.exports = {
 	of the Group, with it's matches, teams, and soccer-tables generated
 */
 function findAssociated(id, next){
+	options = {where: {}};
+	if(id) options.where.id = id;
 	var finding = Group.find(options);
 
 	finding.done(function afterFound(err, models) {
