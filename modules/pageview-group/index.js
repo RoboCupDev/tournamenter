@@ -2,7 +2,7 @@
 	This pageview module will be responsible for
 	showing Group data.
 
-	Process method will find the corresponding table
+	Process method will find the corresponding group
 	data and fetch from it.
 */
 module.exports = {
