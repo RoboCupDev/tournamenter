@@ -73,17 +73,18 @@ var GroupController = module.exports = {
 function findAssociated(id, next){
 	options = {where: {}};
 	if(id) options.where.id = id;
-	var finding = Group.find(options);
+	var finding = Group.find(options).sort('id');;
+
+	// Data to be rendered
+	var data = [];
+	// Wait for parallel tasks to complete
+	var completed = 0;
 
 	finding.done(function afterFound(err, models) {
 		if(!err)
 			afterFindGroups(models);
 	});
 
-	// Data to be rendered
-	var data = [];
-	// Wait for parallel tasks to complete
-	var completed = 0;
 
 	// After finishing search
 	function afterFindGroups(models){
@@ -158,7 +159,6 @@ function findAssociated(id, next){
 			});
 		});
 
-		// console.log(data);
 		next(data);
 	}
 }
