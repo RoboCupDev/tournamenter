@@ -8,8 +8,6 @@
 var _ = require('lodash');
 
 module.exports = {
-	
-	tableName: 'groups',
 
 	attributes: {
 

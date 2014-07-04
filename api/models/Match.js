@@ -8,8 +8,6 @@
 
 module.exports = {
 
-	tableName: 'matches',
-
 	attributes: {
 		// id: {type: 'int'},
 

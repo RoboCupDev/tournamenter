@@ -10,8 +10,6 @@ var _ = require('lodash');
 
 var Table = {
 
-	tableName: 'tables',
-
 	types: {
 		// Returns if the method exists (default), or works (function)
 		oneOfMethods: function(val){
@@ -434,9 +432,9 @@ Table.evaluateMethods.avg = function(scores){
 	Output: VALUE
 */
 Table.evaluateMethods.round = function(places){
-	places = places*1 ? places : 0;
+	places = places*1 ? places*1 : 0;
 	return function(score){
-		return parseFloat(score).toFixed(places);
+		return (score*1).toFixed(places);
 	}
 };
 
