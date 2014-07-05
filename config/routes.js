@@ -44,7 +44,10 @@ module.exports.routes = {
   'GET /groups/find/:id?':  'GroupController.associated',
   'GET /groups/:id?':       'GroupController.associated',
 
+  // Match Results will only be associated with SINGLE query
   'PATCH /matches/:id':     'MatchController.update',
+  'GET /matches':           'MatchController.find',
+  'GET /matches/:id':       'MatchController.associated',
 
   'GET /tables/manage/:id?':'TableController.manage',
   'PATCH /tables/:id':      'TableController.update',

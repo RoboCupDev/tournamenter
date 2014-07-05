@@ -31,6 +31,7 @@ module.exports.policies = {
 
 	MatchController: {
 		find: true,
+		associated: true
 	},
 
 	ScoresController: {
