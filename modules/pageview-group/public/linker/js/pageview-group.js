@@ -76,7 +76,7 @@
 		groups
 	*/
 	module.view = defaultModule.view.extend({
-		tableTemplate: JST['pageview-table.table'],
+		tableTemplate: JST['pageview-group.layout'],
 
 		initialize: function(){
 			// Call super constructor
@@ -90,7 +90,7 @@
 			// this.listenTo(this.model, 'change:data', this.verifyChange);
 			// this.listenTo(this.model, 'change:data', this.updateTables);
 
-			this.$el.addClass('pageview-table');
+			this.$el.addClass('pageview-group');
 		},
 
 		stillTime: null,
@@ -132,33 +132,32 @@
 			Helper functions
 		*/
 
-		// Count how many tables exist in table-index
-		countPages: function(table){
-			if(!table) table = 0;
-			return this.getTableContainer(table).children().length;
+		// Count how many tables exist
+		countPages: function(){
+			return this.getTableContainer().children().length;
 		},
 
-		// Get current table for table-index
-		currentPage: function(table){
-			if(!table) table = 0;
-			return this.getTableContainer(table).transitionGetCurrent();
+		// Get current table
+		currentPage: function(){
+			return this.getTableContainer().transitionGetCurrent();
 		},
 
-		// Return the container for table-index
-		getTableContainer: function(table){
-			if(!table) table = 0;
-			return $(this.$el.find('.table-pages')[table]);
+		// Return the container
+		getTableContainer: function(){
+			return $(this.$el.find('.table-pages'));
 		},
 
 		// Return the expected MAXIMUM number of rows for every table
 		calculateRowsNumber: function(){
 			var rows = this.model.get('options').rows*1 || null;
-			if(rows) return Math.max(10, rows);
+			console.log(rows);
+			if(rows) return Math.max(5, rows);
 
 			var cellHeight = 30 || (this.$el.find('tr:first').height() || 30);
-			var height = this.$el.height() - this.$el.children(':first').height();
+			var height = this.$el.parent().height() - this.$el.children(':first').height();
 			rows = Math.round(height / cellHeight) - 2;
-			return Math.max(5, rows);
+			console.log(height);
+			return Math.max(8, rows);
 		},
 
 		/*
@@ -177,23 +176,8 @@
 			if(!this.$el.html()){
 				// Find out correct layout template for it
 				var template = JST['pageview-group.layout'];
-				// Check if layout template exist
-				if(!template)
-					return console.log('No layout file provided for Groups view');
 
-				// Create Views for group
-				var groupView = null;
-			
-				var group = tables[t];
-				tableViews.push(this.tableTemplate({
-					// table: tables[t]
-					title: '--',
-					subtitle: 'Scores',
-				}));
-
-				var finalLayout = template({
-					tables: tableViews
-				});
+				var finalLayout = template({});
 
 				this.$el.empty();
 				this.$el.html(finalLayout);
@@ -201,6 +185,11 @@
 
 			this.updateGroups();
 			this.updatePageIndicators();
+
+			// Render Matches (if exist)
+			if(groups[0])
+				this.renderMatches(groups[0].matches, this.$('.matches-inner'));
+			
 		},
 
 		/*
@@ -208,20 +197,19 @@
 			trying to recycle it's tables. It will render all tables
 			assigned to this Page.
 		*/
-		updateTables: function(){
+		updateGroups: function(){
 			var tables = this.model.get('data');
-			var $tableSpots = this.$el.find('.table-view');
-			for(var t in tables){
-				// Update a table, with it's table-pages with tables[t] data in tableSpot
-				this.updateTable(tables[t], $($tableSpots[t]));
-			}
+			var tableData = tables[0];
+			var $tableSpots = this.$el;
+
+			this.updateGroup(tableData, $tableSpots);
 			return this;
 		},
 
 		/*
 			Create HTML-tables with the given table data, in $tableSpot (to recycle)
 		*/
-		updateTable: function(table, $tableView){
+		updateGroup: function(table, $tableView){
 			// var $tableSpot = $($tableSpots[t]);
 			// var table = tables[t];
 			var $tableSpot = $tableView.find('.table-pages');
@@ -316,98 +304,235 @@
 			return datas;
 		},
 
-		/*
-		Table Data example
-			table:{
-				columns: "5",
-				createdAt: "2014-01-16T19:10:21.861Z",
-				evaluateMethod: "return Math.random();",
-				headerFinal: "Final",
-				headerRank: "Rank",
-				headerScore: "Round",
-				headerTeam: "Team",
-				locked: "no",
-				name: "Oficial Rounds",
-				sort: "desc",
-				updatedAt: "2014-01-30T02:41:41.302Z",
-				id: "52d82e9d672c2ccc04e0c775",
-				scores: [...]
-		*/
 		makeTableHeader: function(table){
 			var alignRight = 'text-right';
 			var headers = {
 				'rank': {
-					value: table.headerRank,
+					value: 'Rank',
 					class: alignRight,
-					style: 'width: 2%;',
+					style: 'width: 5%;',
 				},
 				'teamName': {
-					value: table.headerTeam,
-					style: 'width: 36%;',
-				}
-			};
-
-			// Create dynamic score fields
-			var percent = (100-40) / table.columns*1;
-			for(var k = 0; k < table.columns*1; k++){
-				headers['score'+k] = {
-					value: table.headers.scores[k],
+					value: 'Team',
+					style: 'width: 35%;',
+				},
+				'score': {
+					value: 'Points',
 					class: alignRight,
-					style: 'width: '+percent+'%;',
-				};
-			}
-
-			headers['final'] = {
-				value: table.headerFinal,
-				class: alignRight,
-				style: 'width: 2%;',
+					style: 'width: 10%;',
+				},
+				'P': {
+					value: 'Plays',
+					class: alignRight,
+					style: 'width: 8%;',
+				},
+				'W': {
+					value: 'W',
+					class: alignRight,
+					style: 'width: 8%;',
+				},
+				'D': {
+					value: 'D',
+					class: alignRight,
+					style: 'width: 8%;',
+				},
+				'L': {
+					value: 'L',
+					class: alignRight,
+					style: 'width: 8%;',
+				},
+				'goalsMade': {
+					value: 'Goals',
+					class: alignRight,
+					style: 'width: 8%;',
+				},
+				'GD': {
+					value: 'GD',
+					class: alignRight,
+					style: 'width: 8%;',
+				},
 			};
 
 			return headers;
 		},
 
 		/*
-		Table Scores Example:
-			scores: [
+		Associated Group Data Example:
+			name: "GRUPO A",
+			createdAt: "2014-07-03T23:30:58.049Z",
+			updatedAt: "2014-07-04T00:53:13.454Z",
+			id: 3,
+			matches: [
 				{
-					createdAt: "2014-01-24T03:53:58.687Z",
-					scores: {
-						1: {value: 213, data: {...}}
-					},
-					tableId: "52d82e9d672c2ccc04e0c775",
-					teamId: "52d35c1e6bda8a5c8f8a22a9",
-					updatedAt: "2014-01-24T03:54:02.213Z",
-					id: "52e1e3d6dbb78102006b8397",
-					final: 0.733663140097633,
-					rank: 1,
-					team: {
+					groupId: 3,
+					teamAId: "1",
+					teamAScore: 0,
+					teamBId: "3",
+					teamBScore: 0,
+					state: "scheduled",
+					day: 1,
+					hour: "12:00",
+					field: "Ç",
+					createdAt: "2014-07-04T00:52:26.467Z",
+					updatedAt: "2014-07-04T00:52:37.070Z",
+					id: 3,
+					teamA: {
+						name: "Team Cooler",
+						country: "BR",
 						category: "default",
-						country: "LK",
-						createdAt: "2014-01-13T03:23:10.011Z",
-						name: "XLSd",
-						updatedAt: "2014-02-07T09:52:40.193Z",
-						id: "52d35c1e6bda8a5c8f8a22a9"
+						createdAt: "2014-07-04T00:01:24.863Z",
+						updatedAt: "2014-07-04T00:01:42.762Z",
+						id: 1
+					},
+					teamB: {
+						name: "Abudabadistas",
+						country: "AS",
+						category: "default",
+						createdAt: "2014-07-04T00:01:25.596Z",
+						updatedAt: "2014-07-04T00:01:52.076Z",
+						id: 3
 					}
 				},
-				{...}
+				{...},
+				{...},
+			],
+			table: [
+				{
+					rank: 1,
+					teamId: "5",
+					P: 0,
+					goalsMade: 0,
+					goalsTaken: 0,
+					S: "0:0",
+					W: 0,
+					D: 0,
+					L: 0,
+					score: 0,
+					team: {
+						name: "Samuel Gunzenores",
+						country: "BD",
+						category: "default",
+						createdAt: "2014-07-04T00:01:25.904Z",
+						updatedAt: "2014-07-04T00:02:07.517Z",
+						id: 5
+					}
+				},
+				{...},
+				{...},
+				{...},
 			]
 		*/
 		makeTableContent: function(table){
+			var listKey = 'table';
 			var content = [];
 			var columns = table.columns*1;
 
-			for(var s in table.scores){
-				var score = table.scores[s];
+			for(var s in table[listKey]){
+				var score = table[listKey][s];
 				// Add dynamic attributes
 				score.teamName = score.team.name;
-				for(var c = 0; c < columns; c++){
-					var scoreValue = (score.scores[c] ? score.scores[c].value : '-');
-					score['score'+c] = scoreValue;
-				}
 				content.push(score);
 			}
 
+			console.log(table);
+
 			return content;
+		},
+
+		/*
+			Module Responsible for rendering Matches View's
+		*/
+
+		renderMatches: function(matches, container){
+
+			// Group matches by state
+			var grouped = _.groupBy(matches, 'state');
+
+			// Now we render everything
+			// (Bagde, Match, Match, Match, Badge, Match,...)
+			var rendered = [];
+			for(var type in grouped){
+				var group = grouped[type];
+
+				// Skip if group is empty
+				if(group.length <= 0) continue;
+
+				// Render Badge
+				rendered.push(this.renderMatchBadge(type));
+
+				// Render Matches
+				for(var k in group){
+					var match = group[k];
+					rendered.push(this.renderMatch(match));
+				}
+			}
+
+			rendered.push($('<div class="clearfix"></div>'));
+
+			container.empty();
+			container.append(rendered);
+		},
+
+		// Method will render the 'badge' with the type specified
+		// (playing/scheduled/ended)
+		renderMatchBadge: function(type){
+			var view;
+
+			if(type == 'scheduled')
+				view = '<div class="group-tag group-tag-blue">'+
+						'<span class="glyphicon glyphicon-time"></span> SCHEDULED</div>';
+
+			else if(type == 'playing')
+				view = '<div class="group-tag group-tag-orange">'+
+						'<span class="glyphicon glyphicon-play"></span> PLAYING</div>';
+
+			else if(type == 'ended')
+				view = '<div class="group-tag group-tag-green">'+
+						'<span class="glyphicon glyphicon-ok"></span> ENDED</div>';
+
+			else
+				view = '<div class="group-tag group-tag-green">'+type+'</div>';
+			// Default one...
+			return $(view);
+		},
+
+		// Render a single match view with the correct view state
+		renderMatch: function(match){
+			/*
+				Depending on the match state, we shall render
+				a different match view. Templates are:
+					+ pageview-group.match.scheduled
+					+ pageview-group.match.playing
+					+ pageview-group.match.endend
+			*/
+			var templates = {
+				'scheduled': JST['pageview-group.match.scheduled'],
+				'playing': JST['pageview-group.match.playing'],
+				'ended': JST['pageview-group.match.ended'],
+			};
+
+			if(match.state == 'scheduled'){
+
+				return JST['pageview-group.match.scheduled']({match: match});
+
+			}else if(match.state == 'playing'){
+
+				return JST['pageview-group.match.playing']({match: match});
+
+			}else if(match.state == 'ended'){
+
+				// In this case, we need to set the class for A and B.
+				// (teamAClass and teamBClass to null, team-win, team-loose)
+				return JST['pageview-group.match.ended']({
+					match: match,
+					
+					teamAClass: (match.teamAScore > match.teamBScore ? 'team-win'
+								:match.teamAScore < match.teamBScore ? 'team-loose' : ''),
+
+					teamBClass: (match.teamBScore > match.teamAScore ? 'team-win'
+								:match.teamBScore < match.teamAScore ? 'team-loose' : ''),
+				});
+			}
 		},
 
 	});
@@ -415,7 +540,7 @@
 
 	module.ConfigView = defaultModule.ConfigView.extend({
 
-		template: JST['pageview-table.configView'],
+		template: JST['pageview-group.configView'],
 
 		initialize: function(){
 			// Setup model variables

@@ -99,6 +99,7 @@ function findAssociated(id, next){
 
 			Match.find()
 				.where({'groupId': group.id})
+				.sort('state DESC')
 				.sort('day ASC')
 				.sort('hour ASC')
 				.sort('id')
