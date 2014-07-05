@@ -10,7 +10,7 @@ var colors = require('colors');
 var _ = require('lodash');
 var argv = require('optimist').argv;
 
-console.log(argv);
+console.info(argv);
 
 /*
 	Set a password for login purposes. If none is set, will be public
@@ -18,8 +18,7 @@ console.log(argv);
 	Usege:
 		node app --env.PASSWORD 123456
 */
-if(argv.password) argv.env.PASSWORD = argv.password;
-if(argv.env.PASSWORD){
+if(argv.env && argv.env.PASSWORD){
 	var password = argv.env.PASSWORD;
 	console.log('\n$ Using Password: '.cyan + password);
 }

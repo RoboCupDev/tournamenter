@@ -8,8 +8,6 @@
 var _ = require('lodash');
 
 module.exports = {
-	
-	tableName: 'groups',
 
 	attributes: {
 
@@ -93,6 +91,7 @@ module.exports = {
             _.forEach(rawTable, function(row){
                 row.score = row.W*3 + row.D*1;
                 row.S = row.goalsMade*1 + ':' + row.goalsTaken*1;
+                row.GD = row.goalsMade*1 - row.goalsTaken*1;
 
                 finalTable.push(row);
             });

@@ -77,6 +77,17 @@ module.exports = {
       // Enable GZip compression
       app.use(express.compress());
 
+      // Log each request (with it's response duration)
+      app.use(function(req, res, next) {
+        var start = Date.now();
+        res.on('finish', function() {
+          var duration = Date.now() - start;
+
+          console.info(req.method.green+'\t'+(req.url+'').cyan, '\t('+duration+'ms)');
+        });
+        next();
+      });
+
       // console.log("config of Middleware is called")
       // app.use(function (req, res, next) {
       //   console.log("installed customMiddleware is used")

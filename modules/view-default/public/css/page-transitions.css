@@ -36,6 +36,14 @@
 	visibility: visible;
 	z-index: 1;
 }
+
+.pt-page .pt-page{
+	visibility: hidden;
+}
+
+.pt-page.pt-page-current .pt-page.pt-page-current{
+	visibility: visible;
+}
  
  
 .pt-page-ontop {

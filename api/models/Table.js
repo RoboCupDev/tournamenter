@@ -10,8 +10,6 @@ var _ = require('lodash');
 
 var Table = {
 
-	tableName: 'tables',
-
 	types: {
 		// Returns if the method exists (default), or works (function)
 		oneOfMethods: function(val){
@@ -434,9 +432,9 @@ Table.evaluateMethods.avg = function(scores){
 	Output: VALUE
 */
 Table.evaluateMethods.round = function(places){
-	places = places*1 ? places : 0;
+	places = places*1 ? places*1 : 0;
 	return function(score){
-		return parseFloat(score).toFixed(places);
+		return (score*1).toFixed(places);
 	}
 };
 
@@ -456,11 +454,12 @@ Table.evaluateMethods.remove = function(type, number){
 
 	// Filter params
 	var endOrBegin = 1;
-	if(type == 'best' || type == 'top' || type == 'max') -1;
+	if(type == 'best' || type == 'top' || type == 'max')
+		endOrBegin = -1;
 	number = number ? parseFloat(number) : 1;
 
 	return function(scores){
-		var val = scores.sort().slice(number * endOrBegin);
+		var val = scores.sort(function(a, b){return a-b}).slice(number * endOrBegin);
 		return val;
 	}
 }

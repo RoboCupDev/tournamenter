@@ -8,8 +8,6 @@
 
 module.exports = {
 
-	tableName: 'views',
-
 	attributes: {
 
 		/*

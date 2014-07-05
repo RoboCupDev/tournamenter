@@ -296,25 +296,6 @@ App.Collections.Scores = Backbone.Collection.extend({
 // Table
 App.Models.Table = Backbone.Model.extend({
 	urlRoot: '/tables',
-	// initialize: function(attributes){
-	// 	// Create a Backbone model
-	// 	attributes = attributes || {};
-	// 	this.scores = new App.Collections.Scores(attributes.scores || []);
-
-	// 	// Save this object inside the scores collection, allowing access from it
-	// 	this.scores.table = this;
-	//     this.scores.url = '/scores/find?tableId=' + this.id;
-	// 	delete attributes['scores'];
-	// },
-	// parse: function(data, options) {
-	// 	// Delegate scores data to scores collection
-	// 	if(data.scores){
-	// 		this.scores.reset(data.scores);
-	// 		delete data['scores'];
-	// 	}
-
-	// 	return data;
-	// },
 
 	constructor: function(){
 		var self = this;
@@ -361,6 +342,17 @@ App.Models.Table = Backbone.Model.extend({
 App.Collections.Tables = Backbone.Collection.extend({
 	model: App.Models.Table,
 	url: '/tables/associated',
+});
+
+// Group
+App.Models.Group = Backbone.Model.extend({
+	urlRoot: '/groups',
+});
+
+// Groups Collection
+App.Collections.Groups = Backbone.Collection.extend({
+	model: App.Models.Group,
+	url: '/groups',
 });
 
 // Page Model

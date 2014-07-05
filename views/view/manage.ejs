@@ -154,6 +154,7 @@ App.Views.Pages = Backbone.View.extend({
 		var view = this;
 
 		// Clear all
+		this.$el.css('minHeight', this.$el.height());
 		this.$el.empty();
 
 		// Go through all models inside the collection, adding to the view
@@ -161,6 +162,7 @@ App.Views.Pages = Backbone.View.extend({
 			// Create and add view
 			view.add(model);
 		});
+		this.$el.css('minHeight', null);
 	},
 
 	add: function(model, collection, options){

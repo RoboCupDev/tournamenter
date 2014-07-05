@@ -5,19 +5,19 @@
 */
 
 @media all and (max-width: 992px) {
-	body{
+	html{
 		zoom: 0.4;
 	}
 }
 
 @media all and (min-width: 992px) and (max-width: 1400px) {
-	body{
-		zoom: 0.6;
+	html{
+		/*zoom: 0.5;*/
 	}
 }
 
 @media all and (min-width: 1400px) {
-	body{
+	html{
 		/*zoom: 0.8;*/
 		/*zoom: 0.9;*/
 	}
@@ -165,7 +165,7 @@ footer .title{
 	margin: 0px;
 	padding-left: 60px;
 	font-size: 90px;
-	font-weight: 600;
+	font-weight: 400;
 	color: #888;
 	font-family: 'Lato', sans-serif;
 }
@@ -272,8 +272,9 @@ footer .footnote{
 
 /*Fix for page indicator in headings (adjust vertical center) */
 .board-heading .dotstyle{
-	padding: 10px 0px;
-	zoom: 0.7;
+	margin-top: 4px;
+	/*padding: 10px 0px;*/
+	/*zoom: 0.7;*/
 }
 
 /* BOARD ORANGE template */
@@ -301,41 +302,40 @@ footer .footnote{
 
 /*
 	******
-	LISTS and Tags for lists layout
+	Lost connection indicator
 	******
 */
-
-.group-tag{
-	display: inline-block;
-	padding-right: 10px;
-	/*line-height: 20px;*/
-	height: 30px;
-
-	color: #F0F0F0;
-	font-size: 16px;
-
-	font-weight: lighter;
-	font-family: 'Helvetica Neue', 'Lato', 'Helvetica';
+/* Effect 10: Corner indicator */
+.lost-connection {
+	position: fixed;
+	top: 0;
+	right: 0;
+	width: 200px;
+	height: 200px;
+	background: #ed4e6e;
+	-webkit-transition: -webkit-transform 0.3s;
+	transition: transform 0.3s;
+	-webkit-transform: translateX(100%) translateY(-100%) rotate(45deg);
+	transform: translateX(100%) translateY(-100%) rotate(45deg);
+	pointer-events: none;
 }
-/* Give size to icon and fix it */
-.group-tag > span{
-	position: static;
-	width: 30px !important;
-	height: 30px;
-	line-height: 30px;
-	margin-right: 5px;
+
+.lost-connection.animate {
+	-webkit-transform: translateX(50%) translateY(-50%) rotate(45deg);
+	transform: translateX(50%) translateY(-50%) rotate(45deg);
+}
+
+.lost-connection > div{
+	position: absolute;
+	bottom: 0;
+	width: 100%;
 	text-align: center;
+	color: rgba(255,255,255,0.6);
 }
 
-/* Colors */
-.group-tag.group-tag-orange{ background-color: #F5AB43; }
-.group-tag.group-tag-orange > span{ background-color: #D68E38; }
-
-.group-tag.group-tag-blue{ background-color: #36A89E; }
-.group-tag.group-tag-blue > span{ background-color: #247F74; }
-
-.group-tag.group-tag-green{ background-color: #65B236; }
-.group-tag.group-tag-green > span{ background-color: #339933; }
+.lost-connection > div > span{
+	font-size: 400%;
+}
 
 /*
 	******
@@ -514,8 +514,8 @@ footer .footnote{
 	display: block;
 	float: left;
 	margin: 0 16px;
-	width: 16px;
-	height: 16px;
+	width: 12px;
+	height: 12px;
 	cursor: pointer;
 }
 
@@ -594,7 +594,7 @@ footer .footnote{
 	Game Round classes
 	******
 */
-.round {
+/*.round {
 	background-color: #F4F4F4;
 	zoom: 1.2;
 }
@@ -671,8 +671,6 @@ footer .footnote{
 
 .round .round-team{
 	position: relative;
-	/*float: left;*/
-	/*width: 100px;*/
 	clear: both;
 	height: 100px;
 
@@ -687,14 +685,14 @@ footer .footnote{
 	color: #F0F0F0;
 	-webkit-box-shadow: 0 0 30px -5px #222;
 			box-shadow: 0 0 30px -5px #222;
-}
+}*/
 
 /*
 	******
 	Match classes
 	******
 */
-.match {
+/*.match {
 	background-color: #F4F4F4;
 	-webkit-box-shadow:inset 0 0 300px -20px #000000;
 			box-shadow:inset 0 0 300px -20px #000000;
@@ -771,7 +769,7 @@ footer .footnote{
 	text-align: center;
 	/*height: 85px;*/
 }
-.match .team-name{
+/*.match .team-name{
 	display: inline-block;
 	margin: 0 auto;
 	text-align: center;
@@ -784,8 +782,6 @@ footer .footnote{
 
 	-webkit-box-shadow: 0 0 20px 0 #000;
 			box-shadow: 0 0 20px 0 #000;
-	/*-webkit-box-shadow:inset 0 0 70px -25px #000000;
-			box-shadow:inset 0 0 70px -25px #000000;*/
 }
 
 .match .flag,
@@ -796,198 +792,7 @@ footer .footnote{
 
 .match .flag-3d-right{	right: 0; }
 .match .flag-3d-left{	left: 0; }
-
-
-/*
-	******
-	Soccer Group Table classes
-	******
 */
-.pageview-group{
-	background-color: #16A79D;
-	/*zoom: 1.2;*/
-}
-
-.pageview-group .scores-board{
-	-webkit-box-shadow: 0 0px 30px -10px #000;
-			box-shadow: 0 0px 30px -10px #000;
-	-webkit-border-radius: 0 0 10px 10px;
-			border-radius: 0 0 10px 10px;
-	z-index: 2;
-}
-.pageview-group .scores-board table{
-	/*-webkit-border-radius: 0 0 10px 10px;
-			border-radius: 0 0 10px 10px;*/
-}
-
-.pageview-group .matches-board{
-	-webkit-box-shadow: 0 0px 30px -10px #000;
-			box-shadow: 0 0px 30px -10px #000;
-	z-index: 1;
-}
-
-.pageview-group .matches-inner{
-	background-color: #DFDFDF;
-	/*padding-bottom: 1px;*/
-}
-
-.pageview-group .group-tag{
-	margin-left: 10px;
-	margin-top: 30px;
-}
-
-/*
-	Match Item common
-*/
-.pageview-group .match-item.match-ended{
-	margin-bottom: 10px
-}
-
-/*
-	Playing Match and Scheduled match
-*/
-.pageview-group .match-playing,
-.pageview-group .match-scheduled{
-	position: relative;
-	height: 40px;
-	color: #999;
-	background-color: #FFF;
-	margin-bottom: 1px;
-}
-
-.pageview-group .match-playing::before,
-.pageview-group .match-scheduled::before{
-	position: absolute;
-	height: 100%;
-	width: 10px;
-	content: "";
-	background-color: #ff0000;
-}
-
-.pageview-group .match-playing > *,
-.pageview-group .match-scheduled > *{
-	margin-left: 20px;
-}
-
-.pageview-group .match-playing .match-field,
-.pageview-group .match-scheduled .match-field{
-	position: absolute;
-	right: 0;
-	top: 0;
-	height: 40px;
-	width: 40px;
-
-	font-size: 32px;
-	line-height: 40px;
-	text-align: center;
-	color: #F0F0F0;
-	background-color: #999;
-}
-
-.pageview-group .match-playing .match-place,
-.pageview-group .match-scheduled .match-place{
-	color: #3FA9F5;
-}
-
-.pageview-group .match-playing .match-teams,
-.pageview-group .match-scheduled .match-teams{
-	/*font-weight: bold;*/
-	line-height: 18px;
-	font-size: 18px;
-	color: #666;
-}
-
-/*
-	Playing Match item specific
-*/
-.pageview-group .match-playing .match-field,
-.pageview-group .match-playing::before{
-	background-color: #F5AB43;
-}
-
-/*
-	Scheduled Match item specific
-*/
-.pageview-group .match-scheduled .match-field,
-.pageview-group .match-scheduled::before{
-	background-color: #36A89E;
-}
-
-/*
-	Ended Match item
-*/
-.pageview-group .match-item.match-ended{
-	position: relative;
-	height: 60px;
-	color: #999;
-	background-color: #FFFFFF;
-	-webkit-box-shadow: 0 0px 10px -5px #000;
-			box-shadow: 0 0px 10px -5px #000;
-}
-
-.pageview-group .match-item.match-ended::before{
-	content: "";
-	width: 10px;
-	background-color: #65B236;
-}
-
-.pageview-group .team-data .team-score{
-	position: absolute;
-	top: 0;
-	width: 60px;
-	height: 60px;
-
-	font-size: 32px;
-	font-weight: bold;
-	line-height: 60px;
-	text-align: center;
-	z-index: 1;
-}
-.pageview-group .team-data .team-name{
-	position: absolute;
-	width: 100%;
-	height: 50%;
-
-	font-size: 18px;
-	line-height: 30px;
-	text-align: center;
-	z-index: 0;
-}
-
-/* Win team is colored green and looser is white*/
-.pageview-group .team-data.team-win *{
-	color: #F0F0F0 !important;
-	background-color: #65B236 !important;
-}
-
-.pageview-group .team-data.team-loose *{
-	color: #999 !important;
-	background-color: #FFF !important;
-}
-
-/* left side specific */
-.pageview-group .team-data.team-left *{
-	color: #F0F0F0;
-	background-color: #B3B3B3;
-}
-.pageview-group .team-data.team-left .team-score{
-	left: 0;
-}
-.pageview-group .team-data.team-left .team-name{
-	top: 0;
-}
-
-/* right side specific */
-.pageview-group .team-data.team-right *{
-	color: #999;
-	background-color: #FFF;
-}
-.pageview-group .team-data.team-right .team-score{
-	right: 0;
-}
-.pageview-group .team-data.team-right .team-name{
-	bottom: 0;
-}
 
 
 .bg-orange{ background-color: #FF8C00; }

@@ -8,8 +8,6 @@
 
 module.exports = {
 
-	tableName: 'teams',
-	autoPK: false,
 	attributes: {
 		name: {
 			type: 'string',
