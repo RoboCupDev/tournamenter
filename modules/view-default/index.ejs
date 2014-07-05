@@ -148,6 +148,14 @@
 
 	</div>
 
+	<!-- LOST CONNECTION indicator -->
+	<div class="lost-connection">
+		<div>
+			<span class="glyphicon glyphicon-warning-sign"></span><br/>
+			Lost connection...
+		</div>
+	</div>
+
 </div>
 
 
@@ -396,6 +404,11 @@ var TemplateViewController = Backbone.View.extend({
 	},
 });
 
+function setConnectionStatus(ok){
+	if(ok) $('.lost-connection').removeClass('animate');
+	else   $('.lost-connection').addClass('animate');
+}
+
 
 $(document).ready(function(){
 
@@ -417,6 +430,10 @@ $(document).ready(function(){
 	});
 
 	App.view.set(<%- JSON.stringify(view) %>);
+
+	// Setup connection indicator callbacks
+	App.view.on('sync',  function(){setConnectionStatus(true)});
+	App.view.on('error', function(){setConnectionStatus(false)});
 
 	window.sync = true;
 	setInterval(function(){
