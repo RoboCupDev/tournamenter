@@ -71,19 +71,21 @@ var GroupController = module.exports = {
 	of the Group, with it's matches, teams, and soccer-tables generated
 */
 function findAssociated(id, next){
-	options = {where: {}};
-	if(id) options.where.id = id;
-	var finding = Group.find(options).sort('id');;
 
 	// Data to be rendered
 	var data = [];
 	// Wait for parallel tasks to complete
 	var completed = 0;
+	var where = (id ? {id: id} : null);
 
-	finding.done(function afterFound(err, models) {
-		if(!err)
-			afterFindGroups(models);
-	});
+	// Query Table model, and call afterFindTables when done.
+	var finding = Group
+		.find()
+		.where(where)
+		.done(function afterFound(err, models) {
+			if(!err)
+				afterFindGroups(models);
+		});
 
 
 	// After finishing search
