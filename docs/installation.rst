@@ -18,6 +18,22 @@ On Mac with `homebrew` you can install it by running::
 
     $ brew install node
 
+On Raspbian (RaspberryPi's default OS) the packages currently provided in
+the repositories will not work so installing node from the command line in
+this way is not really an option.
+
+However, you can follow the advice given in `this article
+<http://joshondesign.com/2013/10/23/noderpi>`_ which describes the process
+of downloading a pre-built version of `nodejs` and putting it into the
+`PATH`.
+
+If you follow the tutorial, make sure you put these lines into your
+`/home/pi/.bash_profile` file::
+
+    NODE_JS_HOME=/home/pi/node-v0.10.2-linux-arm-pi 
+    PATH=$PATH:$NODE_JS_HOME/bin 
+
+given that `pi` is the name of your user on RaspberryPi.
 
 Downloading and installing tournamenter from sources
 ----------------------------------------------------
@@ -58,3 +74,4 @@ running::
 which will use your hard drive to save the data you create while playing
 with tournamenter. Again, you can verify that everything is working as
 expected by looking at http://127.0.0.1:1337
+
