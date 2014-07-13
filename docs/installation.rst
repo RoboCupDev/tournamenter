@@ -58,6 +58,14 @@ correctly. In order to see if everything works as expected you can type::
 Which will make the server start at http://127.0.0.1:1337 and with a bit of
 luck you should see your own `tournamenter` instance there!
 
+.. note:: When trying `npm start` on RaspberryPi you might encounter and
+    error, saying that the server doesn't seem to be starting. This is due to
+    low hardware parameters of RaspberryPi and thus it does not respond in time
+    which results in this error. `tournamenter` is most likely running as you
+    can verify by accessing the IP mentioned in the output (if you'd like
+    to see it from outside of the RaspberryPi make sure you replace
+    localhost with the IP address of the RaspberryPi)
+
 If you are out of luck ...
 --------------------------
 
