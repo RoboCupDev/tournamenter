@@ -83,7 +83,7 @@ module.exports = {
         res.on('finish', function() {
           var duration = Date.now() - start;
 
-          console.info(req.method.green+'\t'+(req.url+'').cyan, '\t('+duration+'ms)');
+          console.info(req.method.green+' ('+duration+'ms)','\t'+(req.url+'').cyan);
         });
         next();
       });
