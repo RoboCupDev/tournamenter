@@ -323,6 +323,13 @@ App.Views.View = Backbone.View.extend({
 		this.model.pages.add({module: module.module}, {silent: true});
 		// this.model.get('pages').push({aew: 1});
 		this.model.save(null, {wait: true});
+
+                // If the pages are not collapsed (meaning they are hidden)
+                // make sure we show them.
+                if (!this.$('.btn-collapse-pages').hasClass('collapse')) {
+                      this.$('.spot-pages').collapse('show')
+                      this.$('.btn-collapse-pages').html('Hide Pages');
+                }
 	},
 
 	onRemovePage: function(model){
