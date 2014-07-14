@@ -355,6 +355,17 @@ App.Collections.Groups = Backbone.Collection.extend({
 	url: '/groups',
 });
 
+// Group
+App.Models.Match = Backbone.Model.extend({
+	urlRoot: '/matches',
+});
+
+// Groups Collection
+App.Collections.Matches = Backbone.Collection.extend({
+	model: App.Models.Match,
+	url: '/matches',
+});
+
 // Page Model
 App.Models.Page = Backbone.Model.extend({
 	save: function(attrs, opts){
