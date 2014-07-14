@@ -54,7 +54,7 @@ function findAssociated(id, next){
 	var model;
 	var checked = 0;
 
-	Match.find(id).done(function afterFound(err, models) {
+	Match.findById(id).done(function afterFound(err, models) {
 		if(!err) return afterFindMatch(models);
 		next(err, null);
 	});
