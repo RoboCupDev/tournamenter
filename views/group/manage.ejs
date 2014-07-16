@@ -391,8 +391,8 @@ function GroupViewController(groupController, onBuild){
 		function onDestroyRequested(){
 			// Send destrou request to view.
 			// It should open a window confirming deletion
-			var phase = 'Are you sure that you want to delete the entire "'+self.controller.data.name+'"?';
-			self.beforeDestroy(destroy, phase, true);
+			var phrase = 'Are you sure that you want to delete the entire "'+self.controller.data.name+'"?';
+			self.beforeDestroy(destroy, phrase, true);
 		};
 
 		// Callback to actually destroy model
