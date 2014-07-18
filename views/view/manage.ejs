@@ -357,7 +357,7 @@ App.Views.View = Backbone.View.extend({
 		// Stop link
 		evt.preventDefault();
 
-		var message = 'Are you shure that you want to delete the ENTIRE view "'+view.model.get('title')+'"?';
+		var message = 'Are you sure that you want to delete the ENTIRE view "'+view.model.get('title')+'"?';
 		App.Mixins.confirmAction(message, false, function(){
 			view.model.destroy({wait: true});
 		});

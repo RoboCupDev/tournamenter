@@ -905,7 +905,7 @@ App.Views.Table = Backbone.View.extend({
 		// Stop link
 		evt.preventDefault();
 
-		var message = 'Are you shure that you want to delete the ENTIRE table "'+view.model.get('name')+'"?';
+		var message = 'Are you sure that you want to delete the ENTIRE table "'+view.model.get('name')+'"?';
 		App.Mixins.confirmAction(message, false, function(){
 			view.model.destroy({wait: true});
 		});

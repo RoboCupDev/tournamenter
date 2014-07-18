@@ -348,7 +348,7 @@ function GroupViewController(groupController, onBuild){
 		$modal.modal('show');
 
 		// Change message
-		message = message || 'Are you shure that you want to DELETE this?'
+		message = message || 'Are you sure you want to DELETE this match?'
 		$modal.find('.modal-body').text(message);
 
 		// Get callback on the confirm-delete button
@@ -391,8 +391,8 @@ function GroupViewController(groupController, onBuild){
 		function onDestroyRequested(){
 			// Send destrou request to view.
 			// It should open a window confirming deletion
-			var phase = 'Are you shure that you want to delete the entire "'+self.controller.data.name+'"?';
-			self.beforeDestroy(destroy, phase, true);
+			var phrase = 'Are you sure you want to delete the entire "'+self.controller.data.name+'" group?';
+			self.beforeDestroy(destroy, phrase, true);
 		};
 
 		// Callback to actually destroy model

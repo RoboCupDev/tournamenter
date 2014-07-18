@@ -229,7 +229,7 @@ App.Views.Team = Backbone.View.extend({
 	// This launches a modal to confirm the action taken
 	confirmAction: function(){
 		var view = this;
-		var message = 'Are you shure that you want to DELETE "'+this.model.get('name')+'"?';
+		var message = 'Are you sure that you want to DELETE team "'+this.model.get('name')+'"?';
 		App.Mixins.confirmAction(message, true, function(){
 			view.model.destroy({wait: true});
 		});
