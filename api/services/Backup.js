@@ -168,6 +168,15 @@ Backup.save = function(config, next){
 
 /*
     Parses backup file and saves to model
+
+    Options:
+        path: path to the file where the DB backup is stored in JSON format
+
+
+    Example usage:
+
+        node app --restore.path=/tmp/something2014-07-18T00:46:47.645Z.json
+
 */
 Backup.restore = function(config){
     if (!config.path)
@@ -179,6 +188,8 @@ Backup.restore = function(config){
 
         var jsonData = JSON.parse(data);
         var models = _.keys(json);
+
+        // Destroy everything there currently is in the DB
         _.each(models, function(model){
             sails.models[model].find(function(err, data){
                 if (err) return console.log(TAG, 'Problem with destroying models'.red, err);
@@ -191,6 +202,7 @@ Backup.restore = function(config){
             });
         });
 
+        // Recreate data from the JSON file
         _.each(models, function(model){
             sails.models[model].create(jsonData[model]).done(function(err) {
                 if (err) return console.log(TAG, 'Problem with creating model data'.red, err);
