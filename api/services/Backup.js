@@ -14,7 +14,7 @@ var TAG = 'Backup ::'.cyan;
 	Options:
 		interval: Time in minutes, between backups
 
-		    path: Relative path to folder where backups will be saved, 
+		    path: Relative path to folder where backups will be saved,
 
 		  models: Models to save. A comma separated string of model names
 		  		  If none, all models will be backuped
@@ -167,10 +167,36 @@ Backup.save = function(config, next){
 }
 
 /*
-	Parses backup file and saves to model
+    Parses backup file and saves to model
 */
-Backup.restore = function(config, next){
-	// TODO
+Backup.restore = function(config){
+    if (!config.path)
+        return console.log(TAG, 'Path for loading JSON data for restore procedure not specified'.red);
+
+    fs.readFile(config.path, function(err, data){
+        if (err)
+            return console.log(TAG, 'Problem with reading from'.red + config.path.green, err);
+
+        var jsonData = JSON.parse(data);
+        var models = _.keys(json);
+        _.each(models, function(model){
+            sails.models[model].find(function(err, data){
+                if (err) return console.log(TAG, 'Problem with destroying models'.red, err);
+
+                _.each(data, function(d){
+                    d.destroy(function(err){
+                        if (err) return console.log(TAG, 'Problem with destroying models'.red, err);
+                    });
+                });
+            });
+        });
+
+        _.each(models, function(model){
+            sails.models[model].create(jsonData[model]).done(function(err) {
+                if (err) return console.log(TAG, 'Problem with creating model data'.red, err);
+            });
+        });
+    })
 }
 
 // Set Backup as global var
