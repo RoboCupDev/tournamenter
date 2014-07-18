@@ -62,10 +62,13 @@ sails.lift(argv, function (sails) {
 
 	/*
 		Initialize Backuper.
+        Either start backing up the current contents of the DB or restore them from a JSON file.
 	*/
-	if(argv.backup){
-		Backup.start(argv.backup);
-		setTimeout(Backup.save, 2000);
-	}
+    if(argv.backup){
+        Backup.start(argv.backup);
+        setTimeout(Backup.save, 2000);
+    } else if (argv.restore) {
+        Backup.restore(argv.restore);
+    }
 	
 });
