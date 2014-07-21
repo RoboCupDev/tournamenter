@@ -160,7 +160,6 @@ footer .logo::before {
 }
 
 footer .title{
-	float: left;
 	line-height: 160px;
 	margin: 0px;
 	padding-left: 60px;
