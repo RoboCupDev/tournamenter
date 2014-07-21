@@ -13,6 +13,7 @@ module.exports = {
 	},
 
 	process: function (match, next) {
+		return next(null, match);
 
 		// Match data inside match key, can be either:
 		if(_.isObject(match.options.match)){
@@ -21,9 +22,9 @@ module.exports = {
 			next(null, match);
 		}else{
 			// INT/STRING: We are dealing with a match on the database
-			// sails.controllers.match._findAssociated(match.options.match || null, afterAssociate);
-			console.log('&&', match);
-			sails.controllers.match._findAssociated(17, afterAssociate);
+			sails.controllers.match._findAssociated(match.options.match || null, afterAssociate);
+			// console.log('&&', match);
+			// sails.controllers.match._findAssociated(20, afterAssociate);
 
 			function afterAssociate(err, data){
 				match.data = data;

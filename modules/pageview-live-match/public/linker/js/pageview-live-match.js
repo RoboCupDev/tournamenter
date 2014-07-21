@@ -18,8 +18,72 @@
 		name: 'Match Live View',
 		module: 'pageview-live-match',
 		disabled: false,
-	});
 
+		/*
+			Find groups in server. Return cached if exist, or callback later
+			This is a helper method, for loading groups the first time it's called.
+			When it is fetched, all the remaining callbacks will be executed.
+			Afte that, calling this method will return instantly the groups.
+
+			Also, when it fetches, it will update the GroupsKeys array.
+		*/
+		groups: new App.Collections.Groups(),
+		GroupsKeys: [],
+		MatchKeys: [],
+		_callbacks: [],
+		fetchComplete: false,
+		getGroups: function(next){
+			var self = this;
+			// Register  callbacks
+
+			// Fetches data
+			if(!this.fetchComplete){
+				this._callbacks.push(next);
+				// Only fetches for the first time
+				if(this._callbacks.length <= 1)
+					this.groups.fetch({success: onFetchComplete});
+				return null;
+			}
+
+			return this.groups;
+
+			function onFetchComplete(){
+				self.fetchComplete = true;
+				processGroupsKeys();
+				// Run callbacks
+				while(self._callbacks.length > 0)
+					self._callbacks.pop()(self.groups);
+			}
+
+			// When the table is synced, we shall update it's values
+			function processGroupsKeys(){
+				var GroupsKeys = [];
+				var MatchKeys = [];
+
+				module.groups.forEach(function(group){
+					GroupsKeys.push({
+						value: group.get('id'),
+						text: group.get('name'),
+					});
+
+					group.get('matches').forEach(function(match){
+						var title = group.get('name') + ': ';
+						title += match.teamA ? match.teamA.name : '[?]';
+						title += ' x ';
+						title += match.teamB ? match.teamB.name : '[?]';
+
+						MatchKeys.push({
+							value: match.id,
+							text: title,
+						});
+					});
+				});
+
+				module.GroupsKeys = GroupsKeys;
+				module.MatchKeys = MatchKeys;
+			}
+		},
+	});
 
 	/*
 		Public view Class that will render, update and animate
@@ -196,19 +260,51 @@
 		render: function(){
 			var view = this;
 
+			// If the fetch is not complete, return and call self render later
+			var groups = module.getGroups(function(){
+				view.render();
+			});
+			if(!groups) return this;
+
 			// Render view
 			this.$el.html(this.template());
 			
 			// Initialize edit fields
 			this.configureEditFields();
 
+			// Update the link to live-edit soccer match
+			var matchId = this.model.get('id');
+			this.$('.btn-live-edit').attr('href', '/matches/live/'+matchId);
+
 			return this;
 		},
 
+		groupId: null,
 		configureEditFields: function(){
+			var self = this;
 
+			var options = this.model.get('options');
+			console.log(options);
+
+			// Render the group editable fields
+			var $match = this.$('.config-match');
+			App.Mixins.editInPlaceCustom($match, {
+				type: 'select2',
+				// mode: 'popup',
+				source: module.MatchKeys,
+				// showbuttons: true,
+				value: options.match,
+				select2: {
+					multiple: false,
+					width: 400,
+					placeholder: 'Select Match',
+					allowClear: true,
+				},
+			}, this.createSaveWrapperForField('match'));
+ 
 			return this;
-		}
+		},
+
 	});
 
 	module.ItemView = defaultModule.ItemView.extend({
