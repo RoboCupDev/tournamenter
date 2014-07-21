@@ -135,7 +135,7 @@
 				this.stillTime =
 					Math.max(tableCount*expectedTableStill, matchesCount*expectedMatchesStill);
 				this.tableStillTime = expectedTableStill;
-				this.matchesStillTime = matchesStillTime;
+				this.matchesStillTime = expectedMatchesStill;
 			}
 		},
 
