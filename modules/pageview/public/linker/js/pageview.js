@@ -174,6 +174,8 @@
 		},
 
 		makeEditable: function(){
+			var self = this;
+
 			var $still = this.$('.page-still');
 			App.Mixins.editInPlace(this.model, $still, {
 				mode: 'popup',
@@ -185,13 +187,44 @@
 				}
 			});
 
-			$disabled = this.$('.page-disabled');
-			App.Mixins.editInPlace(this.model, $disabled, {
-				type: 'select',
-				mode: 'popup',
-				source: [{value: 'true', text: 'Hidden'}, {value: 'false', text: 'Visible'}],
-				value: this.model.get('disabled'),
+			var $disabled = this.$('.page-disabled');
+			$disabled.button();
+			
+			function refreshBtn(){
+				if(self.model.get('disabled') == 'true'){
+					console.log('Btn State H: '+self.model.get('disabled'));
+					$disabled.text('Hidden');
+					$disabled.toggleClass('active', true);
+					$disabled.toggleClass('btn-success', false);
+					$disabled.toggleClass('btn-danger', true);
+				}else{
+					console.log('Btn State S: '+self.model.get('disabled'));
+					$disabled.text('Showing');
+					$disabled.toggleClass('active', false);
+					$disabled.toggleClass('btn-success', true);
+					$disabled.toggleClass('btn-danger', false);
+				}
+			}
+
+			refreshBtn();
+			$disabled.click(function(){
+				var $this = $(this);
+				var disabled = $this.hasClass('active') ? 'false' : 'true';
+				console.log('Disabled: '+disabled);
+				self.model.set('disabled', disabled);
+				self.model.save({}, {
+					patch: true,
+					wait: true,
+				});
+				refreshBtn();
 			});
+
+			// App.Mixins.editInPlace(this.model, $disabled, {
+			// 	type: 'select',
+			// 	mode: 'popup',
+			// 	source: [{value: 'true', text: 'Hidden'}, {value: 'false', text: 'Visible'}],
+			// 	value: this.model.get('disabled'),
+			// });
 
 			return this;
 		},

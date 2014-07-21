@@ -30,6 +30,11 @@ module.exports = {
 		});
 	},
 
+	live: function(req, res, next){
+		var id = req.param('id');
+		res.view({matchId: id});
+	},
+
 	/*
 		Associate a match with it's Group and return
 	*/
