@@ -13,7 +13,6 @@ module.exports = {
 	},
 
 	process: function (match, next) {
-		return next(null, match);
 
 		// Match data inside match key, can be either:
 		if(_.isObject(match.options.match)){
