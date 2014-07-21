@@ -411,7 +411,7 @@ Table.evaluateMethods.min = function(scores){
 Table.evaluateMethods.sum = function(scores){
 	return function(scores){
 		return _.reduce(scores, function(sum, num) {
-			return sum + num*1;
+			return sum*1 + num*1;
 		});
 	}
 };
@@ -419,6 +419,7 @@ Table.evaluateMethods.sum = function(scores){
 // Average method
 Table.evaluateMethods.avg = function(scores){
 	return function(scores){
+		if(scores.length <= 0) return 0;
 		return _.reduce(scores, function(sum, num) {
 			return sum + num*1;
 		})/scores.length;
@@ -453,13 +454,15 @@ Table.evaluateMethods.round = function(places){
 Table.evaluateMethods.remove = function(type, number){
 
 	// Filter params
-	var endOrBegin = 1;
+	var invert = false;
 	if(type == 'best' || type == 'top' || type == 'max')
-		endOrBegin = -1;
+		invert = true;
 	number = number ? parseFloat(number) : 1;
 
 	return function(scores){
-		var val = scores.sort(function(a, b){return a-b}).slice(number * endOrBegin);
+		var val = scores.sort(function(a, b){return a-b});
+		if(invert) val = val.reverse();
+		val = val.slice(number);
 		return val;
 	}
 }
