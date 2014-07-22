@@ -128,6 +128,8 @@
 			var options = this.model.get('options');
 			var match 	= this.model.get('data');
 
+			if(!match) return;
+
 			if(!this.$el.html()){
 				// Find out correct layout template for it
 				var template = JST['pageview-live-match.layout'];

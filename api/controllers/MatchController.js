@@ -54,7 +54,6 @@ module.exports = {
 	of the Match, with it's Group and Teams (A an B teams)
 */
 function findAssociated(id, next){
-	console.log('Finding...'+id)
 
 	var model;
 	var checked = 0;
@@ -67,7 +66,6 @@ function findAssociated(id, next){
 
 	// Called after match is fetched. Associate with Group and Teams
 	function afterFindMatch(models){
-		console.log(models);
 		if(models.length != 1) return next(404);
 
 		model = models[0];
@@ -84,7 +82,6 @@ function findAssociated(id, next){
 		});
 
 		// Fetch Group
-		console.log(model.groupId);
 		Group.findById(model.groupId).done(function(err, models){
 			model.group = models.length ? models[0] : null;
 			checkFetch();

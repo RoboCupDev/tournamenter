@@ -189,11 +189,11 @@
 			var rows = this.model.get('options').rows*1 || null;
 			if(rows) return Math.max(3, rows/2);
 
-			var cellHeight = 60;
+			var cellHeight = 70;
 			var height = this.$el.parent().height() - this.$el.children(':first').height();
 
 			// Less the maximum required by the tags (Scheduled, Playing, Ended...)
-			height -= 120;
+			height -= 180;
 
 			rows = Math.round(height / cellHeight);
 			console.log(height);
@@ -571,7 +571,7 @@
 			for(var s in table[listKey]){
 				var score = table[listKey][s];
 				// Add dynamic attributes
-				score.teamName = score.team.name;
+				score.teamName = score.team ? score.team.name : '';
 				content.push(score);
 			}
 
