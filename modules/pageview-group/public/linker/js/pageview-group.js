@@ -195,7 +195,7 @@
 			// Less the maximum required by the tags (Scheduled, Playing, Ended...)
 			height -= 180;
 
-			rows = Math.round(height / cellHeight);
+			rows = Math.round(height / cellHeight - 0.5);
 			console.log(height);
 			return Math.max(3, rows);
 		},
