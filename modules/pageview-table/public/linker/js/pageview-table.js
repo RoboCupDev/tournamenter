@@ -223,7 +223,6 @@
 			Create HTML-tables with the given table data, in $tableSpot (to recycle)
 		*/
 		updateTable: function(table, $tableView){
-			console.log(table);
 			// var $tableSpot = $($tableSpots[t]);
 			// var table = tables[t];
 			var $tableSpot = $tableView.find('.table-pages');
@@ -336,6 +335,7 @@
 				scores: [...]
 		*/
 		makeTableHeader: function(table){
+			console.log(table);
 			var alignRight = 'text-right';
 			var headers = {
 				'rank': {
