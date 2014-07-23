@@ -166,6 +166,7 @@ var ParseSyncer = {
 					next('Could not find a object model with the specified category');
 			},
 			error: function(error) {
+				console.log(TAG, 'Error while saving Views:'.red, error);
 				next(error);
 			}
 		});

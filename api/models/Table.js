@@ -175,7 +175,7 @@ var Table = {
 
 		*/
 		calculate: generateTableDataInsideScores,
-		// headers: generateTableHeaders,
+		headers: generateTableHeaders,
 
 		toJSON: function(){
 			var table = this.toObject();
