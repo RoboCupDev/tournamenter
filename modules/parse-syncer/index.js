@@ -179,6 +179,7 @@ var ParseSyncer = {
 					next(null);
 				},
 				error: function(err){
+					console.log(TAG, 'Error while saving Views:'.red, err);
 					next(err);
 				}
 			});
@@ -280,8 +281,10 @@ var ParseSyncer = {
 				teams.push(_teams[k].toJSON());
 
 			// Set id var as objecId
-			for(var k in teams)
+			for(var k in teams){
 				teams[k].id = teams[k].objectId+'';
+				delete teams[k].League;
+			}
 
 			// Insert all items from the fixture in the model (in parallel using async)
 			async.each(teams, function(item, nextModel) {
