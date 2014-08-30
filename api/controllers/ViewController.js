@@ -185,6 +185,9 @@ function processView(view, next){
 		Now we delegate process action to function processPage()
 	*/
 
+	// Inject custom attributes to View model
+	view['name'] = process.env.APP_NAME || '';
+
 	var pages = view.pages || [];
 
 	processPage(pages, function(err, newPages){

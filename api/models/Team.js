@@ -9,6 +9,7 @@
 module.exports = {
 
 	attributes: {
+		id: 'string',
 		name: {
 			type: 'string',
 			defaultsTo: '[Team Name]'

@@ -12,12 +12,23 @@ module.exports = {
 
 		/*
 			The title of this view
-			('Rescue B', 'My Tournament', ...)
+			('General Results', 'Arena A', ...)
 		*/
 		title: {
 			type: 'string',
 			defaultsTo: '[View Title]'
 		},
+
+		/*
+			The name of this APP
+			('Rescue B', 'My Tournament', ...)
+
+			[Will be injected dinamically]
+		*/
+		// name: {
+		// 	type: 'string',
+		// 	defaultsTo: '[APP Name]'
+		// },
 
 		/*
 			Template page to be used.

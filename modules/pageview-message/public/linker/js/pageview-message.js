@@ -53,6 +53,8 @@
 			console.info('pageview-message created');
 
 			this.listenTo(this.model, 'change:options', this.render);
+			this.on('show:skip', this.verticalAlign);
+			this.on('show', this.verticalAlign);
 		},
 
 		template: JST['pageview-message.view'],
@@ -64,6 +66,7 @@
 
 			// Setup template props
 			var $inner = this.$('.inner');
+
 			$inner.addClass( 'text-' + (options.align ? options.align : customAlignDefault));
 			$inner.css('zoom', options.size*1 || customSizeDefault);
 
@@ -112,14 +115,17 @@
 			// 	big: '100%',
 			// }
 			// var height = sizes[options.size] || sizes.medium;
+			this.verticalAlign();
+		},
 
+		verticalAlign: function(){
 			// Give time to update DOM
 			var $container = this.$('.container');
 			setTimeout(function(){
 				$container.css('position', 'relative');
 				$container.css('top', '50%');
 				$container.css('marginTop', -$container.height()/2);
-			}, 1);
+			}, 1000);
 		},
 
 	});

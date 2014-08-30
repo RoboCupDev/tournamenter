@@ -335,6 +335,7 @@
 				scores: [...]
 		*/
 		makeTableHeader: function(table){
+			console.log(table);
 			var alignRight = 'text-right';
 			var headers = {
 				'rank': {

@@ -212,7 +212,7 @@ Util.countries = [
   {text: 'Sweden', id: 'SE'}, 
   {text: 'Switzerland', id: 'CH'}, 
   {text: 'Syrian Arab Republic', id: 'SY'}, 
-  {text: 'Taiwan, Province of China', id: 'TW'}, 
+  {text: 'Taiwan', id: 'TW'}, 
   {text: 'Tajikistan', id: 'TJ'}, 
   {text: 'Tanzania, United Republic of', id: 'TZ'}, 
   {text: 'Thailand', id: 'TH'}, 

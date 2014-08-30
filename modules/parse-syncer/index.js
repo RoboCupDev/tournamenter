@@ -43,7 +43,7 @@ var ParseSyncer = {
 			if teamSync === false, will not sync.
 		*/
 		teamsMerge: false,
-		teamsSync: false,
+		teamsSync: true,
 	},
 
 	/*
@@ -166,6 +166,7 @@ var ParseSyncer = {
 					next('Could not find a object model with the specified category');
 			},
 			error: function(error) {
+				console.log(TAG, 'Error while saving Views:'.red, error);
 				next(error);
 			}
 		});
@@ -178,6 +179,7 @@ var ParseSyncer = {
 					next(null);
 				},
 				error: function(err){
+					console.log(TAG, 'Error while saving Views:'.red, err);
 					next(err);
 				}
 			});
@@ -273,20 +275,21 @@ var ParseSyncer = {
 
 		// Save to local db
 		var teams = [];
-		function saveToLocal(_teams){
+		function saveToLocal(_teams){ 
 			// Convert Parse objects to array
 			for(var k in _teams)
 				teams.push(_teams[k].toJSON());
 
 			// Set id var as objecId
-			for(var k in teams)
-				teams[k].id = teams[k].objectId;
-
-			console.log(teams);
+			for(var k in teams){
+				teams[k].id = teams[k].objectId+'';
+				delete teams[k].League;
+			}
 
 			// Insert all items from the fixture in the model (in parallel using async)
 			async.each(teams, function(item, nextModel) {
 				SailsTeam.create(item, function(err) {
+					if(err) console.log(err);
 					if (err) return next && next(err);
 					nextModel();
 				});

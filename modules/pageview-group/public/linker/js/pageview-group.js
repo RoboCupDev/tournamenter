@@ -95,7 +95,9 @@
 
 		stillTime: null,
 		_timePerRowInTable: 400,
+		_timePerMatchInTable: 500,
 		tableStillTime: 1000,
+		matchesStillTime: 1000,
 		prepare: function(){
 			// Render always before showing
 			this.render();
@@ -113,18 +115,27 @@
 			var options = this.model.get('options');
 			// Count pages
 			var tableCount = this.countPages();
+			var matchesCount = this.countSchedulePages();
 
 			if(still){
 
 				this.stillTime = still;
 				this.tableStillTime = still/tableCount;
+				this.matchesStillTime = still/matchesCount;
 			}else{
 				var expectedTableStill = options.still*1000 || null;
 				if(!expectedTableStill)
 					expectedTableStill = this.calculateRowsNumber() * this._timePerRowInTable;
 
-				this.stillTime = tableCount*expectedTableStill;
+				var expectedMatchesStill = options.stillMatches*1000 || null;
+				if(!expectedMatchesStill)
+					expectedMatchesStill =
+						this.calculateScheduleRowsNumber() * this._timePerMatchInTable;
+
+				this.stillTime =
+					Math.max(tableCount*expectedTableStill, matchesCount*expectedMatchesStill);
 				this.tableStillTime = expectedTableStill;
+				this.matchesStillTime = expectedMatchesStill;
 			}
 		},
 
@@ -150,14 +161,43 @@
 		// Return the expected MAXIMUM number of rows for every table
 		calculateRowsNumber: function(){
 			var rows = this.model.get('options').rows*1 || null;
-			console.log(rows);
 			if(rows) return Math.max(5, rows);
 
 			var cellHeight = 30 || (this.$el.find('tr:first').height() || 30);
 			var height = this.$el.parent().height() - this.$el.children(':first').height();
 			rows = Math.round(height / cellHeight) - 2;
-			console.log(height);
 			return Math.max(8, rows);
+		},
+
+		// Only for Schedule
+		countSchedulePages: function(){
+			return this.getScheduleContainer().children().length;
+		},
+
+		// Get current table
+		currentSchedulePage: function(){
+			return this.getScheduleContainer().transitionGetCurrent();
+		},
+
+		// Return the container
+		getScheduleContainer: function(){
+			return $(this.$el.find('.matches-pages'));
+		},
+
+		// Return the expected MAXIMUM number of rows for every table
+		calculateScheduleRowsNumber: function(){
+			var rows = this.model.get('options').rows*1 || null;
+			if(rows) return Math.max(3, rows/2);
+
+			var cellHeight = 70;
+			var height = this.$el.parent().height() - this.$el.children(':first').height();
+
+			// Less the maximum required by the tags (Scheduled, Playing, Ended...)
+			height -= 180;
+
+			rows = Math.round(height / cellHeight - 0.5);
+			console.log(height);
+			return Math.max(3, rows);
 		},
 
 		/*
@@ -170,8 +210,8 @@
 
 		render: function(){
 			// Get Page options and data
-			var options = this.model.get('options');
-			var groups 	= this.model.get('data');
+			// var options = this.model.get('options');
+			// var groups 	= this.model.get('data');
 
 			if(!this.$el.html()){
 				// Find out correct layout template for it
@@ -186,10 +226,8 @@
 			this.updateGroups();
 			this.updatePageIndicators();
 
-			// Render Matches (if exist)
-			if(groups[0])
-				this.renderMatches(groups[0].matches, this.$('.matches-inner'));
-			
+			this.updateMatches();
+			this.updateMatchesPageIndicators();
 		},
 
 		/*
@@ -236,10 +274,55 @@
 			$($tables[datas.length-1]).nextAll().remove();
 		},
 
+		updateMatches: function(){
+			var data = this.model.get('data')[0];
+			var matches = data ? data.matches : null;
+			if(!matches) return console.log('ops... skiping');
+
+			// var $tableSpot = $($tableSpots[t]);
+			// var table = tables[t];
+			var $tableSpot = this.$el.find('.matches-pages');
+			var $tables = $tableSpot.find('.matches-inner');
+			var tables = [];
+			// Split data into rows
+			var datas = this.splitMatchesData(matches);
+
+			// Create a table for each existent 
+			for(var d in datas){
+				// Try to recycle table
+				var $newTable = $tables[d];
+				if(!$newTable){
+					$newTable = $('<div class="pt-page matches-inner"></div>');
+					$tableSpot.append($newTable);
+				}
+				// App.Mixins.createTable(header, datas[d], $newTable);
+				this.renderMatches(datas[d], $($newTable));
+			}
+			// Remove rest of tables (trash from previous render)
+			$($tables[datas.length-1]).nextAll().remove();
+
+
+			// var tables = this.model.get('data');
+			// var $tableSpots = this.$('');
+
+			// this.updateMatch(tableData, $tableSpots);
+
+			// // Render Matches (if exist)
+			// if(groups[0])
+				
+
+			return this;
+		},
+
+
+			
+
 
 		interval: null,
+		intervalMatches: null,
 		show: function(){
 			this.setupTimer();
+			this.setupTimerMatches();
 
 			// Set current page
 			$tablePages = this.getTableContainer();
@@ -249,6 +332,15 @@
 			});
 			$tablePages.transitionTo(0);
 			this.updatePageIndicators();
+
+			// Set current page
+			$schedulePages = this.getScheduleContainer();
+			$schedulePages.transitionSetup({
+				outClass: 'pt-page-flipOutRight',
+				inClass: 'pt-page-flipInLeft pt-page-delay500',
+			});
+			$schedulePages.transitionTo(0);
+			this.updateMatchesPageIndicators();
 			// self.cycle();
 		},
 
@@ -260,8 +352,17 @@
 			}, this.tableStillTime);
 		},
 
+		setupTimerMatches: function(){
+			var self = this;
+			this.intervalMatches = clearInterval(this.intervalMatches);
+			this.intervalMatches = setInterval(function(){
+				self.cycleMatches();
+			}, this.matchesStillTime);
+		},
+
 		hide: function(){
 			this.interval = clearInterval(this.interval);
+			this.intervalMatches = clearInterval(this.intervalMatches);
 		},
 
 		cycle: function(){
@@ -275,10 +376,21 @@
 			this.updatePageIndicators();
 		},
 
+		cycleMatches: function(){
+			$tablesRoots = this.$el.find('.matches-pages').first();
+			// Transition
+			$tablesRoots.transitionNext({
+				outClass: 'pt-page-flipOutRight',
+				inClass: 'pt-page-flipInLeft pt-page-delay500',
+				// animate: false,
+			});
+			this.updateMatchesPageIndicators();
+		},
+
 		updatePageIndicators: function(){
 			// Page indicator
 			var view = this;
-			$pageInd = this.$el.find('.page-indicator');
+			$pageInd = this.$el.find('.page-indicator-tables');
 			$pageInd.indicate(
 				this.countPages(),
 				this.currentPage().index());
@@ -291,12 +403,41 @@
 			});
 		},
 
+		updateMatchesPageIndicators: function(){
+			// Page indicator
+			var view = this;
+			$pageInd = this.$el.find('.page-indicator-matches');
+			$pageInd.indicate(
+				this.countSchedulePages(),
+				this.currentSchedulePage().index());
+
+			$pageInd.off('indicator.selectpage');
+			$pageInd.bind('indicator.selectpage', function(e, i){
+				view.getScheduleContainer().transitionTo(i);
+				view.setupTimerMatches();
+				view.updateMatchesPageIndicators();
+			});
+		},
+
 		/*
 			Takes a data field, and split it in N fields to
 			match the requirement.
 		*/
 		splitTableData: function(data){
 			var rows = this.calculateRowsNumber();
+			var datas = [];
+			for(var i = 0; i < data.length; i += rows){
+				datas.push(data.slice(i, i+rows));
+			}
+			return datas;
+		},
+
+		/*
+			Takes a data field, and split it in N fields to
+			match the requirement.
+		*/
+		splitMatchesData: function(data){
+			var rows = this.calculateScheduleRowsNumber();
 			var datas = [];
 			for(var i = 0; i < data.length; i += rows){
 				datas.push(data.slice(i, i+rows));
@@ -430,7 +571,7 @@
 			for(var s in table[listKey]){
 				var score = table[listKey][s];
 				// Add dynamic attributes
-				score.teamName = score.team.name;
+				score.teamName = score.team ? score.team.name : '';
 				content.push(score);
 			}
 

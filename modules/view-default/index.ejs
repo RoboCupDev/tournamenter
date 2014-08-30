@@ -140,6 +140,7 @@
 			</span>
 			
 			<h1 id="view-title" class="title"></h1>
+			<h2 id="view-subtitle" class="subtitle">Test</h2>
 
 			<p class="footnote">
 				Developed by <a href="mailto:ivanseidel@gmail.com">Ivan Seidel</a> and <a href="http://github.com/RoboCupDev">RoboCupDev</a>.
@@ -294,7 +295,7 @@ var GlobalViewController = Backbone.View.extend({
 	*/
 	// Delay to updateIndicator. Set to 0 to be on start. negative to be on end
 	updatePageIndicatorDelay: 200,
-	delayBeforeAnimate: 100,
+	delayBeforeAnimate: 500,
 	currentView: null,
 	setCurrentView: function(nextView){
 		// Skip if currentView is the same as nextView
@@ -391,7 +392,8 @@ var GlobalViewController = Backbone.View.extend({
 */
 var TemplateViewController = Backbone.View.extend({
 	initialize: function(){
-		this.listenTo(this.model, 'change:title', this.updateTitle);
+		this.listenTo(this.model, 'change:name', this.updateTitle);
+		this.listenTo(this.model, 'change:title', this.updateSubtitle);
 	},
 
 	render: function(){
@@ -399,7 +401,16 @@ var TemplateViewController = Backbone.View.extend({
 	},
 
 	updateTitle: function(){
-		$('#view-title').text(this.model.get('title'));
+		$('#view-title').text(this.model.get('name'));
+		return this;
+	},
+
+	updateSubtitle: function(){
+		// Format subtitle. such as: "(TITLE HERE)"
+		var string = this.model.get('title');
+		string = string ? '(' + string + ')' : '';
+
+		$('#view-subtitle').text(string);
 		return this;
 	},
 });
