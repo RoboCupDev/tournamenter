@@ -55,6 +55,7 @@ module.exports.routes = {
   'GET /tables/:id?':       'TableController.associated',
 
   'PATCH /scores/:id':      'ScoresController.update',
+  'GET /scores/:id/:number':'ScoresController.updateScore',
 
   'GET /views/view/:id?':   'ViewController.view',
   'PATCH /views/:id':       'ViewController.update',
