@@ -9,10 +9,6 @@
 module.exports = {
 
 	attributes: {
-		id: {
-			type: 'integer',
-			autoIncrement: true,
-		},
 		name: {
 			type: 'string',
 			defaultsTo: '[Team Name]'
