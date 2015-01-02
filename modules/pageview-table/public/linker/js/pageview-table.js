@@ -345,7 +345,7 @@
 				},
 				'teamName': {
 					value: table.headerTeam,
-					style: 'width: 36%;',
+					style: 'width: 34%;',
 				}
 			};
 
@@ -362,7 +362,7 @@
 			headers['final'] = {
 				value: table.headerFinal,
 				class: alignRight,
-				style: 'width: 2%;',
+				style: 'width: 4%;',
 			};
 
 			return headers;
