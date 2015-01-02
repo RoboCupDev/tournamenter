@@ -115,7 +115,7 @@ describe('Team', function() {
 	Test View module and modules
 */
 
-describe('View Controller', function() {
+describe.skip('View Controller', function() {
 
 	// Try to find all
 	describe('/views', function() {
