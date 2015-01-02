@@ -59,10 +59,16 @@
 			this.$el.html(this.template({}));
 
 			$bracket = this.$('.bracket-container');
-			$bracket.bracket({
-				init: bracket,
-				// save: function(){}
-			});
+			try{
+
+				$bracket.bracket({
+					init: bracket,
+					// save: function(){}
+				});
+				
+			}catch(e){
+				console.log('Failed to render bracket. Continuing...');
+			}
 
 			// Configure bracket`s position
 			$bracket.css('marginLeft', '-'+$bracket.width()/2+'px');
