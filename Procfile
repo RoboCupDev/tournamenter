@@ -1,1 +1,1 @@
-web: node app.js --env.PASSWORDs 1234 --adapter.module sails-mongo --adapter.url mongodb://heroku:heroku@dharma.mongohq.com:10036/app19376820 --env.NAME demo --env.APP_NAME "System DEMO" --prod true
+web: node app.js --env.PASSWORDs 1234 --adapter.module sails-mongo --adapter.url mongodb://heroku:heroku@dharma.mongohq.com:10036/app19376820 --env.NAME demo --env.APP_NAME "System DEMO" --prods true
