@@ -847,6 +847,9 @@ App.Views.Table = Backbone.View.extend({
 
 			// Facilitate view of the method, by adding labels
 			display: function (value) {
+				// Limit evaluation method
+				value = value.slice(0,30) + (value.length > 30 ? ' [continues]' : '');
+
 				$this = $(this);
 				$this.empty();
 				var methods = value.split('.');

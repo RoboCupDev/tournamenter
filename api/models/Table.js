@@ -294,6 +294,9 @@ function generateTableDataInsideScores(){
 	// Get evaluation method ('min', 'max', custom...)
 	var evalMethod = getMethodFor(table.evaluateMethod);
 
+	// List of all the keys to sort
+	var keysToSort = ['final'];
+
 	// Go through all scores, creating a unique row
 	_(scores).forEach(function(score){
 		/*
@@ -339,14 +342,29 @@ function generateTableDataInsideScores(){
 		}
 
 		// Compute final score and adds to scoreData
-		score['final'] = evalMethod(scoreValues) || 0;
+		var finalScores = evalMethod(scoreValues) || 0;
+		var showScore = finalScores;
+
+		if(_.isArray(finalScores)){
+			showScore = finalScores[0];
+
+			for(var i = 1; i < finalScores.length; i++){
+				var fieldKey = 'final'+(i+1); // Like: final2, final3, ...
+				score[fieldKey] = finalScores[i];
+
+				if(keysToSort.length <= i)
+					keysToSort.push(fieldKey);
+			}
+		}
+
+		score['final'] = showScore;
 
 		// Add to table data
 		// tableRows.push(score)
 	});
 
 	// Sort by 'final' field and reverse if needed
-	var finalData = _.sortBy(scores, 'final');
+	var finalData = _.sortBy(scores, keysToSort);
 
 	if(table.sort == 'desc')
 		finalData = finalData.reverse();
@@ -358,7 +376,16 @@ function generateTableDataInsideScores(){
 	_.forEach(finalData, function(row){
 		pos++;
 
-		if(lastRow && lastRow.final == row.final){
+		var sameRanking = (lastRow ? true : false);
+		for(var k in keysToSort){
+			var key = keysToSort[k];
+			if(lastRow && lastRow[key] != row[key]){
+				sameRanking = false;
+				break;
+			}
+		}
+
+		if(sameRanking){
 			// Keeps the same ranking if scores are the same
 			return row.rank = lastRow.rank;
 		}else{
@@ -578,6 +605,7 @@ function getMethodFor(methodRaw){
 		method([]);
 		return method;
 	}catch(err){
+		console.log('getMethodFor parsing error: '+err);
 	}
 
 

@@ -17,7 +17,7 @@
 	var module = _.extend(defaultModule, {
 		name: 'Image View',
 		module: 'pageview-image',
-		disabled: true,
+		disabled: false,
 	});
 
 
